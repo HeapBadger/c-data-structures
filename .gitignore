@@ -1,0 +1,3 @@
+# Ignore bin/ and obj/ directories anywhere in the repository
+**/bin/
+**/obj/
