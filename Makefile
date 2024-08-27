@@ -34,7 +34,7 @@ $(OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.c
 
 # Link the test executable
 $(TEST_EXEC): $(SRC_OBJECTS) $(TEST_OBJECTS)
-	$(CC) $(SRC_OBJECTS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(LDFLAGS)
+	$(CC) $(SRC_OBJECTS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(LDFLAGS) 
 
 # Run tests with Valgrind
 valgrind: all
@@ -55,4 +55,5 @@ $(BIN_DIR):
 # Clean object and executable files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm test/test_main.o
 	@echo "Clean complete."
