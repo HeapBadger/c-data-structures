@@ -14,6 +14,8 @@
  * - **Search By Index**: Finds an element in the doubly linked list by
  * position.
  * - **Size**: Finds size of doubly linked list.
+ * - **Swap**: Swaps data between two nodes given position.
+ * - **Update**: Updates the data in a node at a given position.
  *
  * @section complexity Complexity
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
@@ -26,9 +28,9 @@
  * @date    August 26, 2024
  */
 
-#include "doubly_linked_list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "doubly_linked_list.h"
 
 // Function Declarations
 static void doubly_linked_list_del_node(doubly_linked_list_node_t *p_node,
@@ -336,6 +338,73 @@ doubly_linked_list_print (doubly_linked_list_t *p_list)
     }
 
     return;
+}
+
+// Swaps the data of two nodes
+int
+doubly_linked_list_swap (doubly_linked_list_t *p_list, int index_1, int index_2)
+{
+    int result = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
+
+    if (NULL == p_list)
+    {
+        result = DOUBLY_LINKED_LIST_INVALID_ARGUMENT;
+        goto EXIT;
+    }
+
+    if ((0 > index_1) || (0 > index_2))
+    {
+        goto EXIT;
+    }
+
+    doubly_linked_list_node_t *p_node_1
+        = doubly_linked_list_at(p_list, index_1);
+    doubly_linked_list_node_t *p_node_2
+        = doubly_linked_list_at(p_list, index_2);
+
+    if ((NULL != p_node_1) && (NULL != p_node_2))
+    {
+        void *p_data_1   = p_node_1->p_data;
+        void *p_data_2   = p_node_2->p_data;
+        p_node_1->p_data = p_data_2;
+        p_node_2->p_data = p_data_1;
+        result           = DOUBLY_LINKED_LIST_SUCCESS;
+    }
+
+EXIT:
+    return result;
+}
+
+// Updates the data of a node
+int
+doubly_linked_list_update (doubly_linked_list_t *p_list,
+                           int                   index,
+                           void                 *p_data)
+{
+    int result = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
+
+    if ((NULL == p_list) || (NULL == p_data))
+    {
+        result = DOUBLY_LINKED_LIST_INVALID_ARGUMENT;
+        goto EXIT;
+    }
+
+    if (0 > index)
+    {
+        goto EXIT;
+    }
+
+    doubly_linked_list_node_t *p_node = doubly_linked_list_at(p_list, index);
+
+    if (NULL != p_node)
+    {
+        p_list->del_f(p_node->p_data);
+        p_node->p_data = p_data;
+        result         = DOUBLY_LINKED_LIST_SUCCESS;
+    }
+
+EXIT:
+    return result;
 }
 
 /**

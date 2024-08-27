@@ -26,9 +26,9 @@
  * @date    August 21, 2024
  */
 
-#include "linked_list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "linked_list.h"
 
 // Function Declarations
 static void linked_list_del_node(linked_list_node_t *p_node, del_func del_f);
@@ -305,7 +305,8 @@ linked_list_print (linked_list_t *p_list)
 }
 
 // Swaps the data of two nodes
-int linked_list_swap(linked_list_t *p_list, int index_1, int index_2)
+int
+linked_list_swap (linked_list_t *p_list, int index_1, int index_2)
 {
     int result = LINKED_LIST_OUT_OF_BOUNDS;
 
@@ -325,19 +326,20 @@ int linked_list_swap(linked_list_t *p_list, int index_1, int index_2)
 
     if ((NULL != p_node_1) && (NULL != p_node_2))
     {
-        void *p_data_1 = p_node_1->p_data;
-        void *p_data_2 = p_node_2->p_data;
+        void *p_data_1   = p_node_1->p_data;
+        void *p_data_2   = p_node_2->p_data;
         p_node_1->p_data = p_data_2;
         p_node_2->p_data = p_data_1;
-        result = LINKED_LIST_SUCCESS;
+        result           = LINKED_LIST_SUCCESS;
     }
-    
+
 EXIT:
     return result;
 }
 
 // Updates the data of a node
-int linked_list_update(linked_list_t *p_list, int index, void *p_data)
+int
+linked_list_update (linked_list_t *p_list, int index, void *p_data)
 {
     int result = LINKED_LIST_OUT_OF_BOUNDS;
 
@@ -358,9 +360,9 @@ int linked_list_update(linked_list_t *p_list, int index, void *p_data)
     {
         p_list->del_f(p_node->p_data);
         p_node->p_data = p_data;
-        result = LINKED_LIST_SUCCESS;
+        result         = LINKED_LIST_SUCCESS;
     }
-    
+
 EXIT:
     return result;
 }

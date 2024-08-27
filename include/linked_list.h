@@ -9,7 +9,8 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-typedef enum {
+typedef enum
+{
     LINKED_LIST_SUCCESS = 0,      /**< Operation completed successfully. */
     LINKED_LIST_NOT_FOUND,        /**< The requested element was not found. */
     LINKED_LIST_OUT_OF_BOUNDS,    /**< An index was out of the valid range. */
@@ -336,8 +337,8 @@ void linked_list_print(linked_list_t *p_list);
 /**
  * @brief Swaps the data of two nodes in the linked list.
  *
- * This function swaps the data stored in the nodes at the specified indices 
- * within the linked list. If either index is out of bounds or the list is 
+ * This function swaps the data stored in the nodes at the specified indices
+ * within the linked list. If either index is out of bounds or the list is
  * `NULL`, the function returns an error.
  *
  * @param p_list Pointer to the linked list in which the swap will occur.
@@ -352,8 +353,8 @@ int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
 /**
  * @brief Updates the data of a node at a specified index in the linked list.
  *
- * This function updates the data stored in the node at the specified index 
- * within the linked list with the provided data. If the index is out of bounds 
+ * This function updates the data stored in the node at the specified index
+ * within the linked list with the provided data. If the index is out of bounds
  * or the list is `NULL`, the function returns an error.
  *
  * @param p_list Pointer to the linked list in which the update will occur.
@@ -361,8 +362,9 @@ int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
  * @param p_data Pointer to the new data to be stored in the node.
  *
  * @return `0` on success, or a non-zero error code if the operation fails
- *         (e.g., due to an invalid index, a `NULL` pointer, or a `NULL` data pointer).
- * 
+ *         (e.g., due to an invalid index, a `NULL` pointer, or a `NULL` data
+ * pointer).
+ *
  * @note The caller must ensure that `p_data` is valid and properly allocated
  *       before calling this function. If the function fails, the caller is
  *       responsible for freeing the memory allocated for `p_data`.

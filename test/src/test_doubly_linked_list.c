@@ -26,6 +26,8 @@ static void test_doubly_linked_list_at(void);
 static void test_doubly_linked_list_find(void);
 static void test_doubly_linked_list_size(void);
 static void test_doubly_linked_list_reverse(void);
+static void test_doubly_linked_list_swap(void);
+static void test_doubly_linked_list_update(void);
 static void test_doubly_linked_list_extreme(void);
 static void test_doubly_linked_list_null(void);
 static void print_int(void *p_data);
@@ -139,7 +141,27 @@ doubly_linked_list_suite (void)
                         "test_doubly_linked_list_reverse",
                         test_doubly_linked_list_reverse)))
     {
-        ERROR_LOG("Failed to add test_doubly_linked_list_reverse tosuite\n");
+        ERROR_LOG("Failed to add test_doubly_linked_list_reverse to suite\n");
+        suite = NULL;
+        goto CLEANUP;
+    }
+
+    if (NULL
+        == (CU_add_test(suite,
+                        "test_doubly_linked_list_swap",
+                        test_doubly_linked_list_swap)))
+    {
+        ERROR_LOG("Failed to add test_doubly_linked_list_swap to suite\n");
+        suite = NULL;
+        goto CLEANUP;
+    }
+
+    if (NULL
+        == (CU_add_test(suite,
+                        "test_doubly_linked_list_update",
+                        test_doubly_linked_list_update)))
+    {
+        ERROR_LOG("Failed to add test_doubly_linked_list_update to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -649,6 +671,81 @@ test_doubly_linked_list_reverse (void)
 }
 
 /**
+ * @brief Tests swapping two nodes in a doubly linked list.
+ *
+ * This test verifies that two nodes can successfully have
+ * their data swapped in a list.
+ *
+ * @return  None.
+ */
+void
+test_doubly_linked_list_swap (void)
+{
+    // Create a new linked list
+    doubly_linked_list_t *p_test
+        = doubly_linked_list_create(delete_int, compare_ints, print_int);
+
+    // Add some elements to the list
+    int *value0 = calloc(1, sizeof(int));
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
+    doubly_linked_list_insert(p_test, value0, 0);
+    doubly_linked_list_insert(p_test, value1, 1);
+    doubly_linked_list_insert(p_test, value2, 2);
+
+    // Swap elements at index 0 and 2
+    int result = doubly_linked_list_swap(p_test, 0, 2);
+    CU_ASSERT_EQUAL(result, DOUBLY_LINKED_LIST_SUCCESS);
+
+    // Check that the elements have been swapped
+    CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 3);
+    CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 2)->p_data, 1);
+
+    // Clean up
+    doubly_linked_list_destroy(p_test);
+}
+
+/**
+ * @brief Tests updating a node in a doubly linked list.
+ *
+ * This test verifies that a node's data can be updated
+ * within a list.
+ *
+ * @return  None.
+ */
+static void
+test_doubly_linked_list_update (void)
+{
+    // Create a new linked list
+    doubly_linked_list_t *p_test
+        = doubly_linked_list_create(delete_int, compare_ints, print_int);
+
+    // Add some elements to the list
+    int *value0 = calloc(1, sizeof(int));
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
+    doubly_linked_list_insert(p_test, value0, 0);
+    doubly_linked_list_insert(p_test, value1, 1);
+    doubly_linked_list_insert(p_test, value2, 2);
+
+    // Update element
+    int *update = calloc(1, sizeof(int));
+    *update     = 50;
+    int result  = doubly_linked_list_update(p_test, 1, update);
+    CU_ASSERT_EQUAL(result, DOUBLY_LINKED_LIST_SUCCESS);
+    CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 1)->p_data, 50);
+
+    // Clean up
+    doubly_linked_list_destroy(p_test);
+}
+
+/**
  * @brief   Tests extreme cases for the doubly linked list operations.
  *
  * This test verifies the behavior of doubly linked list operations under
@@ -687,6 +784,24 @@ test_doubly_linked_list_extreme (void)
     CU_ASSERT_PTR_NULL(p_node);
     p_node = doubly_linked_list_at(p_list, 10000); // Should be NULL or error
     CU_ASSERT_PTR_NULL(p_node);
+    int index = doubly_linked_list_swap(p_list, -10, 5);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    index = doubly_linked_list_swap(p_list, 5, -10);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    index = doubly_linked_list_swap(p_list, 5, 10000);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    index = doubly_linked_list_swap(p_list, 10000, 5);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    value  = calloc(1, sizeof(int));
+    *value = 10;
+    index  = doubly_linked_list_update(p_list, -5, value);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    free(value);
+    value  = calloc(1, sizeof(int));
+    *value = 10;
+    index  = doubly_linked_list_update(p_list, 10000, value);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_OUT_OF_BOUNDS);
+    free(value);
 
     // Test 3: Insertion at Invalid Position
     value  = calloc(1, sizeof(int));
@@ -783,6 +898,14 @@ test_doubly_linked_list_null (void)
     // Test 10: Attempt to find an index for a NULL list
     int index = doubly_linked_list_find(NULL, NULL);
     CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_NOT_FOUND);
+
+    // Test 11: Attempt to swap elements in a NULL list
+    index = doubly_linked_list_swap(NULL, 0, 1);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
+
+    // Test 12: Attempt to update node in a NULL list
+    index = doubly_linked_list_update(NULL, 0, NULL);
+    CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
 }
 
 // Function to delete an integer (free the memory)

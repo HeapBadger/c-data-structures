@@ -134,14 +134,17 @@ linked_list_suite (void)
         goto CLEANUP;
     }
 
-    if (NULL == (CU_add_test(suite, "test_linked_list_swap", test_linked_list_swap)))
+    if (NULL
+        == (CU_add_test(suite, "test_linked_list_swap", test_linked_list_swap)))
     {
         ERROR_LOG("Failed to add test_linked_list_swap to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
 
-    if (NULL == (CU_add_test(suite, "test_linked_list_update", test_linked_list_update)))
+    if (NULL
+        == (CU_add_test(
+            suite, "test_linked_list_update", test_linked_list_update)))
     {
         ERROR_LOG("Failed to add test_linked_list_update to suite\n");
         suite = NULL;
@@ -620,18 +623,20 @@ test_linked_list_reverse (void)
  *
  * @return  None.
  */
-void test_linked_list_swap(void) 
+void
+test_linked_list_swap (void)
 {
     // Create a new linked list
-    linked_list_t *p_test = linked_list_create(delete_int, compare_ints, print_int);
+    linked_list_t *p_test
+        = linked_list_create(delete_int, compare_ints, print_int);
 
     // Add some elements to the list
     int *value0 = calloc(1, sizeof(int));
     int *value1 = calloc(1, sizeof(int));
     int *value2 = calloc(1, sizeof(int));
-    *value0 = 1;
-    *value1 = 2;
-    *value2 = 3;
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
     linked_list_insert(p_test, value0, 0);
     linked_list_insert(p_test, value1, 1);
     linked_list_insert(p_test, value2, 2);
@@ -656,26 +661,28 @@ void test_linked_list_swap(void)
  *
  * @return  None.
  */
-static void test_linked_list_update(void) 
+static void
+test_linked_list_update (void)
 {
     // Create a new linked list
-    linked_list_t *p_test = linked_list_create(delete_int, compare_ints, print_int);
+    linked_list_t *p_test
+        = linked_list_create(delete_int, compare_ints, print_int);
 
     // Add some elements to the list
     int *value0 = calloc(1, sizeof(int));
     int *value1 = calloc(1, sizeof(int));
     int *value2 = calloc(1, sizeof(int));
-    *value0 = 1;
-    *value1 = 2;
-    *value2 = 3;
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
     linked_list_insert(p_test, value0, 0);
     linked_list_insert(p_test, value1, 1);
     linked_list_insert(p_test, value2, 2);
 
     // Update element
     int *update = calloc(1, sizeof(int));
-    *update = 50;
-    int result = linked_list_update(p_test, 1, update);
+    *update     = 50;
+    int result  = linked_list_update(p_test, 1, update);
     CU_ASSERT_EQUAL(result, LINKED_LIST_SUCCESS);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 1)->p_data, 50);
 
@@ -732,12 +739,12 @@ test_linked_list_extreme_cases (void)
     CU_ASSERT_EQUAL(index, LINKED_LIST_OUT_OF_BOUNDS);
     value  = calloc(1, sizeof(int));
     *value = 10;
-    index = linked_list_update(p_list, -5, value);
+    index  = linked_list_update(p_list, -5, value);
     CU_ASSERT_EQUAL(index, LINKED_LIST_OUT_OF_BOUNDS);
     free(value);
     value  = calloc(1, sizeof(int));
     *value = 10;
-    index = linked_list_update(p_list, 10000, value);
+    index  = linked_list_update(p_list, 10000, value);
     CU_ASSERT_EQUAL(index, LINKED_LIST_OUT_OF_BOUNDS);
     free(value);
 
