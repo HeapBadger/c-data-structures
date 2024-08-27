@@ -9,8 +9,12 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-#define LINKED_LIST_NOT_FOUND -1
-#define LINKED_LIST_SUCCESS   0
+typedef enum {
+    LINKED_LIST_SUCCESS = 0,      /**< Operation completed successfully. */
+    LINKED_LIST_NOT_FOUND,        /**< The requested element was not found. */
+    LINKED_LIST_OUT_OF_BOUNDS,    /**< An index was out of the valid range. */
+    LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided. */
+} linked_list_error_code_t;
 
 /**
  * @brief Function pointer type for a custom delete function.
@@ -328,5 +332,41 @@ linked_list_t *linked_list_reverse(linked_list_t *p_list);
  * @param p_list Pointer to the linked list to be printed.
  */
 void linked_list_print(linked_list_t *p_list);
+
+/**
+ * @brief Swaps the data of two nodes in the linked list.
+ *
+ * This function swaps the data stored in the nodes at the specified indices 
+ * within the linked list. If either index is out of bounds or the list is 
+ * `NULL`, the function returns an error.
+ *
+ * @param p_list Pointer to the linked list in which the swap will occur.
+ * @param index_1 The index of the first node.
+ * @param index_2 The index of the second node.
+ *
+ * @return `0` on success, or a non-zero error code if the operation fails
+ *         (e.g., due to invalid indices or a `NULL` pointer).
+ */
+int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
+
+/**
+ * @brief Updates the data of a node at a specified index in the linked list.
+ *
+ * This function updates the data stored in the node at the specified index 
+ * within the linked list with the provided data. If the index is out of bounds 
+ * or the list is `NULL`, the function returns an error.
+ *
+ * @param p_list Pointer to the linked list in which the update will occur.
+ * @param index The index of the node to be updated.
+ * @param p_data Pointer to the new data to be stored in the node.
+ *
+ * @return `0` on success, or a non-zero error code if the operation fails
+ *         (e.g., due to an invalid index, a `NULL` pointer, or a `NULL` data pointer).
+ * 
+ * @note The caller must ensure that `p_data` is valid and properly allocated
+ *       before calling this function. If the function fails, the caller is
+ *       responsible for freeing the memory allocated for `p_data`.
+ */
+int linked_list_update(linked_list_t *p_list, int index, void *p_data);
 
 #endif // LINKED_LIST_H

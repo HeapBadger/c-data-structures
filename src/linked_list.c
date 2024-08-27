@@ -8,9 +8,12 @@
  * - **Insert**: Adds a new element to the beginning, end, or any position in
  * the linked list.
  * - **Delete**: Removes an element from the linked list by position.
- * - **Search By Key**: Finds an element position in the linked list by key.
  * - **Search By Index**: Finds an element in the linked list by position.
+ * - **Search By Key**: Finds an element position in the linked list by key.
+ * - **Reversal**: Reverses the linked list order.
  * - **Size**: Finds size of linked list.
+ * - **Swap**: Swaps data between two nodes given position.
+ * - **Update**: Updates the data in a node at a given position.
  *
  * @section complexity Complexity
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
@@ -284,10 +287,9 @@ linked_list_reverse (linked_list_t *p_list)
 void
 linked_list_print (linked_list_t *p_list)
 {
-    printf("\nLinked List: ");
-
     if ((NULL != p_list) && (NULL != p_list->print_f))
     {
+        printf("\nLinked List: ");
         linked_list_node_t *current = p_list->p_head;
 
         while (NULL != current)
@@ -295,11 +297,72 @@ linked_list_print (linked_list_t *p_list)
             p_list->print_f(current->p_data);
             current = current->p_next;
         }
+
+        printf("\n\n");
     }
 
-    printf("\n\n");
-
     return;
+}
+
+// Swaps the data of two nodes
+int linked_list_swap(linked_list_t *p_list, int index_1, int index_2)
+{
+    int result = LINKED_LIST_OUT_OF_BOUNDS;
+
+    if (NULL == p_list)
+    {
+        result = LINKED_LIST_INVALID_ARGUMENT;
+        goto EXIT;
+    }
+
+    if ((0 > index_1) || (0 > index_2))
+    {
+        goto EXIT;
+    }
+
+    linked_list_node_t *p_node_1 = linked_list_at(p_list, index_1);
+    linked_list_node_t *p_node_2 = linked_list_at(p_list, index_2);
+
+    if ((NULL != p_node_1) && (NULL != p_node_2))
+    {
+        void *p_data_1 = p_node_1->p_data;
+        void *p_data_2 = p_node_2->p_data;
+        p_node_1->p_data = p_data_2;
+        p_node_2->p_data = p_data_1;
+        result = LINKED_LIST_SUCCESS;
+    }
+    
+EXIT:
+    return result;
+}
+
+// Updates the data of a node
+int linked_list_update(linked_list_t *p_list, int index, void *p_data)
+{
+    int result = LINKED_LIST_OUT_OF_BOUNDS;
+
+    if ((NULL == p_list) || (NULL == p_data))
+    {
+        result = LINKED_LIST_INVALID_ARGUMENT;
+        goto EXIT;
+    }
+
+    if (0 > index)
+    {
+        goto EXIT;
+    }
+
+    linked_list_node_t *p_node = linked_list_at(p_list, index);
+
+    if (NULL != p_node)
+    {
+        p_list->del_f(p_node->p_data);
+        p_node->p_data = p_data;
+        result = LINKED_LIST_SUCCESS;
+    }
+    
+EXIT:
+    return result;
 }
 
 /**
@@ -353,14 +416,14 @@ linked_list_del_node (linked_list_node_t *p_node, del_func del_f)
 static linked_list_node_t *
 linked_list_create_node (void *p_data)
 {
-    linked_list_node_t *node = NULL;
-    node                     = calloc(1, sizeof(linked_list_node_t));
+    linked_list_node_t *p_node = NULL;
+    p_node                     = calloc(1, sizeof(linked_list_node_t));
 
-    if (NULL != node)
+    if (NULL != p_node)
     {
-        node->p_data = p_data;
-        node->p_next = NULL;
+        p_node->p_data = p_data;
+        p_node->p_next = NULL;
     }
 
-    return node;
+    return p_node;
 }

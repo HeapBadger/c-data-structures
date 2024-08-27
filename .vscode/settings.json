@@ -3,6 +3,8 @@
         "stdlib.h": "c",
         "basic.h": "c",
         "doubly_linked_list.h": "c",
-        "test_auxiliary.h": "c"
+        "test_auxiliary.h": "c",
+        "string.h": "c",
+        "test_example.h": "c"
     }
 }
