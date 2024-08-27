@@ -10,7 +10,7 @@
 #define LINKED_LIST_H
 
 #define LINKED_LIST_NOT_FOUND -1
-#define LINKED_LIST_SUCCESS 0
+#define LINKED_LIST_SUCCESS   0
 
 /**
  * @brief Function pointer type for a custom delete function.
@@ -126,9 +126,10 @@ typedef int (*cmp_func)(void *p_lhs, void *p_rhs);
  * a pointer to the data it holds and a pointer to the next node in the list. It
  * allows the linked list to manage and traverse a sequence of elements.
  */
-typedef struct linked_list_node {
-  void *p_data;
-  struct linked_list_node *p_next;
+typedef struct linked_list_node
+{
+    void                    *p_data;
+    struct linked_list_node *p_next;
 } linked_list_node_t;
 
 /**
@@ -139,11 +140,12 @@ typedef struct linked_list_node {
  * The functions provided allow for deleting, comparing, and printing node data,
  * facilitating custom behavior for the list.
  */
-typedef struct {
-  linked_list_node_t *p_head;
-  del_func del_f;
-  cmp_func cmp_f;
-  print_func print_f;
+typedef struct
+{
+    linked_list_node_t *p_head;
+    del_func            del_f;
+    cmp_func            cmp_f;
+    print_func          print_f;
 } linked_list_t;
 
 /**
@@ -164,7 +166,8 @@ typedef struct {
  *                        or NULL if memory allocation fails or if any provided
  *                        function pointer is NULL.
  */
-linked_list_t *linked_list_create(del_func del_f, cmp_func cmp_f,
+linked_list_t *linked_list_create(del_func   del_f,
+                                  cmp_func   cmp_f,
                                   print_func print_f);
 
 /**
@@ -223,8 +226,9 @@ linked_list_t *linked_list_preappend(linked_list_t *p_list, void *p_data);
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-linked_list_t *linked_list_insert(linked_list_t *p_list, void *p_data,
-                                  int index);
+linked_list_t *linked_list_insert(linked_list_t *p_list,
+                                  void          *p_data,
+                                  int            index);
 
 /**
  * @brief Deletes the node at a specified index in a linked list.
@@ -299,6 +303,19 @@ int linked_list_find(linked_list_t *p_list, void *p_data);
  *         function returns 0.
  */
 int linked_list_size(linked_list_t *p_list);
+
+/**
+ * @brief Reverses the linked list.
+ *
+ * This function reverses the order of the nodes in a linked list. The head of
+ * the list is updated to point to the last node, effectively inverting the
+ * order of the list.
+ *
+ * @param p_list A pointer to the linked list to be reversed.
+ *
+ * @return A pointer to the reversed linked list.
+ */
+linked_list_t *linked_list_reverse(linked_list_t *p_list);
 
 /**
  * @brief Prints the data in each node of the linked list.

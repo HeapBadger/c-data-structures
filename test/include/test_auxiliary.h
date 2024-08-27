@@ -16,8 +16,8 @@
  *
  * This definition allows additional arguments to be passed as an option.
  */
-#define ERROR_LOG(fmt, ...)                                                    \
-  fprintf(stderr, "\n[Error]: " fmt "\n", ##__VA_ARGS__)
+#define ERROR_LOG(fmt, ...) \
+    fprintf(stderr, "\n[Error]: " fmt "\n", ##__VA_ARGS__)
 
 /**
  * @brief Provides global information logging.

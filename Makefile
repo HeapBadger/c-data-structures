@@ -37,7 +37,7 @@ $(TEST_EXEC): $(SRC_OBJECTS) $(TEST_OBJECTS)
 	$(CC) $(SRC_OBJECTS) $(TEST_OBJECTS) -o $(TEST_EXEC) $(LDFLAGS)
 
 # Run tests with Valgrind
-valgrind: $(TEST_EXEC)
+valgrind: all
 	valgrind --leak-check=full --track-origins=yes ./$(TEST_EXEC)
 
 # Format all C source and header files

@@ -21,27 +21,32 @@
 static void test_hello(void);
 
 // Suite Creation Funtion
-CU_pSuite example_suite(void) {
-  CU_pSuite suite = NULL;
-  suite = CU_add_suite("example-suite", 0, 0);
+CU_pSuite
+example_suite (void)
+{
+    CU_pSuite suite = NULL;
+    suite           = CU_add_suite("example-suite", 0, 0);
 
-  if (NULL == suite) {
-    ERROR_LOG("Failed to add example-suite\n");
-    goto CLEANUP;
-  }
+    if (NULL == suite)
+    {
+        ERROR_LOG("Failed to add example-suite\n");
+        goto CLEANUP;
+    }
 
-  if (NULL == (CU_add_test(suite, "test_hello", test_hello))) {
-    ERROR_LOG("Failed to add test_hello to suite\n");
-    suite = NULL;
-    goto CLEANUP;
-  }
+    if (NULL == (CU_add_test(suite, "test_hello", test_hello)))
+    {
+        ERROR_LOG("Failed to add test_hello to suite\n");
+        suite = NULL;
+        goto CLEANUP;
+    }
 
 CLEANUP:
-  if (NULL == suite) {
-    CU_cleanup_registry();
-  }
+    if (NULL == suite)
+    {
+        CU_cleanup_registry();
+    }
 
-  return suite;
+    return suite;
 }
 
 /**
@@ -52,16 +57,18 @@ CLEANUP:
  *
  * @return  None.
  */
-static void test_hello(void) {
-  // Capture function output to buffer
-  char *buffer = NULL;
-  buffer = capture_stdout(hello, NULL);
+static void
+test_hello (void)
+{
+    // Capture function output to buffer
+    char *buffer = NULL;
+    buffer       = capture_stdout(hello, NULL);
 
-  // Check the output and return value
-  CU_ASSERT_STRING_EQUAL(buffer, "Hello World!\n");
+    // Check the output and return value
+    CU_ASSERT_STRING_EQUAL(buffer, "Hello World!\n");
 
-  // Clean up
-  free(buffer);
-  buffer = NULL;
-  return;
+    // Clean up
+    free(buffer);
+    buffer = NULL;
+    return;
 }

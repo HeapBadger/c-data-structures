@@ -13,7 +13,9 @@
 
 #include "example.h"
 
-void hello() {
-  printf("Hello World!\n");
-  return;
+void
+hello ()
+{
+    printf("Hello World!\n");
+    return;
 }
