@@ -69,9 +69,9 @@ doubly_linked_list_destroy (doubly_linked_list_t *p_list)
 
         while (NULL != p_head)
         {
-            doubly_linked_list_node_t *current = p_head;
+            doubly_linked_list_node_t *p_current = p_head;
             p_head                             = p_head->p_next;
-            doubly_linked_list_del_node(current, p_list->del_f);
+            doubly_linked_list_del_node(p_current, p_list->del_f);
         }
 
         p_list->cmp_f   = NULL;

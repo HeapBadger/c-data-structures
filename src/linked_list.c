@@ -66,9 +66,9 @@ linked_list_destroy (linked_list_t *p_list)
 
         while (NULL != p_head)
         {
-            linked_list_node_t *current = p_head;
+            linked_list_node_t *p_current = p_head;
             p_head                      = p_head->p_next;
-            linked_list_del_node(current, p_list->del_f);
+            linked_list_del_node(p_current, p_list->del_f);
         }
 
         p_list->cmp_f   = NULL;
