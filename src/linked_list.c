@@ -190,7 +190,7 @@ linked_list_at (linked_list_t *p_list, int index)
     linked_list_node_t *p_current = NULL;
     linked_list_node_t *p_node    = NULL;
 
-    if ((NULL != p_list) && (0 <= index))
+    if ((NULL != p_list) && (0 <= index) && (NULL != p_list->p_head))
     {
         int count = 0;
         p_current = p_list->p_head;
@@ -218,7 +218,7 @@ linked_list_find (linked_list_t *p_list, void *p_data)
     int index = LINKED_LIST_NOT_FOUND;
     int count = 0;
 
-    if ((NULL != p_list) && (NULL != p_data))
+    if ((NULL != p_list) && (NULL != p_data) && (NULL != p_list->p_head))
     {
         linked_list_node_t *p_current = p_list->p_head;
 
@@ -234,6 +234,10 @@ linked_list_find (linked_list_t *p_list, void *p_data)
             p_current = p_current->p_next;
         }
     }
+    else
+    {
+        index = LINKED_LIST_INVALID_ARGUMENT;
+    }
 
     return index;
 }
@@ -244,7 +248,7 @@ linked_list_size (linked_list_t *p_list)
 {
     int size = 0;
 
-    if (NULL != p_list)
+    if ((NULL != p_list) && (NULL != p_list->p_head))
     {
         linked_list_node_t *p_current = p_list->p_head;
 
@@ -262,7 +266,7 @@ linked_list_size (linked_list_t *p_list)
 linked_list_t *
 linked_list_reverse (linked_list_t *p_list)
 {
-    if (NULL != p_list)
+    if ((NULL != p_list) && (NULL != p_list->p_head))
     {
         linked_list_node_t *p_current = p_list->p_head;
         linked_list_node_t *p_next    = p_list->p_head->p_next;
@@ -287,15 +291,15 @@ linked_list_reverse (linked_list_t *p_list)
 void
 linked_list_print (linked_list_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f))
+    if ((NULL != p_list) && (NULL != p_list->print_f) && (NULL != p_list->p_head))
     {
         printf("\nLinked List: ");
-        linked_list_node_t *current = p_list->p_head;
+        linked_list_node_t *p_current = p_list->p_head;
 
-        while (NULL != current)
+        while (NULL != p_current)
         {
-            p_list->print_f(current->p_data);
-            current = current->p_next;
+            p_list->print_f(p_current->p_data);
+            p_current = p_current->p_next;
         }
 
         printf("\n\n");

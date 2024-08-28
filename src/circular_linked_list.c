@@ -93,31 +93,25 @@ circular_linked_list_destroy (circular_linked_list_t *p_list)
 }
 
 // Pre-appends data into circular linked list
-circular_linked_list_t *
-circular_linked_list_preappend (circular_linked_list_t *p_list, void *p_data)
+int circular_linked_list_preappend (circular_linked_list_t *p_list, void *p_data)
 {
     return circular_linked_list_insert(p_list, p_data, 0);
 }
 
 // Inserts data into circular linked list at index
-circular_linked_list_t *
-circular_linked_list_insert (circular_linked_list_t *p_list, void *p_data,  int index)
+int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, int index)
 {
-    // handle invalid inputs
-    if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data))
-    {
-        goto EXIT;
-    }
-
-    // handle invalid index
-    if (0 > index)
-    {
-        p_list->del_f(p_data);
-        goto EXIT;
-    }
-
-    // create new node
     circular_linked_list_node_t *p_new_node = NULL;
+    int result = CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS;
+
+    // Handle invalid inputs
+    if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data) || (0 > index))
+    {
+        result = CIRCULAR_LINKED_LIST_INVALID_ARGUMENT;
+        goto EXIT;
+    }
+
+    // Create new node
     p_new_node = circular_linked_list_create_node(p_data);
 
     if (NULL == p_new_node)
@@ -125,39 +119,84 @@ circular_linked_list_insert (circular_linked_list_t *p_list, void *p_data,  int 
         goto EXIT;
     }
 
-    // Case 1: List is empty
-    if (NULL == p_list->p_head)
+    // Case 1: Handle case when the list is empty
+    if (NULL == p_list->p_head) 
     {
-        p_list->p_head = p_new_node;
+        if (0 == index) 
+        {
+            p_list->p_head = p_new_node;
+            p_new_node->p_next = p_new_node;
+            result = CIRCULAR_LINKED_LIST_SUCCESS;
+        }
+        // Index is out of bounds forr an empty list
+        else
+        {
+            goto EXIT;
+        }
+
         goto EXIT;
     }
 
-    // Traverse the list to find the insertion point or reach the last node
-    circular_linked_list_node_t *p_curr = p_list->p_head;
-    circular_linked_list_node_t *p_prev = NULL;
-    int count = 0;
-
-    do
+    // Case 2: Insert at the beginning; traverse list to find last node and update next pointer
+    if (0 == index) 
     {
-        p_prev = p_curr;
-        p_curr = p_curr->p_next;
-        count++;
-    } while ((p_curr != p_list->p_head) && (count < index));
-
-    if (index == 0)
-    { // Case 2: Insert at the beginning
         p_new_node->p_next = p_list->p_head;
-        p_prev->p_next = p_new_node;  
+        circular_linked_list_node_t *p_last = p_list->p_head;
+
+        while (p_last->p_next != p_list->p_head) 
+        {
+            p_last = p_last->p_next;
+        }
+
+        p_last->p_next = p_new_node;
         p_list->p_head = p_new_node;
+        result = CIRCULAR_LINKED_LIST_SUCCESS;
     }
-    else
-    { // Case 3: Insert at the middle or end
-        p_new_node->p_next = p_curr;
-        p_prev->p_next = p_new_node;
+    // Case 3: Insert at the middle or end; traverse list to find insertion point
+    else 
+    {
+        circular_linked_list_node_t *p_curr = p_list->p_head;
+        circular_linked_list_node_t *p_prev = NULL;
+        int count = 0;
+
+        do
+        {
+            p_prev = p_curr;
+            p_curr = p_curr->p_next;
+            count++;
+        } while (p_curr != p_list->p_head && count < index);
+
+        if (count == index) 
+        {
+            p_new_node->p_next = p_curr;
+            p_prev->p_next = p_new_node;
+            result = CIRCULAR_LINKED_LIST_SUCCESS;
+        }
+        // Index is out of bounds
+        else 
+        {
+            goto EXIT;
+        }
     }
 
 EXIT:
-    return p_list;
+    if (CIRCULAR_LINKED_LIST_SUCCESS != result)
+    {
+        if ((NULL != p_data) && (NULL != p_list->del_f))
+        {
+            p_list->del_f(p_data);
+            p_data = NULL;
+        }
+
+        if (NULL != p_new_node)
+        {
+            free(p_new_node);
+            p_new_node = NULL;
+        }
+    }
+
+    // return p_list;
+    return result;
 }
 
 // Deletes data in circular linked list at index
@@ -221,36 +260,15 @@ EXIT:
 circular_linked_list_node_t *
 circular_linked_list_at (circular_linked_list_t *p_list, int index)
 {
-    // // Traverse the list to find the insertion point or reach the last node
-    // circular_linked_list_node_t *p_curr = p_list->p_head;
-    // // circular_linked_list_node_t *p_prev = NULL;
-    // circular_linked_list_node_t *p_node = NULL;
-    // int count = 0;
-
-    // do
-    // {
-    //     // p_prev = p_curr;
-    //     p_curr = p_curr->p_next;
-    //     count++;
-    // } while ((p_list->p_head != p_curr) && (index > count));
-
-    // if (index == count)
-    // {
-    //     p_node = p_curr;
-    // }
-
-    // return p_node;
-
-
     circular_linked_list_node_t *p_current = NULL;
     circular_linked_list_node_t *p_node    = NULL;
 
-    if ((NULL != p_list) && (0 <= index))
+    if ((NULL != p_list) && (0 <= index) && (NULL != p_list->p_head))
     {
         int count = 0;
         p_current = p_list->p_head;
 
-        while (NULL != p_current)
+        do
         {
             if (index == count)
             {
@@ -260,7 +278,7 @@ circular_linked_list_at (circular_linked_list_t *p_list, int index)
 
             count++;
             p_current = p_current->p_next;
-        }
+        } while (p_current != p_list->p_head);
     }
 
     return p_node;
@@ -271,13 +289,13 @@ int
 circular_linked_list_find (circular_linked_list_t *p_list, void *p_data)
 {
     int index = CIRCULAR_LINKED_LIST_NOT_FOUND;
-    int count = 0;
 
-    if ((NULL != p_list) && (NULL != p_data))
+    if ((NULL != p_list) && (NULL != p_data) && (NULL != p_list->p_head))
     {
+        int count = 0;
         circular_linked_list_node_t *p_current = p_list->p_head;
 
-        while (NULL != p_current)
+        do
         {
             if (0 == p_list->cmp_f(p_data, p_current->p_data))
             {
@@ -287,7 +305,11 @@ circular_linked_list_find (circular_linked_list_t *p_list, void *p_data)
 
             count++;
             p_current = p_current->p_next;
-        }
+        } while (p_current != p_list->p_head);
+    }
+    else
+    {
+        index = CIRCULAR_LINKED_LIST_INVALID_ARGUMENT;
     }
 
     return index;
@@ -299,15 +321,15 @@ circular_linked_list_size (circular_linked_list_t *p_list)
 {
     int size = 0;
 
-    if (NULL != p_list)
+    if ((NULL != p_list) && (NULL != p_list->p_head))
     {
         circular_linked_list_node_t *p_current = p_list->p_head;
 
-        while (NULL != p_current)
+        do
         {
             size++;
             p_current = p_current->p_next;
-        }
+        } while (p_current != p_list->p_head);
     }
 
     return size;
@@ -317,23 +339,23 @@ circular_linked_list_size (circular_linked_list_t *p_list)
 circular_linked_list_t *
 circular_linked_list_reverse (circular_linked_list_t *p_list)
 {
-    if (NULL != p_list)
-    {
-        circular_linked_list_node_t *p_current = p_list->p_head;
-        circular_linked_list_node_t *p_next    = p_list->p_head->p_next;
-        circular_linked_list_node_t *p_prev    = NULL;
+    // if ((NULL != p_list) && (NULL != p_list->p_head))
+    // {
+    //     circular_linked_list_node_t *p_current = p_list->p_head;
+    //     circular_linked_list_node_t *p_next    = p_list->p_head->p_next;
+    //     circular_linked_list_node_t *p_prev    = NULL;
 
-        while (NULL != p_current)
-        {
-            p_next            = p_current->p_next;
-            p_current->p_next = p_prev;
-            p_prev            = p_current;
-            p_current         = p_next;
-        }
+    //     do
+    //     {
+    //         p_next            = p_current->p_next;
+    //         p_current->p_next = p_prev;
+    //         p_prev            = p_current;
+    //         p_current         = p_next;
+    //         p_current = p_current->p_next;
+    //     } while (p_current != p_list->p_head);
 
-        p_list->p_head
-            = p_prev; // Update the head of the list to the new first element
-    }
+    //     p_list->p_head = p_prev; // Update the head of the list to the new first element
+    // }
 
     return p_list;
 }
@@ -342,16 +364,16 @@ circular_linked_list_reverse (circular_linked_list_t *p_list)
 void
 circular_linked_list_print (circular_linked_list_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f))
+    if ((NULL != p_list) && (NULL != p_list->print_f) && (NULL != p_list->p_head))
     {
         printf("\nLinked List: ");
-        circular_linked_list_node_t *current = p_list->p_head;
+        circular_linked_list_node_t *p_current = p_list->p_head;
 
-        while (NULL != current)
+        do
         {
-            p_list->print_f(current->p_data);
-            current = current->p_next;
-        }
+            p_list->print_f(p_current->p_data);
+            p_current = p_current->p_next;
+        } while (p_current != p_list->p_head);
 
         printf("\n\n");
     }

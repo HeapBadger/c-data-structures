@@ -13,10 +13,8 @@ typedef enum
 {
     CIRCULAR_LINKED_LIST_SUCCESS = 0, /**< Operation completed successfully. */
     CIRCULAR_LINKED_LIST_NOT_FOUND,   /**< The requested element was not found. */
-    CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range.
-                                       */
-    CIRCULAR_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided.
-                                          */
+    CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range.*/
+    CIRCULAR_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided.*/
 } circular_linked_list_error_code_t;
 
 /**
@@ -174,9 +172,7 @@ typedef struct
  * list, or NULL if memory allocation fails or if any provided function pointer
  * is NULL.
  */
-circular_linked_list_t *circular_linked_list_create(del_func   del_f,
-                                                cmp_func   cmp_f,
-                                                print_func print_f);
+circular_linked_list_t *circular_linked_list_create(del_func del_f, cmp_func cmp_f, print_func print_f);
 
 /**
  * @brief Destroys the circular linked list and frees its resources.
@@ -207,15 +203,13 @@ void circular_linked_list_destroy(circular_linked_list_t *p_list);
  * prepended.
  * @param p_data Pointer to the data to be stored in the new node.
  *
- * @return circular_linked_list_t* Pointer to the updated circular linked list, or
- * NULL if the operation fails.
+ * @return int Error code indicating the result of the operation.
  *
  * @note The function assumes that the `p_data` pointer is valid and properly
- * managed by the caller. The function may return NULL if the list pointer or
+ * managed by the caller. It may return an error code if the list pointer or
  * data pointer is invalid, or if memory allocation for the new node fails.
  */
-circular_linked_list_t *circular_linked_list_preappend(circular_linked_list_t *p_list,
-                                                   void *p_data);
+int circular_linked_list_preappend(circular_linked_list_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node with the given data at the specified index in the
@@ -230,15 +224,12 @@ circular_linked_list_t *circular_linked_list_preappend(circular_linked_list_t *p
  * @param p_data Pointer to the data to be stored in the new node.
  * @param index  The position at which to insert the new node (0-based index).
  *
- * @return circular_linked_list_t* Pointer to the updated circular linked list, or
- * NULL if insertion fails.
+ * @return int Error code indicating the result of the operation.
  *
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-circular_linked_list_t *circular_linked_list_insert(circular_linked_list_t *p_list,
-                                                void                 *p_data,
-                                                int                   index);
+int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, int index);
 
 /**
  * @brief Deletes the node at a specified index in a circular linked list.
@@ -260,8 +251,7 @@ circular_linked_list_t *circular_linked_list_insert(circular_linked_list_t *p_li
  * deletion function is NULL, the function returns the original circular linked
  * list unchanged.
  */
-circular_linked_list_t *circular_linked_list_del_at(circular_linked_list_t *p_list,
-                                                int                   index);
+circular_linked_list_t *circular_linked_list_del_at(circular_linked_list_t *p_list, int index);
 
 /**
  * @brief Retrieves the node at a specified index in a circular linked list.

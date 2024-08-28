@@ -204,73 +204,71 @@ CLEANUP:
 static void
 test_circular_linked_list_simple (void)
 {
-    // circular_linked_list_t      *p_test  = NULL;
-    // circular_linked_list_node_t *p_node  = NULL;
-    // int                        ll_size = 0;
+    circular_linked_list_t      *p_test  = NULL;
+    circular_linked_list_node_t *p_node  = NULL;
+    int                        ll_size = 0;
 
-    // // Create the circular linked list
-    // p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
+    // Create the circular linked list
+    p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
 
-    // // Test case 1: Preappend value when list is empty
-    // int *value_1 = calloc(1, sizeof(int));
-    // *value_1     = 5;
-    // p_test = circular_linked_list_preappend(p_test, value_1); // Expect only "5"
+    // Test case 1: Preappend value when list is empty
+    int *value_1 = calloc(1, sizeof(int));
+    *value_1     = 5;
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value_1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 5
 
-    // ll_size = circular_linked_list_size(p_test);
-    // CU_ASSERT_EQUAL(ll_size, 1);
+    ll_size = circular_linked_list_size(p_test);
+    CU_ASSERT_EQUAL(ll_size, 1);
 
-    // p_node = circular_linked_list_at(p_test, 0);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
+    p_node = circular_linked_list_at(p_test, 0);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
 
-    // // Test case 2: Preappend value when a list exists
-    // int *value_2 = calloc(1, sizeof(int));
-    // *value_2     = 4;
-    // p_test = circular_linked_list_preappend(p_test, value_2); // Expect "4 5"
+    // Test case 2: Preappend value when a list exists
+    int *value_2 = calloc(1, sizeof(int));
+    *value_2     = 4;
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value_2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 4 5
 
-    // ll_size = circular_linked_list_size(p_test);
-    // CU_ASSERT_EQUAL(ll_size, 2);
+    ll_size = circular_linked_list_size(p_test);
+    CU_ASSERT_EQUAL(ll_size, 2);
 
-    // p_node = circular_linked_list_at(p_test, 0);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
-    // p_node = circular_linked_list_at(p_test, 1);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
+    p_node = circular_linked_list_at(p_test, 0);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
+    p_node = circular_linked_list_at(p_test, 1);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
 
-    // // Test case 3: Insert value at end of list
-    // int *value_3 = calloc(1, sizeof(int));
-    // *value_3     = 10;
-    // p_test = circular_linked_list_insert(p_test, value_3, 2); // Expect "4 5 10"
+    // Test case 3: Insert value at end of list
+    int *value_3 = calloc(1, sizeof(int));
+    *value_3     = 10;
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value_3, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 4 5 10
 
-    // ll_size = circular_linked_list_size(p_test);
-    // CU_ASSERT_EQUAL(ll_size, 3);
+    ll_size = circular_linked_list_size(p_test);
+    CU_ASSERT_EQUAL(ll_size, 3);
 
-    // p_node = circular_linked_list_at(p_test, 0);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
-    // p_node = circular_linked_list_at(p_test, 1);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
-    // p_node = circular_linked_list_at(p_test, 2);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_3));
+    p_node = circular_linked_list_at(p_test, 0);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
+    p_node = circular_linked_list_at(p_test, 1);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
+    p_node = circular_linked_list_at(p_test, 2);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_3));
 
-    // // Test case 4: Insert value in the middle of the list
-    // int *value_4 = calloc(1, sizeof(int));
-    // *value_4     = 23;
-    // p_test
-    //     = circular_linked_list_insert(p_test, value_4, 2); // Expect "4 5 23 10"
+    // Test case 4: Insert value in the middle of the list
+    int *value_4 = calloc(1, sizeof(int));
+    *value_4     = 23;
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value_4, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 4 5 23 10
 
-    // ll_size = circular_linked_list_size(p_test);
-    // CU_ASSERT_EQUAL(ll_size, 4);
+    ll_size = circular_linked_list_size(p_test);
+    CU_ASSERT_EQUAL(ll_size, 4);
 
-    // p_node = circular_linked_list_at(p_test, 0);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
-    // p_node = circular_linked_list_at(p_test, 1);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
-    // p_node = circular_linked_list_at(p_test, 2);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_4));
-    // p_node = circular_linked_list_at(p_test, 3);
-    // CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_3));
+    p_node = circular_linked_list_at(p_test, 0);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_2));
+    p_node = circular_linked_list_at(p_test, 1);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_1));
+    p_node = circular_linked_list_at(p_test, 2);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_4));
+    p_node = circular_linked_list_at(p_test, 3);
+    CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value_3));
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -327,18 +325,49 @@ test_circular_linked_list_destroy (void)
 static void
 test_circular_linked_list_preappend (void)
 {
+    // preappend to empty list
     circular_linked_list_t *p_test = NULL;
-    int *value  = calloc(1, sizeof(int));
-    *value = 7;
+    int *value0  = calloc(1, sizeof(int));
+    *value0 = 7;
 
     p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = circular_linked_list_preappend(p_test, value);
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value0), CIRCULAR_LINKED_LIST_SUCCESS);
 
     CU_ASSERT_PTR_NOT_NULL(p_test);
     CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 7);
 
     circular_linked_list_node_t *node0 = circular_linked_list_at(p_test, 0);
     CU_ASSERT_PTR_EQUAL(node0->p_next, node0);
+
+    // preappend second value
+    int *value1  = calloc(1, sizeof(int));
+    *value1 = 10;
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); 
+
+    CU_ASSERT_PTR_NOT_NULL(p_test);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 10);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 7);
+
+    node0 = circular_linked_list_at(p_test, 0);
+    circular_linked_list_node_t *node1 = circular_linked_list_at(p_test, 1);
+    CU_ASSERT_PTR_EQUAL(node0->p_next, node1);
+    CU_ASSERT_PTR_EQUAL(node1->p_next, node0);
+
+    // preappend third value
+    int *value2  = calloc(1, sizeof(int));
+    *value2 = 34;
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value2), CIRCULAR_LINKED_LIST_SUCCESS);
+    CU_ASSERT_PTR_NOT_NULL(p_test);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 34);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 10);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 2)->p_data, 7);
+
+    node0 = circular_linked_list_at(p_test, 0);
+    node1 = circular_linked_list_at(p_test, 1);
+    circular_linked_list_node_t *node2 = circular_linked_list_at(p_test, 2);
+    CU_ASSERT_PTR_EQUAL(node0->p_next, node1);
+    CU_ASSERT_PTR_EQUAL(node1->p_next, node2);
+    CU_ASSERT_PTR_EQUAL(node2->p_next, node0);
 
     // Clean up
     circular_linked_list_destroy(p_test);
@@ -370,11 +399,11 @@ test_circular_linked_list_insert (void)
     *value4                      = 4;
 
     p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = circular_linked_list_preappend(p_test, value0); // List: 1
-    p_test = circular_linked_list_preappend(p_test, value1); // List: 1 1
-    p_test = circular_linked_list_insert(p_test, value2, 2); // List: 1 1 2
-    p_test = circular_linked_list_insert(p_test, value3, 2); // List: 1 1 3 2
-    p_test = circular_linked_list_insert(p_test, value4, 4); // List: 1 1 3 2 4
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value0), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 1 3 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value4, 4), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 1 3 2 4
 
     // Verify the values at each position
     CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 1);
@@ -435,11 +464,11 @@ test_circular_linked_list_del_at (void)
     *value5                      = 5;
 
     p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = circular_linked_list_preappend(p_test, value1); // List: 1
-    p_test = circular_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = circular_linked_list_insert(p_test, value3, 2); // List: 1 2 3
-    p_test = circular_linked_list_insert(p_test, value4, 3); // List: 1 2 3 4
-    p_test = circular_linked_list_insert(p_test, value5, 4); // List: 1 2 3 4 5
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2 3
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value4, 3), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2 3 4
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value5, 4), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2 3 4 5
 
     // Test deletion at the middle index
     p_test = circular_linked_list_del_at(p_test, 2); // Remove 3, List: 1 2 4 5
@@ -517,9 +546,9 @@ test_circular_linked_list_at (void)
     *value3                      = 3;
 
     p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = circular_linked_list_preappend(p_test, value1); // List: 1
-    p_test = circular_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = circular_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
 
     CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 1);
     CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 3);
@@ -540,26 +569,25 @@ test_circular_linked_list_at (void)
 static void
 test_circular_linked_list_find (void)
 {
-    // circular_linked_list_t *p_test = NULL;
-    // int                  *value1 = calloc(1, sizeof(int));
-    // int                  *value2 = calloc(1, sizeof(int));
-    // int                  *value3 = calloc(1, sizeof(int));
-    // *value1                      = 1;
-    // *value2                      = 2;
-    // *value3                      = 3;
+    circular_linked_list_t *p_test = NULL;
+    int                  *value1 = calloc(1, sizeof(int));
+    int                  *value2 = calloc(1, sizeof(int));
+    int                  *value3 = calloc(1, sizeof(int));
+    *value1                      = 1;
+    *value2                      = 2;
+    *value3                      = 3;
 
-    // p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    // p_test = circular_linked_list_preappend(p_test, value1); // List: 1
-    // p_test = circular_linked_list_insert(p_test, value2, 1); // List: 1 2
-    // p_test = circular_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
 
-    // CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value1), 0);
-    // CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value2), 2);
-    // CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value3), 1);
+    CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value1), 0);
+    CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value2), 2);
+    CU_ASSERT_EQUAL(circular_linked_list_find(p_test, value3), 1);
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -574,24 +602,23 @@ test_circular_linked_list_find (void)
 static void
 test_circular_linked_list_size (void)
 {
-    // circular_linked_list_t *p_test = NULL;
-    // int                  *value1 = calloc(1, sizeof(int));
-    // int                  *value2 = calloc(1, sizeof(int));
-    // int                  *value3 = calloc(1, sizeof(int));
-    // *value1                      = 1;
-    // *value2                      = 2;
-    // *value3                      = 3;
+    circular_linked_list_t *p_test = NULL;
+    int                  *value1 = calloc(1, sizeof(int));
+    int                  *value2 = calloc(1, sizeof(int));
+    int                  *value3 = calloc(1, sizeof(int));
+    *value1                      = 1;
+    *value2                      = 2;
+    *value3                      = 3;
 
-    // p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    // p_test = circular_linked_list_preappend(p_test, value1); // List: 1
-    // p_test = circular_linked_list_insert(p_test, value2, 1); // List: 1 2
-    // p_test = circular_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
 
-    // CU_ASSERT_EQUAL(circular_linked_list_size(p_test), 3);
+    CU_ASSERT_EQUAL(circular_linked_list_size(p_test), 3);
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -605,43 +632,42 @@ test_circular_linked_list_size (void)
 static void
 test_circular_linked_list_reverse (void)
 {
-    // circular_linked_list_t *p_test = NULL;
-    // int                  *value1 = calloc(1, sizeof(int));
-    // int                  *value2 = calloc(1, sizeof(int));
-    // int                  *value3 = calloc(1, sizeof(int));
-    // *value1                      = 1;
-    // *value2                      = 2;
-    // *value3                      = 3;
+    circular_linked_list_t *p_test = NULL;
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    int *value3 = calloc(1, sizeof(int));
+    *value1 = 1;
+    *value2 = 2;
+    *value3 = 3;
 
-    // p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
-    // p_test = circular_linked_list_preappend(p_test, value1); // List: 1
-    // p_test = circular_linked_list_insert(p_test, value2, 1); // List: 1 2
-    // p_test = circular_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value3, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
 
-    // p_test = circular_linked_list_reverse(p_test);
+    p_test = circular_linked_list_reverse(p_test);
 
-    // // Verify the values at each position
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 2);
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 3);
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 2)->p_data, 1);
+    // Verify the values at each position
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 2);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 3);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 2)->p_data, 1);
 
-    // // Verify p_next pointers
-    // circular_linked_list_node_t *node0 = circular_linked_list_at(p_test, 0);
-    // circular_linked_list_node_t *node1 = circular_linked_list_at(p_test, 1);
-    // circular_linked_list_node_t *node2 = circular_linked_list_at(p_test, 2);
+    // Verify p_next pointers
+    circular_linked_list_node_t *node0 = circular_linked_list_at(p_test, 0);
+    circular_linked_list_node_t *node1 = circular_linked_list_at(p_test, 1);
+    circular_linked_list_node_t *node2 = circular_linked_list_at(p_test, 2);
 
-    // // Check node 0 (should be the new head)
-    // CU_ASSERT_PTR_EQUAL(node0->p_next, node1); // node 0's next should be node 1
+    // Check node 0 (should be the new head)
+    CU_ASSERT_PTR_EQUAL(node0->p_next, node1); // node 0's next should be node 1
 
-    // // Check node 1
-    // CU_ASSERT_PTR_EQUAL(node1->p_next, node2); // node 1's next should be node 2
+    // Check node 1
+    CU_ASSERT_PTR_EQUAL(node1->p_next, node2); // node 1's next should be node 2
 
-    // // Check node 2 (should be the new tail)
-    // CU_ASSERT_PTR_EQUAL(node2->p_next, node0);
+    // Check node 2 (should be the new tail)
+    CU_ASSERT_PTR_EQUAL(node2->p_next, node0);
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -655,32 +681,34 @@ test_circular_linked_list_reverse (void)
 void
 test_circular_linked_list_swap (void)
 {
-    // // Create a new linked list
-    // circular_linked_list_t *p_test
-    //     = circular_linked_list_create(delete_int, compare_ints, print_int);
+    // Create a new linked list
+    circular_linked_list_t *p_test
+        = circular_linked_list_create(delete_int, compare_ints, print_int);
 
-    // // Add some elements to the list
-    // int *value0 = calloc(1, sizeof(int));
-    // int *value1 = calloc(1, sizeof(int));
-    // int *value2 = calloc(1, sizeof(int));
-    // *value0     = 1;
-    // *value1     = 2;
-    // *value2     = 3;
+    // Add some elements to the list
+    int *value0 = calloc(1, sizeof(int));
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value0, 0), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value1, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
     // circular_linked_list_insert(p_test, value0, 0);
     // circular_linked_list_insert(p_test, value1, 1);
     // circular_linked_list_insert(p_test, value2, 2);
 
-    // // Swap elements at index 0 and 2
-    // int result = circular_linked_list_swap(p_test, 0, 2);
-    // CU_ASSERT_EQUAL(result, CIRCULAR_LINKED_LIST_SUCCESS);
+    // Swap elements at index 0 and 2
+    int result = circular_linked_list_swap(p_test, 0, 2);
+    CU_ASSERT_EQUAL(result, CIRCULAR_LINKED_LIST_SUCCESS);
 
-    // // Check that the elements have been swapped
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 3);
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 2)->p_data, 1);
+    // Check that the elements have been swapped
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 0)->p_data, 3);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 2)->p_data, 1);
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -694,31 +722,33 @@ test_circular_linked_list_swap (void)
 static void
 test_circular_linked_list_update (void)
 {
-    // // Create a new linked list
-    // circular_linked_list_t *p_test
-    //     = circular_linked_list_create(delete_int, compare_ints, print_int);
+    // Create a new linked list
+    circular_linked_list_t *p_test
+        = circular_linked_list_create(delete_int, compare_ints, print_int);
 
-    // // Add some elements to the list
-    // int *value0 = calloc(1, sizeof(int));
-    // int *value1 = calloc(1, sizeof(int));
-    // int *value2 = calloc(1, sizeof(int));
-    // *value0     = 1;
-    // *value1     = 2;
-    // *value2     = 3;
+    // Add some elements to the list
+    int *value0 = calloc(1, sizeof(int));
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    *value0     = 1;
+    *value1     = 2;
+    *value2     = 3;
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value0, 0), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value1, 1), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_test, value2, 2), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1 3 2
     // circular_linked_list_insert(p_test, value0, 0);
     // circular_linked_list_insert(p_test, value1, 1);
     // circular_linked_list_insert(p_test, value2, 2);
 
-    // // Update element
-    // int *update = calloc(1, sizeof(int));
-    // *update     = 50;
-    // int result  = circular_linked_list_update(p_test, 1, update);
-    // CU_ASSERT_EQUAL(result, CIRCULAR_LINKED_LIST_SUCCESS);
-    // CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 50);
+    // Update element
+    int *update = calloc(1, sizeof(int));
+    *update     = 50;
+    int result  = circular_linked_list_update(p_test, 1, update);
+    CU_ASSERT_EQUAL(result, CIRCULAR_LINKED_LIST_SUCCESS);
+    CU_ASSERT_EQUAL(*(int *)circular_linked_list_at(p_test, 1)->p_data, 50);
 
-    // // Clean up
-    // circular_linked_list_destroy(p_test);
-    return;
+    // Clean up
+    circular_linked_list_destroy(p_test);
 }
 
 /**
@@ -835,18 +865,26 @@ static void
 test_circular_linked_list_null (void)
 {
     circular_linked_list_t *p_list = NULL;
+    circular_linked_list_t *p_list_actual = NULL;
 
     // Test 1: Attempt to create a linked list with NULL function pointers
-    p_list = circular_linked_list_create(NULL, NULL, NULL);
+    p_list = circular_linked_list_create(NULL, compare_ints, print_int);
     CU_ASSERT_PTR_NULL(p_list);
+    p_list = circular_linked_list_create(delete_int, NULL, print_int);
+    CU_ASSERT_PTR_NULL(p_list);
+    p_list = circular_linked_list_create(delete_int, compare_ints, NULL);
+    CU_ASSERT_PTR_NULL(p_list);
+    p_list_actual = circular_linked_list_create(delete_int, compare_ints, print_int);
+    CU_ASSERT_PTR_NOT_NULL(p_list_actual);
 
-    // Test 2: Attempt to pre-append NULL value to a non-existent list
-    p_list = circular_linked_list_preappend(NULL, NULL);
-    CU_ASSERT_PTR_NULL(p_list);
+    // Test 2: Attempt to pre-append with NULL values
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(NULL, NULL), CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(circular_linked_list_preappend(p_list_actual, NULL), CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(circular_linked_list_size(p_list_actual), 0);
 
-    // Test 3: Attempt to insert NULL value into a non-existent list
-    p_list = circular_linked_list_insert(NULL, NULL, 0);
-    CU_ASSERT_PTR_NULL(p_list);
+    // Test 3: Attempt to insert with NULL values
+    CU_ASSERT_EQUAL(circular_linked_list_insert(NULL, NULL, 0), CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(circular_linked_list_insert(p_list_actual, NULL, 0), CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
 
     // Test 4: Attempt to delete at position from a NULL list
     p_list = circular_linked_list_del_at(NULL, 0);
@@ -861,20 +899,24 @@ test_circular_linked_list_null (void)
     CU_ASSERT_EQUAL(size, 0);
 
     // Test 7: Attempt to destroy a NULL list
-    circular_linked_list_destroy(
-        NULL); // Should handle gracefully without crashing
+    circular_linked_list_destroy(NULL); // Should handle gracefully without crashing
 
     // Test 8: Attempt to reverse a NULL list
     p_list = circular_linked_list_reverse(NULL);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 9: Attempt to print a NULL list
-    circular_linked_list_print(
-        p_list); // Should handle gracefully without crashing
+    circular_linked_list_print(p_list); // Should handle gracefully without crashing
 
     // Test 10: Attempt to find an index for a NULL list
+    int *value1 = calloc(1, sizeof(int));
+    *value1 = 1;
     int index = circular_linked_list_find(NULL, NULL);
-    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_NOT_FOUND);
+    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    index = circular_linked_list_find(NULL, value1);
+    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    index = circular_linked_list_find(p_list_actual, NULL);
+    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
 
     // Test 11: Attempt to swap elements in a NULL list
     index = circular_linked_list_swap(NULL, 0, 1);
@@ -883,6 +925,14 @@ test_circular_linked_list_null (void)
     // Test 12: Attempt to update node in a NULL list
     index = circular_linked_list_update(NULL, 0, NULL);
     CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    index = circular_linked_list_update(p_list_actual, 0, NULL);
+    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+    index = circular_linked_list_update(NULL, 0, value1);
+    CU_ASSERT_EQUAL(index, CIRCULAR_LINKED_LIST_INVALID_ARGUMENT);
+
+    // cleanup
+    circular_linked_list_destroy(p_list_actual);
+    free(value1);
 }
 
 // Function to delete an integer (free the memory)

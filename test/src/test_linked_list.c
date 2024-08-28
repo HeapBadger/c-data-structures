@@ -839,7 +839,7 @@ test_linked_list_null (void)
 
     // Test 10: Attempt to find an index for a NULL list
     int index = linked_list_find(NULL, NULL);
-    CU_ASSERT_EQUAL(index, LINKED_LIST_NOT_FOUND);
+    CU_ASSERT_EQUAL(index, LINKED_LIST_INVALID_ARGUMENT);
 
     // Test 11: Attempt to swap elements in a NULL list
     index = linked_list_swap(NULL, 0, 1);
