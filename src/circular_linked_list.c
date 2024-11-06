@@ -33,8 +33,7 @@
 #include "circular_linked_list.h"
 
 // Function Declarations
-static void circular_linked_list_del_node(circular_linked_list_node_t *p_node,
-                                        del_func                   del_f);
+static void circular_linked_list_del_node(circular_linked_list_node_t *p_node, del_func del_f);
 static circular_linked_list_node_t *circular_linked_list_create_node(void *p_data);
 
 // Creates circular linked list
@@ -339,23 +338,22 @@ circular_linked_list_size (circular_linked_list_t *p_list)
 circular_linked_list_t *
 circular_linked_list_reverse (circular_linked_list_t *p_list)
 {
-    // if ((NULL != p_list) && (NULL != p_list->p_head))
-    // {
-    //     circular_linked_list_node_t *p_current = p_list->p_head;
-    //     circular_linked_list_node_t *p_next    = p_list->p_head->p_next;
-    //     circular_linked_list_node_t *p_prev    = NULL;
+    if ((NULL != p_list) && (NULL != p_list->p_head))
+    {
+        circular_linked_list_node_t *p_current = p_list->p_head;
+        circular_linked_list_node_t *p_next    = p_list->p_head->p_next;
 
-    //     do
-    //     {
-    //         p_next            = p_current->p_next;
-    //         p_current->p_next = p_prev;
-    //         p_prev            = p_current;
-    //         p_current         = p_next;
-    //         p_current = p_current->p_next;
-    //     } while (p_current != p_list->p_head);
+        // do
+        // {
+        //     p_next            = p_current->p_next;
+        //     p_current->p_next = p_prev;
+        //     p_prev            = p_current;
+        //     p_current         = p_next;
+        //     p_current = p_current->p_next;
+        // } while (p_current != p_list->p_head);
 
-    //     p_list->p_head = p_prev; // Update the head of the list to the new first element
-    // }
+        // p_list->p_head = p_prev; // Update the head of the list to the new first element
+    }
 
     return p_list;
 }

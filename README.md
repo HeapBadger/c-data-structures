@@ -64,18 +64,6 @@ To use the data structures, write a program that links against the generated obj
 
 Each data structure includes tests located in the tests/ directory. The tests cover edge cases, performance benchmarks, and comparisons with built-in library functions.
 
-To compile the tests, use:
-
-```sh
-make test
-```
-
-To remove the generated object files and clean up the build directory, use:
-
-```sh
-make clean
-```
-
 The testing suite supports various command-line arguments:
 
 ```sh

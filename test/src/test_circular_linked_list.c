@@ -387,16 +387,16 @@ static void
 test_circular_linked_list_insert (void)
 {
     circular_linked_list_t *p_test = NULL;
-    int                  *value0 = calloc(1, sizeof(int));
-    int                  *value1 = calloc(1, sizeof(int));
-    int                  *value2 = calloc(1, sizeof(int));
-    int                  *value3 = calloc(1, sizeof(int));
-    int                  *value4 = calloc(1, sizeof(int));
-    *value0                      = 1;
-    *value1                      = 1;
-    *value2                      = 2;
-    *value3                      = 3;
-    *value4                      = 4;
+    int *value0 = calloc(1, sizeof(int));
+    int *value1 = calloc(1, sizeof(int));
+    int *value2 = calloc(1, sizeof(int));
+    int *value3 = calloc(1, sizeof(int));
+    int *value4 = calloc(1, sizeof(int));
+    *value0 = 1;
+    *value1 = 1;
+    *value2 = 2;
+    *value3 = 3;
+    *value4 = 4;
 
     p_test = circular_linked_list_create(delete_int, compare_ints, print_int);
     CU_ASSERT_EQUAL(circular_linked_list_preappend(p_test, value0), CIRCULAR_LINKED_LIST_SUCCESS); // List: 1
