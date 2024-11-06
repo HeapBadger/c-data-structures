@@ -67,7 +67,7 @@ linked_list_destroy (linked_list_t *p_list)
         while (NULL != p_head)
         {
             linked_list_node_t *p_current = p_head;
-            p_head                      = p_head->p_next;
+            p_head                        = p_head->p_next;
             linked_list_del_node(p_current, p_list->del_f);
         }
 
@@ -291,7 +291,8 @@ linked_list_reverse (linked_list_t *p_list)
 void
 linked_list_print (linked_list_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f) && (NULL != p_list->p_head))
+    if ((NULL != p_list) && (NULL != p_list->print_f)
+        && (NULL != p_list->p_head))
     {
         printf("\nLinked List: ");
         linked_list_node_t *p_current = p_list->p_head;

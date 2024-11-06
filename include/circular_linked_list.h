@@ -12,9 +12,11 @@
 typedef enum
 {
     CIRCULAR_LINKED_LIST_SUCCESS = 0, /**< Operation completed successfully. */
-    CIRCULAR_LINKED_LIST_NOT_FOUND,   /**< The requested element was not found. */
-    CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range.*/
-    CIRCULAR_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided.*/
+    CIRCULAR_LINKED_LIST_NOT_FOUND, /**< The requested element was not found. */
+    CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS,    /**< An index was out of the valid
+                                              range.*/
+    CIRCULAR_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was
+                                              provided.*/
 } circular_linked_list_error_code_t;
 
 /**
@@ -80,9 +82,9 @@ typedef void (*print_func)(void *p_data);
  * @brief Function pointer type for a custom comparison function.
  *
  * This function pointer is designed to compare two arbitrary data types
- * stored within circular linked list nodes. The comparison function should return
- * an integer value that indicates the relative order of the two data items,
- * similar to the behavior of the standard `strcmp` function.
+ * stored within circular linked list nodes. The comparison function should
+ * return an integer value that indicates the relative order of the two data
+ * items, similar to the behavior of the standard `strcmp` function.
  *
  * @param p_lhs Pointer to the left-hand side data for comparison.
  * @param p_rhs Pointer to the right-hand side data for comparison.
@@ -134,7 +136,7 @@ typedef int (*cmp_func)(void *p_lhs, void *p_rhs);
  */
 typedef struct circular_linked_list_node
 {
-    void *p_data;
+    void                             *p_data;
     struct circular_linked_list_node *p_next;
 } circular_linked_list_node_t;
 
@@ -149,9 +151,9 @@ typedef struct circular_linked_list_node
 typedef struct
 {
     circular_linked_list_node_t *p_head;
-    del_func                   del_f;
-    cmp_func                   cmp_f;
-    print_func                 print_f;
+    del_func                     del_f;
+    cmp_func                     cmp_f;
+    print_func                   print_f;
 } circular_linked_list_t;
 
 /**
@@ -172,7 +174,9 @@ typedef struct
  * list, or NULL if memory allocation fails or if any provided function pointer
  * is NULL.
  */
-circular_linked_list_t *circular_linked_list_create(del_func del_f, cmp_func cmp_f, print_func print_f);
+circular_linked_list_t *circular_linked_list_create(del_func   del_f,
+                                                    cmp_func   cmp_f,
+                                                    print_func print_f);
 
 /**
  * @brief Destroys the circular linked list and frees its resources.
@@ -196,8 +200,8 @@ void circular_linked_list_destroy(circular_linked_list_t *p_list);
  * linked list.
  *
  * This function is a convenience wrapper around `circular_linked_list_insert`
- * that inserts a new node at the head (index 0) of the circular linked list. The
- * new node becomes the first node in the list.
+ * that inserts a new node at the head (index 0) of the circular linked list.
+ * The new node becomes the first node in the list.
  *
  * @param p_list Pointer to the circular linked list where the node will be
  * prepended.
@@ -209,16 +213,17 @@ void circular_linked_list_destroy(circular_linked_list_t *p_list);
  * managed by the caller. It may return an error code if the list pointer or
  * data pointer is invalid, or if memory allocation for the new node fails.
  */
-int circular_linked_list_preappend(circular_linked_list_t *p_list, void *p_data);
+int circular_linked_list_preappend(circular_linked_list_t *p_list,
+                                   void                   *p_data);
 
 /**
  * @brief Inserts a new node with the given data at the specified index in the
  * circular linked list.
  *
- * This function inserts a new node at the specified index in the circular linked
- * list. If the index is 0, the new node is inserted at the head. If the index
- * is greater than the number of nodes in the list, the function appends the
- * node at the end.
+ * This function inserts a new node at the specified index in the circular
+ * linked list. If the index is 0, the new node is inserted at the head. If the
+ * index is greater than the number of nodes in the list, the function appends
+ * the node at the end.
  *
  * @param p_list Pointer to the circular linked list.
  * @param p_data Pointer to the data to be stored in the new node.
@@ -229,15 +234,17 @@ int circular_linked_list_preappend(circular_linked_list_t *p_list, void *p_data)
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, int index);
+int circular_linked_list_insert(circular_linked_list_t *p_list,
+                                void                   *p_data,
+                                int                     index);
 
 /**
  * @brief Deletes the node at a specified index in a circular linked list.
  *
- * This function traverses the circular linked list to find the node at the given
- * index and deletes it using the node deletion function specified in the circular
- * linked list. The function handles deletion of both the head node and nodes in
- * the middle or end of the list.
+ * This function traverses the circular linked list to find the node at the
+ * given index and deletes it using the node deletion function specified in the
+ * circular linked list. The function handles deletion of both the head node and
+ * nodes in the middle or end of the list.
  *
  * @param p_list  A pointer to the circular linked list from which the node will
  * be deleted. This must be a valid circular linked list structure with an
@@ -245,13 +252,14 @@ int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, in
  * @param index   The zero-based index of the node to delete. Indexing starts at
  * 0.
  *
- * @return A pointer to the updated circular linked list. The return value is the
- * same as `p_list`. Returns the circular linked list structure after removing the
- * specified node. If the index is out of bounds or if the circular linked list or
- * deletion function is NULL, the function returns the original circular linked
- * list unchanged.
+ * @return A pointer to the updated circular linked list. The return value is
+ * the same as `p_list`. Returns the circular linked list structure after
+ * removing the specified node. If the index is out of bounds or if the circular
+ * linked list or deletion function is NULL, the function returns the original
+ * circular linked list unchanged.
  */
-circular_linked_list_t *circular_linked_list_del_at(circular_linked_list_t *p_list, int index);
+circular_linked_list_t *circular_linked_list_del_at(
+    circular_linked_list_t *p_list, int index);
 
 /**
  * @brief Retrieves the node at a specified index in a circular linked list.
@@ -260,8 +268,8 @@ circular_linked_list_t *circular_linked_list_del_at(circular_linked_list_t *p_li
  * returns the node at the given index. If the index is out of bounds or the
  * list is NULL, the function returns NULL.
  *
- * @param p_list  A pointer to the circular linked list from which the node is to
- * be retrieved. This must be a valid circular linked list structure.
+ * @param p_list  A pointer to the circular linked list from which the node is
+ * to be retrieved. This must be a valid circular linked list structure.
  * @param index   The zero-based index of the node to retrieve. Indexing starts
  * at 0.
  *
@@ -270,8 +278,8 @@ circular_linked_list_t *circular_linked_list_del_at(circular_linked_list_t *p_li
  * should be treated as a node in the circular linked list and not directly
  * modified.
  */
-circular_linked_list_node_t *circular_linked_list_at(circular_linked_list_t *p_list,
-                                                 int                   index);
+circular_linked_list_node_t *circular_linked_list_at(
+    circular_linked_list_t *p_list, int index);
 
 /**
  * @brief Finds the index of a node in a circular linked list containing the
@@ -284,11 +292,12 @@ circular_linked_list_node_t *circular_linked_list_at(circular_linked_list_t *p_l
  * node. If no matching node is found or if the circular linked list or data is
  * NULL, the function returns -1.
  *
- * @param p_list  A pointer to the circular linked list to search. This must be a
- * valid circular linked list structure with an initialized comparison function.
+ * @param p_list  A pointer to the circular linked list to search. This must be
+ * a valid circular linked list structure with an initialized comparison
+ * function.
  * @param p_data  A pointer to the data to find in the circular linked list. The
- * data is compared using the comparison function specified in the circular linked
- * list.
+ * data is compared using the comparison function specified in the circular
+ * linked list.
  *
  * @return The zero-based index of the first node containing the matching data,
  * or -1 if no matching node is found or if the circular linked list or data is
@@ -322,7 +331,8 @@ int circular_linked_list_size(circular_linked_list_t *p_list);
  *
  * @return A pointer to the reversed circular linked list.
  */
-circular_linked_list_t *circular_linked_list_reverse(circular_linked_list_t *p_list);
+circular_linked_list_t *circular_linked_list_reverse(
+    circular_linked_list_t *p_list);
 
 /**
  * @brief Prints the data in each node of the circular linked list.
@@ -351,8 +361,8 @@ void circular_linked_list_print(circular_linked_list_t *p_list);
  *         (e.g., due to invalid indices or a `NULL` pointer).
  */
 int circular_linked_list_swap(circular_linked_list_t *p_list,
-                            int                   index_1,
-                            int                   index_2);
+                              int                     index_1,
+                              int                     index_2);
 
 /**
  * @brief Updates the data of a node at a specified index in the circular linked
@@ -375,7 +385,7 @@ int circular_linked_list_swap(circular_linked_list_t *p_list,
  *       responsible for freeing the memory allocated for `p_data`.
  */
 int circular_linked_list_update(circular_linked_list_t *p_list,
-                              int                   index,
-                              void                 *p_data);
+                                int                     index,
+                                void                   *p_data);
 
 #endif // CIRCULAR_LINKED_LIST_H

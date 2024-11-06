@@ -70,7 +70,7 @@ doubly_linked_list_destroy (doubly_linked_list_t *p_list)
         while (NULL != p_head)
         {
             doubly_linked_list_node_t *p_current = p_head;
-            p_head                             = p_head->p_next;
+            p_head                               = p_head->p_next;
             doubly_linked_list_del_node(p_current, p_list->del_f);
         }
 
@@ -327,7 +327,8 @@ doubly_linked_list_reverse (doubly_linked_list_t *p_list)
 void
 doubly_linked_list_print (doubly_linked_list_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f) && (NULL != p_list->p_head))
+    if ((NULL != p_list) && (NULL != p_list->print_f)
+        && (NULL != p_list->p_head))
     {
         printf("\nLinked List: ");
         doubly_linked_list_node_t *p_current = p_list->p_head;

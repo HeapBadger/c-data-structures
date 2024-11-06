@@ -21,8 +21,8 @@
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
  *                          O(N) for insertion, deletion, and search, where N is
  * the number of nodes.
- * - **Space Complexity**: O(N) for storing elements in the circular linked list,
- * where N is the number of nodes.
+ * - **Space Complexity**: O(N) for storing elements in the circular linked
+ * list, where N is the number of nodes.
  *
  * @author  Anna DeVries
  * @date    August 27, 2024
@@ -33,8 +33,10 @@
 #include "circular_linked_list.h"
 
 // Function Declarations
-static void circular_linked_list_del_node(circular_linked_list_node_t *p_node, del_func del_f);
-static circular_linked_list_node_t *circular_linked_list_create_node(void *p_data);
+static void circular_linked_list_del_node(circular_linked_list_node_t *p_node,
+                                          del_func                     del_f);
+static circular_linked_list_node_t *circular_linked_list_create_node(
+    void *p_data);
 
 // Creates circular linked list
 circular_linked_list_t *
@@ -79,7 +81,7 @@ circular_linked_list_destroy (circular_linked_list_t *p_list)
 
             circular_linked_list_del_node(p_head, p_list->del_f);
         }
-    
+
         p_list->cmp_f   = NULL;
         p_list->del_f   = NULL;
         p_list->print_f = NULL;
@@ -92,19 +94,24 @@ circular_linked_list_destroy (circular_linked_list_t *p_list)
 }
 
 // Pre-appends data into circular linked list
-int circular_linked_list_preappend (circular_linked_list_t *p_list, void *p_data)
+int
+circular_linked_list_preappend (circular_linked_list_t *p_list, void *p_data)
 {
     return circular_linked_list_insert(p_list, p_data, 0);
 }
 
 // Inserts data into circular linked list at index
-int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, int index)
+int
+circular_linked_list_insert (circular_linked_list_t *p_list,
+                             void                   *p_data,
+                             int                     index)
 {
     circular_linked_list_node_t *p_new_node = NULL;
-    int result = CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS;
+    int                          result = CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS;
 
     // Handle invalid inputs
-    if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data) || (0 > index))
+    if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data)
+        || (0 > index))
     {
         result = CIRCULAR_LINKED_LIST_INVALID_ARGUMENT;
         goto EXIT;
@@ -119,13 +126,13 @@ int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, in
     }
 
     // Case 1: Handle case when the list is empty
-    if (NULL == p_list->p_head) 
+    if (NULL == p_list->p_head)
     {
-        if (0 == index) 
+        if (0 == index)
         {
-            p_list->p_head = p_new_node;
+            p_list->p_head     = p_new_node;
             p_new_node->p_next = p_new_node;
-            result = CIRCULAR_LINKED_LIST_SUCCESS;
+            result             = CIRCULAR_LINKED_LIST_SUCCESS;
         }
         // Index is out of bounds forr an empty list
         else
@@ -136,27 +143,29 @@ int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, in
         goto EXIT;
     }
 
-    // Case 2: Insert at the beginning; traverse list to find last node and update next pointer
-    if (0 == index) 
+    // Case 2: Insert at the beginning; traverse list to find last node and
+    // update next pointer
+    if (0 == index)
     {
-        p_new_node->p_next = p_list->p_head;
+        p_new_node->p_next                  = p_list->p_head;
         circular_linked_list_node_t *p_last = p_list->p_head;
 
-        while (p_last->p_next != p_list->p_head) 
+        while (p_last->p_next != p_list->p_head)
         {
             p_last = p_last->p_next;
         }
 
         p_last->p_next = p_new_node;
         p_list->p_head = p_new_node;
-        result = CIRCULAR_LINKED_LIST_SUCCESS;
+        result         = CIRCULAR_LINKED_LIST_SUCCESS;
     }
-    // Case 3: Insert at the middle or end; traverse list to find insertion point
-    else 
+    // Case 3: Insert at the middle or end; traverse list to find insertion
+    // point
+    else
     {
         circular_linked_list_node_t *p_curr = p_list->p_head;
         circular_linked_list_node_t *p_prev = NULL;
-        int count = 0;
+        int                          count  = 0;
 
         do
         {
@@ -165,14 +174,14 @@ int circular_linked_list_insert(circular_linked_list_t *p_list, void *p_data, in
             count++;
         } while (p_curr != p_list->p_head && count < index);
 
-        if (count == index) 
+        if (count == index)
         {
             p_new_node->p_next = p_curr;
-            p_prev->p_next = p_new_node;
-            result = CIRCULAR_LINKED_LIST_SUCCESS;
+            p_prev->p_next     = p_new_node;
+            result             = CIRCULAR_LINKED_LIST_SUCCESS;
         }
         // Index is out of bounds
-        else 
+        else
         {
             goto EXIT;
         }
@@ -228,7 +237,7 @@ circular_linked_list_del_at (circular_linked_list_t *p_list, int index)
         }
 
         // Update pointers and delete the old head
-        p_prev = p_list->p_head;
+        p_prev         = p_list->p_head;
         p_curr->p_next = p_list->p_head->p_next;
         p_list->p_head = p_list->p_head->p_next;
         circular_linked_list_del_node(p_prev, p_list->del_f);
@@ -291,7 +300,7 @@ circular_linked_list_find (circular_linked_list_t *p_list, void *p_data)
 
     if ((NULL != p_list) && (NULL != p_data) && (NULL != p_list->p_head))
     {
-        int count = 0;
+        int                          count     = 0;
         circular_linked_list_node_t *p_current = p_list->p_head;
 
         do
@@ -342,17 +351,20 @@ circular_linked_list_reverse (circular_linked_list_t *p_list)
     {
         circular_linked_list_node_t *p_current = p_list->p_head;
         circular_linked_list_node_t *p_next    = p_list->p_head->p_next;
+        circular_linked_list_node_t *p_prev    = NULL;
 
-        // do
-        // {
-        //     p_next            = p_current->p_next;
-        //     p_current->p_next = p_prev;
-        //     p_prev            = p_current;
-        //     p_current         = p_next;
-        //     p_current = p_current->p_next;
-        // } while (p_current != p_list->p_head);
+        // Traverse the entire circular linked list once to reverse it
+        do
+        {
+            p_next = p_current->p_next;    // Store the next node
+            p_current->p_next = p_prev;    // Reverse the current node's pointer
+            p_prev = p_current;            // Move prev to current
+            p_current = p_next;            // Move to the next node
+        } while (p_current != p_list->p_head);
 
-        // p_list->p_head = p_prev; // Update the head of the list to the new first element
+        // After the loop, p_prev is the new head, and p_current is back at the old head
+        p_list->p_head->p_next = p_prev;   // Old head now points to the new head
+        p_list->p_head = p_prev;           // Update the list's head to the new head
     }
 
     return p_list;
@@ -362,7 +374,8 @@ circular_linked_list_reverse (circular_linked_list_t *p_list)
 void
 circular_linked_list_print (circular_linked_list_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f) && (NULL != p_list->p_head))
+    if ((NULL != p_list) && (NULL != p_list->print_f)
+        && (NULL != p_list->p_head))
     {
         printf("\nLinked List: ");
         circular_linked_list_node_t *p_current = p_list->p_head;
@@ -381,7 +394,9 @@ circular_linked_list_print (circular_linked_list_t *p_list)
 
 // Swaps the data of two nodes
 int
-circular_linked_list_swap (circular_linked_list_t *p_list, int index_1, int index_2)
+circular_linked_list_swap (circular_linked_list_t *p_list,
+                           int                     index_1,
+                           int                     index_2)
 {
     int result = CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS;
 
@@ -417,8 +432,8 @@ EXIT:
 // Updates the data of a node
 int
 circular_linked_list_update (circular_linked_list_t *p_list,
-                           int                   index,
-                           void                 *p_data)
+                             int                     index,
+                             void                   *p_data)
 {
     int result = CIRCULAR_LINKED_LIST_OUT_OF_BOUNDS;
 
@@ -433,7 +448,8 @@ circular_linked_list_update (circular_linked_list_t *p_list,
         goto EXIT;
     }
 
-    circular_linked_list_node_t *p_node = circular_linked_list_at(p_list, index);
+    circular_linked_list_node_t *p_node
+        = circular_linked_list_at(p_list, index);
 
     if (NULL != p_node)
     {
@@ -459,7 +475,8 @@ EXIT:
  * data.
  */
 static void
-circular_linked_list_del_node (circular_linked_list_node_t *p_node, del_func del_f)
+circular_linked_list_del_node (circular_linked_list_node_t *p_node,
+                               del_func                     del_f)
 {
     if (NULL != p_node)
     {
@@ -487,8 +504,8 @@ circular_linked_list_del_node (circular_linked_list_node_t *p_node, del_func del
  *
  * @param p_data Pointer to the data to be stored in the new node.
  *
- * @return circular_linked_list_node_t* Pointer to the newly created node, or NULL
- * if memory allocation fails.
+ * @return circular_linked_list_node_t* Pointer to the newly created node, or
+ * NULL if memory allocation fails.
  *
  * @note The provided data pointer `p_data` is directly assigned to the node
  * without copying or validation. Ensure that the data pointer is valid and
