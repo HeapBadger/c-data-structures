@@ -33,8 +33,8 @@ This repository provides a collection of fundamental **data structure implementa
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/yourusername/data-structures.git
-   cd data-structures/
+   git clone https://github.com/yourusername/c-data-structures.git
+   cd c-data-structures/
    ```
 1. Run the setup script to install dependencies (if applicable):
 
@@ -82,7 +82,7 @@ make valgrind
 ## Repository Structure
 
 ```
-data-structures/
+c-data-structures/
 │
 ├── include/
 │   ├── linked_list.h
