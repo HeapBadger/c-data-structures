@@ -1,13 +1,10 @@
-# C Data Structures
-
-## Overview
+# 🧠C Data Structures
 
 This repository provides a collection of fundamental **data structure implementations in C**, designed for easy integration and reuse in various projects. It includes commonly used structures such as linked lists, stacks, queues, trees, heaps, and hash tables.
 
 
-## Table of Contents
+## 🧭 Table of Contents
 
-- [Overview](#overview)
 - [Usage](#usage)
   - [Requirements](#requirements)
   - [Setup](#setup)
@@ -16,9 +13,9 @@ This repository provides a collection of fundamental **data structure implementa
 - [Repository Structure](#repository-structure)
 - [Known Issues/Bugs](#known-issuesbugs)
 
-## Usage
+## 🚀 Usage
 
-### Requirements
+### 📝 Requirements
 
 - **Hardware**: Any machine capable of running C.
 - **Operating System**: Recommended Ubuntu 22.04 or similar Linux distro.
@@ -28,7 +25,7 @@ This repository provides a collection of fundamental **data structure implementa
   - `clang-format-15` for formatting (optional, for code style)
   - `valgrind` for memory leak detection (optional)
 
-### Setup
+### ⚙️ Setup
 
 1. Clone the repository:
 
@@ -42,7 +39,7 @@ This repository provides a collection of fundamental **data structure implementa
    ./setup.sh
    ```
 
-### Building and Cleaning
+### 🛠️ Building and Cleaning
 
 - To compile all data structure implementations:
 ```sh
@@ -53,7 +50,7 @@ make all
 make clean
 ```
 
-### Testing
+### 🧪 Testing
 
 All data structures include tests in the tests/ directory covering edge cases and correctness.
 
@@ -79,7 +76,7 @@ make format
 make valgrind
 ```
 
-## Repository Structure
+## 📁 Repository Structure
 
 ```
 c-data-structures/
@@ -130,6 +127,6 @@ c-data-structures/
 └── README.md
 ```
 
-## Known Issues/Bugs
+## 🪲 Known Issues/Bugs
 
 No known issues.
