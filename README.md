@@ -1,6 +1,6 @@
 # 🧠C Data Structures
 
-https://github.com/HeapBadger/c-data-structures/actions/workflows/ci.yml/badge.svg
+![Build Status](https://github.com/HeapBadger/c-data-structures/actions/workflows/ci.yml/badge.svg)
 
 This repository provides a collection of fundamental **data structure implementations in C**, designed for easy integration and reuse in various projects. It includes commonly used structures such as linked lists, stacks, queues, trees, heaps, and hash tables.
 
