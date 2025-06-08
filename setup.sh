@@ -3,18 +3,39 @@
 # Exit script on any error
 set -e
 
+# Defaults auto yes to false
+AUTO_YES=false
+
+# Parse command-line options
+while getopts "y" opt; do
+  case $opt in
+    y)
+      AUTO_YES=true
+      ;;
+    *)
+      echo "Usage: $0 [-y]"
+      exit 1
+      ;;
+  esac
+done
+
 # Function to check if a tool is installed
 check_and_install() {
     local tool=$1
     local install_command=$2
 
-    if command -v $tool >/dev/null 2>&1; then
+    if command -v "$tool" >/dev/null 2>&1; then
         echo "$tool is already installed."
     else
-        read -p "$tool is not installed. Do you want to install it? (y/n): " response
+        if [ "$AUTO_YES" = true ]; then
+            response="y"
+        else
+            read -p "$tool is not installed. Do you want to install it? (y/n): " response
+        fi
+
         if [[ $response == "y" || $response == "Y" ]]; then
             echo "Installing $tool..."
-            eval $install_command
+            eval "$install_command"
         else
             echo "Skipping $tool installation."
         fi

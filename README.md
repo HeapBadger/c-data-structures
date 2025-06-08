@@ -7,13 +7,13 @@ This repository provides a collection of fundamental **data structure implementa
 
 ## 🧭 Table of Contents
 
-- [Usage](#usage)
-  - [Requirements](#requirements)
-  - [Setup](#setup)
-  - [Building and Cleaning](#building-and-cleaning)
-  - [Testing](#testing)
-- [Repository Structure](#repository-structure)
-- [Known Issues/Bugs](#known-issuesbugs)
+- [Usage](#🚀-usage)
+  - [Requirements](#📝-requirements)
+  - [Setup](#⚙️-setup)
+  - [Building and Cleaning](#🛠️-building-and-cleaning)
+  - [Testing](#🧪-testing)
+- [Repository Structure](#📁-repository-structure)
+- [Known Issues](#🪲-known-issues)
 
 ## 🚀 Usage
 
@@ -23,21 +23,20 @@ This repository provides a collection of fundamental **data structure implementa
 - **Operating System**: Recommended Ubuntu 22.04 or similar Linux distro.
 - **Software**: 
   - `git` to clone the repository
-  - Build tools: `gcc`, `make`
-  - `clang-format-15` for formatting (optional, for code style)
-  - `valgrind` for memory leak detection (optional)
+  - Build tools installed from the `setup.sh`
 
 ### ⚙️ Setup
 
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/yourusername/c-data-structures.git
+   git clone https://github.com/HeapBadger/c-data-structures.git
    cd c-data-structures/
    ```
-1. Run the setup script to install dependencies (if applicable):
+1. Run the setup script to install dependencies:
 
    ```sh
+   chmod +x setup.sh
    ./setup.sh
    ```
 
@@ -69,7 +68,7 @@ Run tests with:
 - `<specific suite name>`: Runs a specific test suite.
 
 Additional Makefile commands:
-- Format all code:
+- Format all code:         **REMOVE AFTER COMPLETE!**
 ```sh
 make format
 ```
@@ -126,9 +125,11 @@ c-data-structures/
 │   ├── test_skip_list.c
 │   ├── test_bloom_filter.c
 │
+└── Makefile
 └── README.md
+└── setup.sh
 ```
 
-## 🪲 Known Issues/Bugs
+## 🪲 Known Issues
 
 No known issues.

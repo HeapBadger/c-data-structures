@@ -20,6 +20,8 @@ TEST_EXEC = $(BIN_DIR)/test_main
 
 # Default target
 all: $(OBJ_DIR) $(BIN_DIR) $(SRC_OBJECTS) $(TEST_EXEC)
+	rm -rf $(OBJ_DIR)
+	rm test/test_main.o
 	@echo "Build complete."
 
 # Create object files from src/
@@ -54,6 +56,5 @@ $(BIN_DIR):
 
 # Clean object and executable files
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
-	rm test/test_main.o
+	rm -rf $(BIN_DIR)
 	@echo "Clean complete."
