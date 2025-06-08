@@ -18,20 +18,17 @@ jobs:
       security-events: write
 
     steps:
-      # Checkout the repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Run your existing setup script
-      - name: Run setup.sh
-        run: |
-          chmod +x ./setup.sh
-          sudo ./setup.sh -y
+      - name: Make setup.sh executable
+        run: chmod +x ./setup.sh
 
-      # Build the project
+      - name: Run setup.sh with auto-yes
+        run: ./setup.sh -y
+
       - name: Build project
         run: make all
 
-      # Run unit tests with Valgrind
-      - name: Run tests with Valgrind
+      - name: Run unit tests with Valgrind
         run: make valgrind
