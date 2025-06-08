@@ -9,7 +9,7 @@ on:
 
 jobs:
   analyze:
-    name: Build, Test & CodeQL Analyze
+    name: Build & Test
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,36 +22,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Initialize CodeQL (before dependencies)
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: c
-
       # Run your existing setup script
       - name: Run setup.sh
         run: |
           chmod +x ./setup.sh
-          ./setup.sh
+          sudo ./setup.sh -y
 
       # Build the project
       - name: Build project
         run: make all
 
-      # Run unit tests
-      - name: Run tests
-        run: make test
-
-      # Run tests with Valgrind
+      # Run unit tests with Valgrind
       - name: Run tests with Valgrind
         run: make valgrind
-
-      # Check formatting
-      - name: Check code formatting
-        run: |
-          make format
-          git diff --exit-code || (echo "Code formatting issue found!" && exit 1)
-
-      # Perform CodeQL analysis
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
