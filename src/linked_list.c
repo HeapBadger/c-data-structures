@@ -154,9 +154,11 @@ EXIT:
 }
 
 // Deletes data in linked list at index
-linked_list_t *
+int
 linked_list_del_at (linked_list_t *p_list, int index)
 {
+    int p_return = LINKED_LIST_INVALID_ARGUMENT;
+
     if ((NULL != p_list) && (0 <= index) && (NULL != p_list->del_f))
     {
         int                 count     = 0;
@@ -165,10 +167,13 @@ linked_list_del_at (linked_list_t *p_list, int index)
 
         while (NULL != p_current)
         {
+            p_return = LINKED_LIST_OUT_OF_BOUNDS;
+
             if (0 == index)
             {
                 p_list->p_head = p_current->p_next;
                 linked_list_del_node(p_current, p_list->del_f);
+                p_return = LINKED_LIST_SUCCESS;
                 break;
             }
             else if (index == count)
@@ -177,6 +182,7 @@ linked_list_del_at (linked_list_t *p_list, int index)
                 p_current                    = p_current->p_next;
                 p_prev->p_next               = p_current;
                 linked_list_del_node(p_delete, p_list->del_f);
+                p_return = LINKED_LIST_SUCCESS;
                 break;
             }
 
@@ -185,8 +191,13 @@ linked_list_del_at (linked_list_t *p_list, int index)
             p_current = p_current->p_next;
         }
     }
+    
+    if ( 0 > index )
+    {
+        p_return = LINKED_LIST_OUT_OF_BOUNDS;
+    }
 
-    return p_list;
+    return p_return;
 }
 
 // Finds node data given index

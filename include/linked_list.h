@@ -246,12 +246,9 @@ int linked_list_insert(linked_list_t *p_list, void *p_data, int index);
  * @param index   The zero-based index of the node to delete. Indexing starts at
  * 0.
  *
- * @return A pointer to the updated linked list. The return value is the same as
- * `p_list`. Returns the linked list structure after removing the specified
- * node. If the index is out of bounds or if the linked list or deletion
- * function is NULL, the function returns the original linked list unchanged.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  */
-linked_list_t *linked_list_del_at(linked_list_t *p_list, int index);
+int linked_list_del_at(linked_list_t *p_list, int index);
 
 /**
  * @brief Retrieves the node at a specified index in a linked list.

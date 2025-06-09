@@ -425,7 +425,7 @@ test_linked_list_del_at (void)
     CU_ASSERT_EQUAL(linked_list_insert(p_test, value5, 4), LINKED_LIST_SUCCESS); // List: 1 2 3 4 5
 
     // Test deletion at the middle index
-    p_test = linked_list_del_at(p_test, 2); // Remove 3, List: 1 2 4 5
+    CU_ASSERT_EQUAL(linked_list_del_at(p_test, 2), LINKED_LIST_SUCCESS); // Remove 3, List: 1 2 4 5
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 1);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 1)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 2)->p_data, 4);
@@ -443,7 +443,7 @@ test_linked_list_del_at (void)
     CU_ASSERT_PTR_NULL(node4->p_next);         // node4 should have no next node
 
     // Test deletion at the first index
-    p_test = linked_list_del_at(p_test, 0); // Remove 1, List: 2 4 5
+    CU_ASSERT_EQUAL(linked_list_del_at(p_test, 0), LINKED_LIST_SUCCESS); // Remove 1, List: 2 4 5
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 1)->p_data, 4);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 2)->p_data, 5);
@@ -458,7 +458,7 @@ test_linked_list_del_at (void)
     CU_ASSERT_PTR_NULL(node4->p_next);         // node4 should have no next node
 
     // Test deletion at the last index
-    p_test = linked_list_del_at(p_test, 2); // Remove 5, List: 2 4
+    CU_ASSERT_EQUAL(linked_list_del_at(p_test, 2), LINKED_LIST_SUCCESS); // Remove 5, List: 2 4
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 1)->p_data, 4);
 
@@ -758,9 +758,9 @@ test_linked_list_extreme_cases (void)
     CU_ASSERT_PTR_NOT_NULL(p_list);
 
     // Test 4: Deletion at Invalid Position
-    p_list = linked_list_del_at(p_list, 10000); // Deleting out-of-bounds
+    CU_ASSERT_EQUAL(linked_list_del_at(p_list, 10000), LINKED_LIST_OUT_OF_BOUNDS); // Deleting out-of-bounds
     CU_ASSERT_PTR_NOT_NULL(p_list);
-    p_list = linked_list_del_at(p_list, -10); // Deleting negative index
+    CU_ASSERT_EQUAL(linked_list_del_at(p_list, -10), LINKED_LIST_OUT_OF_BOUNDS); // Deleting negative index
     CU_ASSERT_PTR_NOT_NULL(p_list);
 
     // Test 5: Memory Management
@@ -778,7 +778,7 @@ test_linked_list_extreme_cases (void)
 
     for (i = 0; i < 10000; ++i)
     {
-        p_list = linked_list_del_at(p_list, 0); // Deleting head each time
+        CU_ASSERT_EQUAL(linked_list_del_at(p_list, 0), LINKED_LIST_SUCCESS); // Deleting head each time
     }
 
     CU_ASSERT_EQUAL(linked_list_size(p_list), 0);
@@ -813,7 +813,7 @@ test_linked_list_null (void)
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 4: Attempt to delete at position from a NULL list
-    p_list = linked_list_del_at(NULL, 0);
+    CU_ASSERT_EQUAL(linked_list_del_at(NULL, 0), LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 5: Attempt to access an element from a NULL list
