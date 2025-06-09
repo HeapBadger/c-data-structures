@@ -2,7 +2,7 @@
  * @file    test_auxiliary.h
  * @brief   Header file for `test_auxiliary.c`.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 20, 2024
  */
 

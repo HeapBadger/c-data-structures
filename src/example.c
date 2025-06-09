@@ -5,7 +5,7 @@
  * This file contains a simple Hello World program. The purpose of this
  * file is to provide a template for other C programs.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 17, 2024
  */
 

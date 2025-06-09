@@ -2,7 +2,7 @@
  * @file    test_doubly_linked_list.c
  * @brief   Doubly Linked List test suite.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 26, 2024
  */
 

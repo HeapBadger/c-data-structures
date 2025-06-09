@@ -1,6 +1,6 @@
 /**
  * @file linked_list.c
- * @brief Implementation of the Singly Linked List data structure.
+ * @brief Implementation of the singly Linked List data structure.
  *
  * @section operations Operations
  * - **Create**: Creates an empty linked list.
@@ -9,20 +9,20 @@
  * the linked list.
  * - **Delete**: Removes an element from the linked list by position.
  * - **Search By Index**: Finds an element in the linked list by position.
- * - **Search By Key**: Finds an element position in the linked list by key.
+ * - **Search By Key**: Finds the position of an element by key.
  * - **Reversal**: Reverses the linked list order.
- * - **Size**: Finds size of linked list.
- * - **Swap**: Swaps data between two nodes given position.
+ * - **Size**: Returns the number of elements in the list.
+ * - **Swap**: Swaps data between two nodes at given positions.
  * - **Update**: Updates the data in a node at a given position.
  *
  * @section complexity Complexity
- * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
+ * - **Time Complexity**:   O(1) for insertion and deletion at the head,
  *                          O(N) for insertion, deletion, and search, where N is
  *                          the number of nodes.
  * - **Space Complexity**:  O(N) for storing elements in the linked list, where
  * N is the number of nodes.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 21, 2024
  */
 

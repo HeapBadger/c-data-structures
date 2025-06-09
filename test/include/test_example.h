@@ -2,7 +2,7 @@
  * @file    test_example.h
  * @brief   Header file for `test_example.c`.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 17, 2024
  */
 

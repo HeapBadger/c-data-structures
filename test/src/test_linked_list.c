@@ -2,7 +2,7 @@
  * @file    test_linked_list.c
  * @brief   Linked List test suite.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 21, 2024
  */
 

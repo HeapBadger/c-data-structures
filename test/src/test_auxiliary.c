@@ -2,7 +2,7 @@
  * @file    test_auxiliary.c
  * @brief   File contains helper functions for test suites.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 20, 2024
  */
 

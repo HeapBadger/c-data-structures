@@ -2,7 +2,7 @@
  * @file    test_main.c
  * @brief   Control suite for all test cases.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 17, 2024
  */
 

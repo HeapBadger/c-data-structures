@@ -4,7 +4,7 @@
  *
  * This file contains the test suite creation for 'example.c'.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 17, 2024
  */
 

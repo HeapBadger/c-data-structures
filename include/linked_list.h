@@ -2,7 +2,7 @@
  * @file    linked_list.h
  * @brief   Header file for `linked_list.c`.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 21, 2024
  */
 

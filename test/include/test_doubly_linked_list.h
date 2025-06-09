@@ -2,7 +2,7 @@
  * @file    test_doubly_linked_list.h
  * @brief   Header file for `test_doubly_linked_list.c`.
  *
- * @author  Anna DeVries
+ * @author  heapbadger
  * @date    August 26, 2024
  */
 
