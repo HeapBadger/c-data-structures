@@ -13,8 +13,10 @@ typedef enum
 {
     DOUBLY_LINKED_LIST_SUCCESS = 0, /**< Operation completed successfully. */
     DOUBLY_LINKED_LIST_NOT_FOUND,   /**< The requested element was not found. */
-    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range. */
-    DOUBLY_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided. */
+    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range.
+                                       */
+    DOUBLY_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided.
+                                          */
     DOUBLY_LINKED_LIST_ALLOCATION_FAILURE, /**< Unable to allocate memory. */
 } doubly_linked_list_error_code_t;
 
@@ -233,7 +235,9 @@ int doubly_linked_list_preappend(doubly_linked_list_t *p_list, void *p_data);
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-int doubly_linked_list_insert(doubly_linked_list_t *p_list, void *p_data, int index);
+int doubly_linked_list_insert(doubly_linked_list_t *p_list,
+                              void                 *p_data,
+                              int                   index);
 
 /**
  * @brief Deletes the node at a specified index in a doubly linked list.

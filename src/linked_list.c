@@ -19,8 +19,8 @@
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
  *                          O(N) for insertion, deletion, and search, where N is
  *                          the number of nodes.
- * - **Space Complexity**:  O(N) for storing elements in the linked list, where N
- *                          is the number of nodes.
+ * - **Space Complexity**:  O(N) for storing elements in the linked list, where
+ * N is the number of nodes.
  *
  * @author  Anna DeVries
  * @date    August 21, 2024
@@ -137,7 +137,8 @@ linked_list_insert (linked_list_t *p_list, void *p_data, int index)
             count++;
         }
 
-        if ((count == index) && (NULL != p_prev)) // handle insertion operation at specific index
+        if ((count == index)
+            && (NULL != p_prev)) // handle insertion operation at specific index
         {
             p_new_node->p_next = p_curr;
             p_prev->p_next     = p_new_node;
@@ -191,8 +192,8 @@ linked_list_del_at (linked_list_t *p_list, int index)
             p_current = p_current->p_next;
         }
     }
-    
-    if ( 0 > index )
+
+    if (0 > index)
     {
         p_return = LINKED_LIST_OUT_OF_BOUNDS;
     }

@@ -182,7 +182,7 @@ doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
     {
         int                        count     = 0;
         doubly_linked_list_node_t *p_current = p_list->p_head;
-        p_return = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
+        p_return                             = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
 
         while (NULL != p_current)
         {
@@ -334,7 +334,7 @@ doubly_linked_list_reverse (doubly_linked_list_t *p_list)
 
         p_list->p_head
             = p_prev; // Update the head of the list to the new first element
-        
+
         p_return = DOUBLY_LINKED_LIST_SUCCESS;
     }
 

@@ -205,7 +205,7 @@ void linked_list_destroy(linked_list_t *p_list);
  * @param p_data Pointer to the data to be stored in the new node.
  *
  * @return `0` on success, or a non-zero error code if the operation fails.
- * 
+ *
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller. The function may return NULL if the list pointer or
  * data pointer is invalid, or if memory allocation for the new node fails.
