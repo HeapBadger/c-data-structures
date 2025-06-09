@@ -589,7 +589,7 @@ test_linked_list_reverse (void)
     CU_ASSERT_EQUAL(linked_list_insert(p_test, value2, 1), LINKED_LIST_SUCCESS); // List: 1 2
     CU_ASSERT_EQUAL(linked_list_insert(p_test, value3, 1), LINKED_LIST_SUCCESS); // List: 1 3 2
 
-    p_test = linked_list_reverse(p_test); // Reversed List: 2 3 1
+    CU_ASSERT_EQUAL(linked_list_reverse(p_test), LINKED_LIST_SUCCESS); // Reversed List: 2 3 1
 
     // Verify the values at each position
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 2);
@@ -717,7 +717,7 @@ test_linked_list_extreme_cases (void)
     CU_ASSERT_EQUAL(linked_list_size(p_list), 10000);
 
     // Reverse the list
-    p_list = linked_list_reverse(p_list);
+    CU_ASSERT_EQUAL(linked_list_reverse(p_list), LINKED_LIST_SUCCESS);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_list, 0)->p_data, 0);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_list, 9999)->p_data, 9999);
 
@@ -828,7 +828,7 @@ test_linked_list_null (void)
     linked_list_destroy(NULL); // Should handle gracefully without crashing
 
     // Test 8: Attempt to reverse a NULL list
-    p_list = linked_list_reverse(NULL);
+    CU_ASSERT_EQUAL(linked_list_reverse(NULL), LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 9: Attempt to print a NULL list

@@ -280,9 +280,11 @@ linked_list_size (linked_list_t *p_list)
 }
 
 // Reverse a linked list
-linked_list_t *
+int
 linked_list_reverse (linked_list_t *p_list)
 {
+    int p_return = LINKED_LIST_INVALID_ARGUMENT;
+
     if ((NULL != p_list) && (NULL != p_list->p_head))
     {
         linked_list_node_t *p_current = p_list->p_head;
@@ -299,9 +301,11 @@ linked_list_reverse (linked_list_t *p_list)
 
         p_list->p_head
             = p_prev; // Update the head of the list to the new first element
+
+        p_return = LINKED_LIST_SUCCESS;
     }
 
-    return p_list;
+    return p_return;
 }
 
 // Prints data from each node in list

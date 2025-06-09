@@ -312,9 +312,9 @@ int linked_list_size(linked_list_t *p_list);
  *
  * @param p_list A pointer to the linked list to be reversed.
  *
- * @return A pointer to the reversed linked list.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  */
-linked_list_t *linked_list_reverse(linked_list_t *p_list);
+int linked_list_reverse(linked_list_t *p_list);
 
 /**
  * @brief Prints the data in each node of the linked list.
