@@ -214,7 +214,7 @@ test_doubly_linked_list_simple (void)
     // Test case 1: Preappend value when list is empty
     int *value_1 = calloc(1, sizeof(int));
     *value_1     = 5;
-    p_test = doubly_linked_list_preappend(p_test, value_1); // Expect only "5"
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value_1), DOUBLY_LINKED_LIST_SUCCESS); // Expect only "5"
 
     ll_size = doubly_linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 1);
@@ -225,7 +225,7 @@ test_doubly_linked_list_simple (void)
     // Test case 2: Preappend value when a list exists
     int *value_2 = calloc(1, sizeof(int));
     *value_2     = 4;
-    p_test = doubly_linked_list_preappend(p_test, value_2); // Expect "4 5"
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value_2), DOUBLY_LINKED_LIST_SUCCESS); // Expect "4 5"
 
     ll_size = doubly_linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 2);
@@ -238,7 +238,7 @@ test_doubly_linked_list_simple (void)
     // Test case 3: Insert value at end of list
     int *value_3 = calloc(1, sizeof(int));
     *value_3     = 10;
-    p_test = doubly_linked_list_insert(p_test, value_3, 2); // Expect "4 5 10"
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value_3, 2), DOUBLY_LINKED_LIST_SUCCESS); // Expect "4 5 10"
 
     ll_size = doubly_linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 3);
@@ -253,8 +253,7 @@ test_doubly_linked_list_simple (void)
     // Test case 4: Insert value in the middle of the list
     int *value_4 = calloc(1, sizeof(int));
     *value_4     = 23;
-    p_test
-        = doubly_linked_list_insert(p_test, value_4, 2); // Expect "4 5 23 10"
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value_4, 2), DOUBLY_LINKED_LIST_SUCCESS); // Expect "4 5 23 10"
 
     ll_size = doubly_linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 4);
@@ -331,7 +330,7 @@ test_doubly_linked_list_preappend (void)
     *value                       = 7;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value);
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value), DOUBLY_LINKED_LIST_SUCCESS);
 
     CU_ASSERT_PTR_NOT_NULL(p_test);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 7);
@@ -370,11 +369,11 @@ test_doubly_linked_list_insert (void)
     *value4                      = 4;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value0); // List: 1
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1 1
-    p_test = doubly_linked_list_insert(p_test, value2, 2); // List: 1 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 2); // List: 1 1 3 2
-    p_test = doubly_linked_list_insert(p_test, value4, 4); // List: 1 1 3 2 4
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value0), DOUBLY_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 2), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 2), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 1 3 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value4, 4), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 1 3 2 4
 
     // Verify the values at each position
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 1);
@@ -444,14 +443,14 @@ test_doubly_linked_list_del_at (void)
     *value5                      = 5;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1
-    p_test = doubly_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 2); // List: 1 2 3
-    p_test = doubly_linked_list_insert(p_test, value4, 3); // List: 1 2 3 4
-    p_test = doubly_linked_list_insert(p_test, value5, 4); // List: 1 2 3 4 5
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS) // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 1), DOUBLY_LINKED_LIST_SUCCESS) // List: 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 2), DOUBLY_LINKED_LIST_SUCCESS) // List: 1 2 3
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value4, 3), DOUBLY_LINKED_LIST_SUCCESS) // List: 1 2 3 4
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value5, 4), DOUBLY_LINKED_LIST_SUCCESS) // List: 1 2 3 4 5
 
     // Test deletion at the middle index
-    p_test = doubly_linked_list_del_at(p_test, 2); // Remove 3, List: 1 2 4 5
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_test, 2), DOUBLY_LINKED_LIST_SUCCESS); // Remove 3, List: 1 2 4 5
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 1);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 1)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 2)->p_data, 4);
@@ -479,7 +478,7 @@ test_doubly_linked_list_del_at (void)
     CU_ASSERT_PTR_NULL(node4->p_next); // node4 should have no next node
 
     // Test deletion at the first index
-    p_test = doubly_linked_list_del_at(p_test, 0); // Remove 1, List: 2 4 5
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_test, 0), DOUBLY_LINKED_LIST_SUCCESS); // Remove 1, List: 2 4 5
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 1)->p_data, 4);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 2)->p_data, 5);
@@ -501,7 +500,7 @@ test_doubly_linked_list_del_at (void)
     CU_ASSERT_PTR_NULL(node4->p_next); // node4 should have no next node
 
     // Test deletion at the last index
-    p_test = doubly_linked_list_del_at(p_test, 2); // Remove 5, List: 2 4
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_test, 2), DOUBLY_LINKED_LIST_SUCCESS); // Remove 5, List: 2 4
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 1)->p_data, 4);
 
@@ -541,9 +540,9 @@ test_doubly_linked_list_at (void)
     *value3                      = 3;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1
-    p_test = doubly_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 3 2
 
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 1);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 1)->p_data, 3);
@@ -573,9 +572,9 @@ test_doubly_linked_list_find (void)
     *value3                      = 3;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1
-    p_test = doubly_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 3 2
 
     CU_ASSERT_EQUAL(doubly_linked_list_find(p_test, value1), 0);
     CU_ASSERT_EQUAL(doubly_linked_list_find(p_test, value2), 2);
@@ -606,9 +605,9 @@ test_doubly_linked_list_size (void)
     *value3                      = 3;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1
-    p_test = doubly_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 3 2
 
     CU_ASSERT_EQUAL(doubly_linked_list_size(p_test), 3);
 
@@ -636,11 +635,11 @@ test_doubly_linked_list_reverse (void)
     *value3                      = 3;
 
     p_test = doubly_linked_list_create(delete_int, compare_ints, print_int);
-    p_test = doubly_linked_list_preappend(p_test, value1); // List: 1
-    p_test = doubly_linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = doubly_linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_test, value1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value2, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_test, value3, 1), DOUBLY_LINKED_LIST_SUCCESS); // List: 1 3 2
 
-    p_test = doubly_linked_list_reverse(p_test);
+    CU_ASSERT_EQUAL(doubly_linked_list_reverse(p_test), DOUBLY_LINKED_LIST_SUCCESS);
 
     // Verify the values at each position
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_test, 0)->p_data, 2);
@@ -767,13 +766,13 @@ test_doubly_linked_list_extreme (void)
     {
         value  = calloc(1, sizeof(int));
         *value = i;
-        p_list = doubly_linked_list_preappend(p_list, value);
+        CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_list, value), DOUBLY_LINKED_LIST_SUCCESS);
     }
 
     CU_ASSERT_EQUAL(doubly_linked_list_size(p_list), 10000);
 
     // Reverse the list
-    p_list = doubly_linked_list_reverse(p_list);
+    CU_ASSERT_EQUAL(doubly_linked_list_reverse(p_list), DOUBLY_LINKED_LIST_SUCCESS);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_list, 0)->p_data, 0);
     CU_ASSERT_EQUAL(*(int *)doubly_linked_list_at(p_list, 9999)->p_data, 9999);
 
@@ -806,19 +805,17 @@ test_doubly_linked_list_extreme (void)
     // Test 3: Insertion at Invalid Position
     value  = calloc(1, sizeof(int));
     *value = 10;
-    p_list = doubly_linked_list_insert(
-        p_list, value, 20000); // Should be handled gracefully
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_list, value, 20000), DOUBLY_LINKED_LIST_OUT_OF_BOUNDS); // Should be handled gracefully
     CU_ASSERT_PTR_NOT_NULL(p_list);
     value  = calloc(1, sizeof(int));
     *value = 20;
-    p_list = doubly_linked_list_insert(
-        p_list, value, -10); // inserting at negative index
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(p_list, value, -10), DOUBLY_LINKED_LIST_OUT_OF_BOUNDS); // inserting at negative index
     CU_ASSERT_PTR_NOT_NULL(p_list);
 
     // Test 4: Deletion at Invalid Position
-    p_list = doubly_linked_list_del_at(p_list, 10000); // Deleting out-of-bounds
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_list, 10000), DOUBLY_LINKED_LIST_OUT_OF_BOUNDS); // Deleting out-of-bounds
     CU_ASSERT_PTR_NOT_NULL(p_list);
-    p_list = doubly_linked_list_del_at(p_list, -10); // Deleting negative index
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_list, -10), DOUBLY_LINKED_LIST_OUT_OF_BOUNDS); // Deleting negative index
     CU_ASSERT_PTR_NOT_NULL(p_list);
 
     // Test 5: Memory Management
@@ -831,13 +828,12 @@ test_doubly_linked_list_extreme (void)
     {
         value  = calloc(1, sizeof(int));
         *value = i;
-        p_list = doubly_linked_list_preappend(p_list, value);
+        CU_ASSERT_EQUAL(doubly_linked_list_preappend(p_list, value), DOUBLY_LINKED_LIST_SUCCESS);
     }
 
     for (i = 0; i < 10000; ++i)
     {
-        p_list
-            = doubly_linked_list_del_at(p_list, 0); // Deleting head each time
+        CU_ASSERT_EQUAL(doubly_linked_list_del_at(p_list, 0), DOUBLY_LINKED_LIST_SUCCESS); // Deleting head each time
     }
 
     CU_ASSERT_EQUAL(doubly_linked_list_size(p_list), 0);
@@ -864,15 +860,15 @@ test_doubly_linked_list_null (void)
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 2: Attempt to pre-append NULL value to a non-existent list
-    p_list = doubly_linked_list_preappend(NULL, NULL);
+    CU_ASSERT_EQUAL(doubly_linked_list_preappend(NULL, NULL), DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 3: Attempt to insert NULL value into a non-existent list
-    p_list = doubly_linked_list_insert(NULL, NULL, 0);
+    CU_ASSERT_EQUAL(doubly_linked_list_insert(NULL, NULL, 0), DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 4: Attempt to delete at position from a NULL list
-    p_list = doubly_linked_list_del_at(NULL, 0);
+    CU_ASSERT_EQUAL(doubly_linked_list_del_at(NULL, 0), DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 5: Attempt to access an element from a NULL list
@@ -888,7 +884,7 @@ test_doubly_linked_list_null (void)
         NULL); // Should handle gracefully without crashing
 
     // Test 8: Attempt to reverse a NULL list
-    p_list = doubly_linked_list_reverse(NULL);
+    CU_ASSERT_EQUAL(doubly_linked_list_reverse(NULL), DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 9: Attempt to print a NULL list

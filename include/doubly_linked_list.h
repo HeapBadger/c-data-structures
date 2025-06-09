@@ -13,10 +13,9 @@ typedef enum
 {
     DOUBLY_LINKED_LIST_SUCCESS = 0, /**< Operation completed successfully. */
     DOUBLY_LINKED_LIST_NOT_FOUND,   /**< The requested element was not found. */
-    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range.
-                                       */
-    DOUBLY_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided.
-                                          */
+    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS, /**< An index was out of the valid range. */
+    DOUBLY_LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided. */
+    DOUBLY_LINKED_LIST_ALLOCATION_FAILURE, /**< Unable to allocate memory. */
 } doubly_linked_list_error_code_t;
 
 /**
@@ -208,15 +207,13 @@ void doubly_linked_list_destroy(doubly_linked_list_t *p_list);
  * prepended.
  * @param p_data Pointer to the data to be stored in the new node.
  *
- * @return doubly_linked_list_t* Pointer to the updated doubly linked list, or
- * NULL if the operation fails.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  *
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller. The function may return NULL if the list pointer or
  * data pointer is invalid, or if memory allocation for the new node fails.
  */
-doubly_linked_list_t *doubly_linked_list_preappend(doubly_linked_list_t *p_list,
-                                                   void *p_data);
+int doubly_linked_list_preappend(doubly_linked_list_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node with the given data at the specified index in the
@@ -231,15 +228,12 @@ doubly_linked_list_t *doubly_linked_list_preappend(doubly_linked_list_t *p_list,
  * @param p_data Pointer to the data to be stored in the new node.
  * @param index  The position at which to insert the new node (0-based index).
  *
- * @return doubly_linked_list_t* Pointer to the updated doubly linked list, or
- * NULL if insertion fails.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  *
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-doubly_linked_list_t *doubly_linked_list_insert(doubly_linked_list_t *p_list,
-                                                void                 *p_data,
-                                                int                   index);
+int doubly_linked_list_insert(doubly_linked_list_t *p_list, void *p_data, int index);
 
 /**
  * @brief Deletes the node at a specified index in a doubly linked list.
@@ -255,14 +249,9 @@ doubly_linked_list_t *doubly_linked_list_insert(doubly_linked_list_t *p_list,
  * @param index   The zero-based index of the node to delete. Indexing starts at
  * 0.
  *
- * @return A pointer to the updated doubly linked list. The return value is the
- * same as `p_list`. Returns the doubly linked list structure after removing the
- * specified node. If the index is out of bounds or if the doubly linked list or
- * deletion function is NULL, the function returns the original doubly linked
- * list unchanged.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  */
-doubly_linked_list_t *doubly_linked_list_del_at(doubly_linked_list_t *p_list,
-                                                int                   index);
+int doubly_linked_list_del_at(doubly_linked_list_t *p_list, int index);
 
 /**
  * @brief Retrieves the node at a specified index in a doubly linked list.
@@ -331,9 +320,9 @@ int doubly_linked_list_size(doubly_linked_list_t *p_list);
  *
  * @param p_list A pointer to the doubly linked list to be reversed.
  *
- * @return A pointer to the reversed doubly linked list.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  */
-doubly_linked_list_t *doubly_linked_list_reverse(doubly_linked_list_t *p_list);
+int doubly_linked_list_reverse(doubly_linked_list_t *p_list);
 
 /**
  * @brief Prints the data in each node of the doubly linked list.
@@ -378,8 +367,6 @@ int doubly_linked_list_swap(doubly_linked_list_t *p_list,
  * @param p_data Pointer to the new data to be stored in the node.
  *
  * @return `0` on success, or a non-zero error code if the operation fails
- *         (e.g., due to an invalid index, a `NULL` pointer, or a `NULL` data
- * pointer).
  *
  * @note The caller must ensure that `p_data` is valid and properly allocated
  *       before calling this function. If the function fails, the caller is

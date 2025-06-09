@@ -86,25 +86,29 @@ doubly_linked_list_destroy (doubly_linked_list_t *p_list)
 }
 
 // Pre-appends data into doubly linked list
-doubly_linked_list_t *
+int
 doubly_linked_list_preappend (doubly_linked_list_t *p_list, void *p_data)
 {
     return doubly_linked_list_insert(p_list, p_data, 0);
 }
 
 // Inserts data into doubly linked list at index
-doubly_linked_list_t *
+int
 doubly_linked_list_insert (doubly_linked_list_t *p_list,
                            void                 *p_data,
                            int                   index)
 {
+    int p_return = DOUBLY_LINKED_LIST_SUCCESS;
+
     if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data))
     {
+        p_return = DOUBLY_LINKED_LIST_INVALID_ARGUMENT;
         goto EXIT;
     }
 
     if (0 > index)
     {
+        p_return = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
         p_list->del_f(p_data);
         goto EXIT;
     }
@@ -159,22 +163,26 @@ doubly_linked_list_insert (doubly_linked_list_t *p_list,
         }
         else // count exceeds index; remove new node
         {
+            p_return = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
             doubly_linked_list_del_node(p_new_node, p_list->del_f);
         }
     }
 
 EXIT:
-    return p_list;
+    return p_return;
 }
 
 // Deletes data in doubly linked list at index
-doubly_linked_list_t *
+int
 doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
 {
+    int p_return = DOUBLY_LINKED_LIST_INVALID_ARGUMENT;
+
     if ((NULL != p_list) && (0 <= index) && (NULL != p_list->del_f))
     {
         int                        count     = 0;
         doubly_linked_list_node_t *p_current = p_list->p_head;
+        p_return = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
 
         while (NULL != p_current)
         {
@@ -207,6 +215,7 @@ doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
 
                 // Delete the current node
                 doubly_linked_list_del_node(p_current, p_list->del_f);
+                p_return = DOUBLY_LINKED_LIST_SUCCESS;
                 break;
             }
 
@@ -215,7 +224,12 @@ doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
         }
     }
 
-    return p_list;
+    if (0 > index)
+    {
+        p_return = DOUBLY_LINKED_LIST_OUT_OF_BOUNDS;
+    }
+
+    return p_return;
 }
 
 // Finds node data given index
@@ -298,9 +312,11 @@ doubly_linked_list_size (doubly_linked_list_t *p_list)
 }
 
 // Reverse a doubly linked list
-doubly_linked_list_t *
+int
 doubly_linked_list_reverse (doubly_linked_list_t *p_list)
 {
+    int p_return = DOUBLY_LINKED_LIST_INVALID_ARGUMENT;
+
     if ((NULL != p_list) && (NULL != p_list->p_head))
     {
         doubly_linked_list_node_t *p_current = p_list->p_head;
@@ -318,9 +334,11 @@ doubly_linked_list_reverse (doubly_linked_list_t *p_list)
 
         p_list->p_head
             = p_prev; // Update the head of the list to the new first element
+        
+        p_return = DOUBLY_LINKED_LIST_SUCCESS;
     }
 
-    return p_list;
+    return p_return;
 }
 
 // Prints data from each node in list
