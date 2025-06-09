@@ -20,9 +20,9 @@
  * @section complexity Complexity
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
  *                          O(N) for insertion, deletion, and search, where N is
- * the number of nodes.
- * - **Space Complexity**: O(N) for storing elements in the doubly linked list,
- * where N is the number of nodes.
+ *                          the number of nodes.
+ * - **Space Complexity**:  O(N) for storing elements in the doubly linked list,
+ *                          where N is the number of nodes.
  *
  * @author  Anna DeVries
  * @date    August 26, 2024

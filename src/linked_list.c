@@ -18,9 +18,9 @@
  * @section complexity Complexity
  * - **Time Complexity**:   O(1) for insertion and deletion at the p_head,
  *                          O(N) for insertion, deletion, and search, where N is
- * the number of nodes.
- * - **Space Complexity**: O(N) for storing elements in the linked list, where N
- * is the number of nodes.
+ *                          the number of nodes.
+ * - **Space Complexity**:  O(N) for storing elements in the linked list, where N
+ *                          is the number of nodes.
  *
  * @author  Anna DeVries
  * @date    August 21, 2024
@@ -83,24 +83,28 @@ linked_list_destroy (linked_list_t *p_list)
 }
 
 // Pre-appends data into linked list
-linked_list_t *
+int
 linked_list_preappend (linked_list_t *p_list, void *p_data)
 {
     return linked_list_insert(p_list, p_data, 0);
 }
 
 // Inserts data into linked list at index
-linked_list_t *
+int
 linked_list_insert (linked_list_t *p_list, void *p_data, int index)
 {
+    int p_return = LINKED_LIST_SUCCESS;
+
     if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data))
     {
+        p_return = LINKED_LIST_INVALID_ARGUMENT;
         goto EXIT;
     }
 
     if (0 > index)
     {
         p_list->del_f(p_data);
+        p_return = LINKED_LIST_OUT_OF_BOUNDS;
         goto EXIT;
     }
 
@@ -110,6 +114,7 @@ linked_list_insert (linked_list_t *p_list, void *p_data, int index)
 
     if (NULL == p_new_node)
     {
+        p_return = LINKED_LIST_ALLOCATION_FAILURE;
         goto EXIT;
     }
 
@@ -132,19 +137,20 @@ linked_list_insert (linked_list_t *p_list, void *p_data, int index)
             count++;
         }
 
-        if (count == index) // handle insertion operation at specific index
+        if ((count == index) && (NULL != p_prev)) // handle insertion operation at specific index
         {
             p_new_node->p_next = p_curr;
             p_prev->p_next     = p_new_node;
         }
         else // count exceeds index; remove new node
         {
+            p_return = LINKED_LIST_OUT_OF_BOUNDS;
             linked_list_del_node(p_new_node, p_list->del_f);
         }
     }
 
 EXIT:
-    return p_list;
+    return p_return;
 }
 
 // Deletes data in linked list at index

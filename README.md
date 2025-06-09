@@ -83,19 +83,7 @@ make valgrind
 c-data-structures/
 │
 ├── include/
-│   ├── linked_list.h
-│   ├── doubly_linked_list.h
-│   ├── matrix.h            
-│   ├── stack.h
-│   ├── queue.h
-│   ├── binary_tree.h
-│   ├── binary_heap.h
-│   ├── hash_table.h
-│   ├── deque.h               
-│   ├── trie.h               
-│   ├── disjoint_set.h          
-│   ├── skip_list.h           
-│   ├── bloom_filter.h 
+│   ├── ...
 │
 ├── src/
 │   ├── linked_list.c
@@ -113,17 +101,7 @@ c-data-structures/
 │   ├── bloom_filter.c       
 │
 ├── tests/
-│   ├── test_linked_list.c
-│   ├── test_stack.c
-│   ├── test_queue.c
-│   ├── test_binary_tree.c
-│   ├── test_binary_heap.c
-│   ├── test_hash_table.c
-│   ├── test_deque.c    
-│   ├── test_trie.c
-│   ├── test_disjoint_set.c
-│   ├── test_skip_list.c
-│   ├── test_bloom_filter.c
+│   ├── ...
 │
 └── Makefile
 └── README.md

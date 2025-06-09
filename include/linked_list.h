@@ -11,10 +11,11 @@
 
 typedef enum
 {
-    LINKED_LIST_SUCCESS = 0,      /**< Operation completed successfully. */
-    LINKED_LIST_NOT_FOUND,        /**< The requested element was not found. */
-    LINKED_LIST_OUT_OF_BOUNDS,    /**< An index was out of the valid range. */
-    LINKED_LIST_INVALID_ARGUMENT, /**< An invalid argument was provided. */
+    LINKED_LIST_SUCCESS = 0,        /**< Operation completed successfully. */
+    LINKED_LIST_NOT_FOUND,          /**< The requested element was not found. */
+    LINKED_LIST_OUT_OF_BOUNDS,      /**< An index was out of the valid range. */
+    LINKED_LIST_INVALID_ARGUMENT,   /**< An invalid argument was provided. */
+    LINKED_LIST_ALLOCATION_FAILURE, /**< Unable to allocate memory. */
 } linked_list_error_code_t;
 
 /**
@@ -203,14 +204,13 @@ void linked_list_destroy(linked_list_t *p_list);
  * @param p_list Pointer to the linked list where the node will be prepended.
  * @param p_data Pointer to the data to be stored in the new node.
  *
- * @return linked_list_t* Pointer to the updated linked list, or NULL if the
- * operation fails.
- *
+ * @return `0` on success, or a non-zero error code if the operation fails.
+ * 
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller. The function may return NULL if the list pointer or
  * data pointer is invalid, or if memory allocation for the new node fails.
  */
-linked_list_t *linked_list_preappend(linked_list_t *p_list, void *p_data);
+int linked_list_preappend(linked_list_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node with the given data at the specified index in the
@@ -225,15 +225,12 @@ linked_list_t *linked_list_preappend(linked_list_t *p_list, void *p_data);
  * @param p_data Pointer to the data to be stored in the new node.
  * @param index  The position at which to insert the new node (0-based index).
  *
- * @return linked_list_t* Pointer to the updated linked list, or NULL if
- * insertion fails.
+ * @return `0` on success, or a non-zero error code if the operation fails.
  *
  * @note The function assumes that the `p_data` pointer is valid and properly
  * managed by the caller.
  */
-linked_list_t *linked_list_insert(linked_list_t *p_list,
-                                  void          *p_data,
-                                  int            index);
+int linked_list_insert(linked_list_t *p_list, void *p_data, int index);
 
 /**
  * @brief Deletes the node at a specified index in a linked list.

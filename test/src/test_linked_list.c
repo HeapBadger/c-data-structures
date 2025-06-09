@@ -197,7 +197,7 @@ test_linked_list_simple (void)
     // Test case 1: Preappend value when list is empty
     int *value_1 = calloc(1, sizeof(int));
     *value_1     = 5;
-    p_test       = linked_list_preappend(p_test, value_1); // Expect only "5"
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value_1), LINKED_LIST_SUCCESS); // Expect only "5"
 
     ll_size = linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 1);
@@ -208,7 +208,7 @@ test_linked_list_simple (void)
     // Test case 2: Preappend value when a list exists
     int *value_2 = calloc(1, sizeof(int));
     *value_2     = 4;
-    p_test       = linked_list_preappend(p_test, value_2); // Expect "4 5"
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value_2), LINKED_LIST_SUCCESS); // Expect "4 5"
 
     ll_size = linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 2);
@@ -221,7 +221,7 @@ test_linked_list_simple (void)
     // Test case 3: Insert value at end of list
     int *value_3 = calloc(1, sizeof(int));
     *value_3     = 10;
-    p_test       = linked_list_insert(p_test, value_3, 2); // Expect "4 5 10"
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value_3, 2), LINKED_LIST_SUCCESS); // Expect "4 5 10"
 
     ll_size = linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 3);
@@ -236,7 +236,7 @@ test_linked_list_simple (void)
     // Test case 4: Insert value in the middle of the list
     int *value_4 = calloc(1, sizeof(int));
     *value_4     = 23;
-    p_test       = linked_list_insert(p_test, value_4, 2); // Expect "4 5 23 10"
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value_4, 2), LINKED_LIST_SUCCESS); // Expect "4 5 23 10"
 
     ll_size = linked_list_size(p_test);
     CU_ASSERT_EQUAL(ll_size, 4);
@@ -293,7 +293,7 @@ test_linked_list_destroy (void)
         = linked_list_create(delete_int, compare_ints, print_int);
     int *value = calloc(1, sizeof(int));
     *value     = 5;
-    p_list     = linked_list_preappend(p_list, value);
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value), LINKED_LIST_SUCCESS);
 
     linked_list_destroy(p_list);
 }
@@ -315,7 +315,7 @@ test_linked_list_preappend (void)
     *value                = 7;
 
     p_test = linked_list_create(delete_int, compare_ints, print_int);
-    p_test = linked_list_preappend(p_test, value);
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value), LINKED_LIST_SUCCESS);
 
     CU_ASSERT_PTR_NOT_NULL(p_test);
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 7);
@@ -353,11 +353,11 @@ test_linked_list_insert (void)
     *value4               = 4;
 
     p_test = linked_list_create(delete_int, compare_ints, print_int);
-    p_test = linked_list_preappend(p_test, value0); // List: 1
-    p_test = linked_list_preappend(p_test, value1); // List: 1 1
-    p_test = linked_list_insert(p_test, value2, 2); // List: 1 1 2
-    p_test = linked_list_insert(p_test, value3, 2); // List: 1 1 3 2
-    p_test = linked_list_insert(p_test, value4, 4); // List: 1 1 3 2 4
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value0), LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value1), LINKED_LIST_SUCCESS); // List: 1 1
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value2, 2), LINKED_LIST_SUCCESS); // List: 1 1 2
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value3, 2), LINKED_LIST_SUCCESS); // List: 1 1 3 2
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value4, 4), LINKED_LIST_SUCCESS); // List: 1 1 3 2 4
 
     // Verify the values at each position
     CU_ASSERT_EQUAL(*(int *)linked_list_at(p_test, 0)->p_data, 1);
@@ -418,11 +418,11 @@ test_linked_list_del_at (void)
     *value5               = 5;
 
     p_test = linked_list_create(delete_int, compare_ints, print_int);
-    p_test = linked_list_preappend(p_test, value1); // List: 1
-    p_test = linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = linked_list_insert(p_test, value3, 2); // List: 1 2 3
-    p_test = linked_list_insert(p_test, value4, 3); // List: 1 2 3 4
-    p_test = linked_list_insert(p_test, value5, 4); // List: 1 2 3 4 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value1), LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value2, 1), LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value3, 2), LINKED_LIST_SUCCESS); // List: 1 2 3
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value4, 3), LINKED_LIST_SUCCESS); // List: 1 2 3 4
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value5, 4), LINKED_LIST_SUCCESS); // List: 1 2 3 4 5
 
     // Test deletion at the middle index
     p_test = linked_list_del_at(p_test, 2); // Remove 3, List: 1 2 4 5
@@ -492,8 +492,8 @@ test_linked_list_at (void)
     int *value2 = calloc(1, sizeof(int));
     *value2     = 10;
 
-    p_list = linked_list_preappend(p_list, value1); // List: 5
-    p_list = linked_list_preappend(p_list, value2); // List: 10 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value1), LINKED_LIST_SUCCESS); // List: 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value2), LINKED_LIST_SUCCESS); // List: 10 5
 
     linked_list_node_t *p_node = linked_list_at(p_list, 0);
     CU_ASSERT_EQUAL(0, compare_ints(p_node->p_data, (void *)value2));
@@ -523,8 +523,8 @@ test_linked_list_find (void)
     int *value2 = calloc(1, sizeof(int));
     *value2     = 10;
 
-    p_list = linked_list_preappend(p_list, value1); // List: 5
-    p_list = linked_list_preappend(p_list, value2); // List: 10 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value1), LINKED_LIST_SUCCESS); // List: 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value2), LINKED_LIST_SUCCESS); // List: 10 5
 
     int index = linked_list_find(p_list, (void *)value1);
     CU_ASSERT_EQUAL(index, 1);
@@ -554,13 +554,12 @@ test_linked_list_size (void)
     int *value2 = calloc(1, sizeof(int));
     *value2     = 10;
 
-    p_list = linked_list_preappend(p_list, value1); // List: 5
-    p_list = linked_list_preappend(p_list, value2); // List: 10 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value1), LINKED_LIST_SUCCESS); // List: 5
+    CU_ASSERT_EQUAL(linked_list_preappend(p_list, value2), LINKED_LIST_SUCCESS); // List: 10 5
 
     CU_ASSERT_EQUAL(linked_list_size(p_list), 2);
 
-    p_list
-        = linked_list_insert(p_list, calloc(1, sizeof(int)), 2); // List: 10 5 X
+    CU_ASSERT_EQUAL(linked_list_insert(p_list, calloc(1, sizeof(int)), 2), LINKED_LIST_SUCCESS); // List: 10 5 X
     CU_ASSERT_EQUAL(linked_list_size(p_list), 3);
 
     linked_list_destroy(p_list);
@@ -586,9 +585,9 @@ test_linked_list_reverse (void)
     *value3               = 3;
 
     p_test = linked_list_create(delete_int, compare_ints, print_int);
-    p_test = linked_list_preappend(p_test, value1); // List: 1
-    p_test = linked_list_insert(p_test, value2, 1); // List: 1 2
-    p_test = linked_list_insert(p_test, value3, 1); // List: 1 3 2
+    CU_ASSERT_EQUAL(linked_list_preappend(p_test, value1), LINKED_LIST_SUCCESS); // List: 1
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value2, 1), LINKED_LIST_SUCCESS); // List: 1 2
+    CU_ASSERT_EQUAL(linked_list_insert(p_test, value3, 1), LINKED_LIST_SUCCESS); // List: 1 3 2
 
     p_test = linked_list_reverse(p_test); // Reversed List: 2 3 1
 
@@ -712,7 +711,7 @@ test_linked_list_extreme_cases (void)
     {
         value  = calloc(1, sizeof(int));
         *value = i;
-        p_list = linked_list_preappend(p_list, value);
+        CU_ASSERT_EQUAL(linked_list_preappend(p_list, value), LINKED_LIST_SUCCESS);
     }
 
     CU_ASSERT_EQUAL(linked_list_size(p_list), 10000);
@@ -751,13 +750,11 @@ test_linked_list_extreme_cases (void)
     // Test 3: Insertion at Invalid Position
     value  = calloc(1, sizeof(int));
     *value = 10;
-    p_list = linked_list_insert(
-        p_list, value, 20000); // Should be handled gracefully
+    CU_ASSERT_EQUAL(linked_list_insert(p_list, value, 20000), LINKED_LIST_OUT_OF_BOUNDS); // Should be handled gracefully
     CU_ASSERT_PTR_NOT_NULL(p_list);
     value  = calloc(1, sizeof(int));
     *value = 20;
-    p_list
-        = linked_list_insert(p_list, value, -10); // inserting at negative index
+    CU_ASSERT_EQUAL(linked_list_insert(p_list, value, -10), LINKED_LIST_OUT_OF_BOUNDS); // inserting at negative index
     CU_ASSERT_PTR_NOT_NULL(p_list);
 
     // Test 4: Deletion at Invalid Position
@@ -776,7 +773,7 @@ test_linked_list_extreme_cases (void)
     {
         value  = calloc(1, sizeof(int));
         *value = i;
-        p_list = linked_list_preappend(p_list, value);
+        CU_ASSERT_EQUAL(linked_list_preappend(p_list, value), LINKED_LIST_SUCCESS);
     }
 
     for (i = 0; i < 10000; ++i)
@@ -808,11 +805,11 @@ test_linked_list_null (void)
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 2: Attempt to pre-append NULL value to a non-existent list
-    p_list = linked_list_preappend(NULL, NULL);
+    CU_ASSERT_EQUAL(linked_list_preappend(NULL, NULL), LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 3: Attempt to insert NULL value into a non-existent list
-    p_list = linked_list_insert(NULL, NULL, 0);
+    CU_ASSERT_EQUAL(linked_list_insert(NULL, NULL, 0), LINKED_LIST_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(p_list);
 
     // Test 4: Attempt to delete at position from a NULL list
