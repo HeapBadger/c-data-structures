@@ -6,7 +6,7 @@
  * - **Create**: Creates an empty linked list.
  * - **Destroy**: Deletes all elements in the linked list and destroys the list.
  * - **Insert**: Adds a new element to the beginning, end, or any position in
- * the linked list.
+ *               the linked list.
  * - **Delete**: Removes an element from the linked list by position.
  * - **Search By Index**: Finds an element in the linked list by position.
  * - **Search By Key**: Finds the position of an element by key.
@@ -20,7 +20,7 @@
  *                          O(N) for insertion, deletion, and search, where N is
  *                          the number of nodes.
  * - **Space Complexity**:  O(N) for storing elements in the linked list, where
- * N is the number of nodes.
+ *                          N is the number of nodes.
  *
  * @author  heapbadger
  * @date    August 21, 2024
@@ -28,15 +28,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "auxiliary.h"
 #include "linked_list.h"
 
-// Function Declarations
-static void linked_list_del_node(linked_list_node_t *p_node, del_func del_f);
+static void                linked_list_del_node(linked_list_node_t *p_node,
+                                                const del_func      del_f);
 static linked_list_node_t *linked_list_create_node(void *p_data);
 
-// Creates linked list
 linked_list_t *
-linked_list_create (del_func del_f, cmp_func cmp_f, print_func print_f)
+linked_list_create (const del_func   del_f,
+                    const cmp_func   cmp_f,
+                    const print_func print_f)
 {
     linked_list_t *p_list = NULL;
 
@@ -56,7 +58,6 @@ linked_list_create (del_func del_f, cmp_func cmp_f, print_func print_f)
     return p_list;
 }
 
-// Destroys linked list
 void
 linked_list_destroy (linked_list_t *p_list)
 {
@@ -82,14 +83,12 @@ linked_list_destroy (linked_list_t *p_list)
     return;
 }
 
-// Pre-appends data into linked list
 int
 linked_list_preappend (linked_list_t *p_list, void *p_data)
 {
     return linked_list_insert(p_list, p_data, 0);
 }
 
-// Inserts data into linked list at index
 int
 linked_list_insert (linked_list_t *p_list, void *p_data, int index)
 {
@@ -154,7 +153,6 @@ EXIT:
     return p_return;
 }
 
-// Deletes data in linked list at index
 int
 linked_list_del_at (linked_list_t *p_list, int index)
 {
@@ -201,9 +199,8 @@ linked_list_del_at (linked_list_t *p_list, int index)
     return p_return;
 }
 
-// Finds node data given index
 linked_list_node_t *
-linked_list_at (linked_list_t *p_list, int index)
+linked_list_at (const linked_list_t *p_list, int index)
 {
     linked_list_node_t *p_current = NULL;
     linked_list_node_t *p_node    = NULL;
@@ -229,9 +226,8 @@ linked_list_at (linked_list_t *p_list, int index)
     return p_node;
 }
 
-// Finds node index given data
 int
-linked_list_find (linked_list_t *p_list, void *p_data)
+linked_list_find (const linked_list_t *p_list, void *p_data)
 {
     int index = LINKED_LIST_NOT_FOUND;
     int count = 0;
@@ -260,9 +256,8 @@ linked_list_find (linked_list_t *p_list, void *p_data)
     return index;
 }
 
-// Finds size of linked list
 int
-linked_list_size (linked_list_t *p_list)
+linked_list_size (const linked_list_t *p_list)
 {
     int size = 0;
 
@@ -280,7 +275,6 @@ linked_list_size (linked_list_t *p_list)
     return size;
 }
 
-// Reverse a linked list
 int
 linked_list_reverse (linked_list_t *p_list)
 {
@@ -309,9 +303,8 @@ linked_list_reverse (linked_list_t *p_list)
     return p_return;
 }
 
-// Prints data from each node in list
 void
-linked_list_print (linked_list_t *p_list)
+linked_list_print (const linked_list_t *p_list)
 {
     if ((NULL != p_list) && (NULL != p_list->print_f)
         && (NULL != p_list->p_head))
@@ -331,7 +324,6 @@ linked_list_print (linked_list_t *p_list)
     return;
 }
 
-// Swaps the data of two nodes
 int
 linked_list_swap (linked_list_t *p_list, int index_1, int index_2)
 {
@@ -364,7 +356,6 @@ EXIT:
     return result;
 }
 
-// Updates the data of a node
 int
 linked_list_update (linked_list_t *p_list, int index, void *p_data)
 {
@@ -397,17 +388,11 @@ EXIT:
 /**
  * @brief Deletes a node from the linked list and frees its memory.
  *
- * This function deallocates the memory used by a single node in the linked
- * list. It calls the provided delete function to handle the node's data and
- * then frees the memory allocated for the node itself. After freeing the
- * memory, it sets pointers in the node to `NULL` to avoid dangling pointers.
- *
  * @param p_node Pointer to the node to be deleted.
- * @param del_f  Function pointer to the function used to delete the node's
- * data.
+ * @param del_f  Custom delete function.
  */
 static void
-linked_list_del_node (linked_list_node_t *p_node, del_func del_f)
+linked_list_del_node (linked_list_node_t *p_node, const del_func del_f)
 {
     if (NULL != p_node)
     {
@@ -428,19 +413,10 @@ linked_list_del_node (linked_list_node_t *p_node, del_func del_f)
 /**
  * @brief Creates and initializes a new node for the linked list.
  *
- * This function allocates memory for a new node in the linked list and
- * initializes its members. The node's data pointer is set to the provided data,
- * and the next pointer is set to NULL. The function returns a pointer to the
- * newly created node, or NULL if memory allocation fails.
- *
- * @param p_data Pointer to the data to be stored in the new node.
+ * @param p_data Pointer to the data for the new node.
  *
  * @return linked_list_node_t* Pointer to the newly created node, or NULL if
  * memory allocation fails.
- *
- * @note The provided data pointer `p_data` is directly assigned to the node
- * without copying or validation. Ensure that the data pointer is valid and
- * properly managed by the caller.
  */
 static linked_list_node_t *
 linked_list_create_node (void *p_data)

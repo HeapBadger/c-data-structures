@@ -31,14 +31,12 @@
 #include <stdlib.h>
 #include "doubly_linked_list.h"
 
-// Function Declarations
 static void doubly_linked_list_del_node(doubly_linked_list_node_t *p_node,
-                                        del_func                   del_f);
+                                        const del_func del_f);
 static doubly_linked_list_node_t *doubly_linked_list_create_node(void *p_data);
 
-// Creates doubly linked list
 doubly_linked_list_t *
-doubly_linked_list_create (del_func del_f, cmp_func cmp_f, print_func print_f)
+doubly_linked_list_create (const del_func del_f, const cmp_func cmp_f, const print_func print_f)
 {
     doubly_linked_list_t *p_list = NULL;
 
@@ -58,7 +56,6 @@ doubly_linked_list_create (del_func del_f, cmp_func cmp_f, print_func print_f)
     return p_list;
 }
 
-// Destroys doubly linked list
 void
 doubly_linked_list_destroy (doubly_linked_list_t *p_list)
 {
@@ -84,14 +81,12 @@ doubly_linked_list_destroy (doubly_linked_list_t *p_list)
     return;
 }
 
-// Pre-appends data into doubly linked list
 int
 doubly_linked_list_preappend (doubly_linked_list_t *p_list, void *p_data)
 {
     return doubly_linked_list_insert(p_list, p_data, 0);
 }
 
-// Inserts data into doubly linked list at index
 int
 doubly_linked_list_insert (doubly_linked_list_t *p_list,
                            void                 *p_data,
@@ -171,7 +166,6 @@ EXIT:
     return p_return;
 }
 
-// Deletes data in doubly linked list at index
 int
 doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
 {
@@ -231,9 +225,8 @@ doubly_linked_list_del_at (doubly_linked_list_t *p_list, int index)
     return p_return;
 }
 
-// Finds node data given index
 doubly_linked_list_node_t *
-doubly_linked_list_at (doubly_linked_list_t *p_list, int index)
+doubly_linked_list_at (const doubly_linked_list_t *p_list, int index)
 {
     doubly_linked_list_node_t *p_current = NULL;
     doubly_linked_list_node_t *p_node    = NULL;
@@ -259,9 +252,8 @@ doubly_linked_list_at (doubly_linked_list_t *p_list, int index)
     return p_node;
 }
 
-// Finds node index given data
 int
-doubly_linked_list_find (doubly_linked_list_t *p_list, void *p_data)
+doubly_linked_list_find (const doubly_linked_list_t *p_list, void *p_data)
 {
     int index = DOUBLY_LINKED_LIST_NOT_FOUND;
     int count = 0;
@@ -290,9 +282,8 @@ doubly_linked_list_find (doubly_linked_list_t *p_list, void *p_data)
     return index;
 }
 
-// Finds size of doubly linked list
 int
-doubly_linked_list_size (doubly_linked_list_t *p_list)
+doubly_linked_list_size (const doubly_linked_list_t *p_list)
 {
     int size = 0;
 
@@ -310,7 +301,6 @@ doubly_linked_list_size (doubly_linked_list_t *p_list)
     return size;
 }
 
-// Reverse a doubly linked list
 int
 doubly_linked_list_reverse (doubly_linked_list_t *p_list)
 {
@@ -340,9 +330,8 @@ doubly_linked_list_reverse (doubly_linked_list_t *p_list)
     return p_return;
 }
 
-// Prints data from each node in list
 void
-doubly_linked_list_print (doubly_linked_list_t *p_list)
+doubly_linked_list_print (const doubly_linked_list_t *p_list)
 {
     if ((NULL != p_list) && (NULL != p_list->print_f)
         && (NULL != p_list->p_head))
@@ -362,7 +351,6 @@ doubly_linked_list_print (doubly_linked_list_t *p_list)
     return;
 }
 
-// Swaps the data of two nodes
 int
 doubly_linked_list_swap (doubly_linked_list_t *p_list, int index_1, int index_2)
 {
@@ -397,7 +385,6 @@ EXIT:
     return result;
 }
 
-// Updates the data of a node
 int
 doubly_linked_list_update (doubly_linked_list_t *p_list,
                            int                   index,
@@ -432,17 +419,12 @@ EXIT:
 /**
  * @brief Deletes a node from the doubly linked list and frees its memory.
  *
- * This function deallocates the memory used by a single node in the linked
- * list. It calls the provided delete function to handle the node's data and
- * then frees the memory allocated for the node itself. After freeing the
- * memory, it sets pointers in the node to `NULL` to avoid dangling pointers.
- *
  * @param p_node Pointer to the node to be deleted.
- * @param del_f  Function pointer to the function used to delete the node's
+ * @param del_f  Function to delete node data.
  * data.
  */
 static void
-doubly_linked_list_del_node (doubly_linked_list_node_t *p_node, del_func del_f)
+doubly_linked_list_del_node (doubly_linked_list_node_t *p_node, const del_func del_f)
 {
     if (NULL != p_node)
     {
@@ -464,19 +446,10 @@ doubly_linked_list_del_node (doubly_linked_list_node_t *p_node, del_func del_f)
 /**
  * @brief Creates and initializes a new node for the doubly linked list.
  *
- * This function allocates memory for a new node in the doubly linked list and
- * initializes its members. The node's data pointer is set to the provided data,
- * and the next pointer is set to NULL. The function returns a pointer to the
- * newly created node, or NULL if memory allocation fails.
- *
  * @param p_data Pointer to the data to be stored in the new node.
  *
  * @return doubly_linked_list_node_t* Pointer to the newly created node, or NULL
  * if memory allocation fails.
- *
- * @note The provided data pointer `p_data` is directly assigned to the node
- * without copying or validation. Ensure that the data pointer is valid and
- * properly managed by the caller.
  */
 static doubly_linked_list_node_t *
 doubly_linked_list_create_node (void *p_data)

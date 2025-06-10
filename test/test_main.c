@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <CUnit/Basic.h>
+#include "test_array.h"
 #include "test_auxiliary.h"
 #include "test_example.h"
 #include "test_doubly_linked_list.h"
@@ -193,6 +194,14 @@ create_suites (void)
     if (NULL == doubly_linked_list_suite())
     {
         ERROR_LOG("Failed to create the Doubly Linked List Suite\n");
+        retval = CU_get_error();
+        goto EXIT;
+    }
+
+    // Array
+    if (NULL == array_suite())
+    {
+        ERROR_LOG("Failed to create the Array Suite\n");
         retval = CU_get_error();
         goto EXIT;
     }
