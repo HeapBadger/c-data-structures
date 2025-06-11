@@ -40,8 +40,10 @@ void
 print_int (void *p_data)
 {
     if (NULL != p_data)
+    {
         printf("%d ", *(int *)p_data);
-    
+    }
+
     return;
 }
 

@@ -13,7 +13,23 @@
 #include <sys/types.h>
 #include "auxiliary.h"
 
+// Growth factor used when expanding array capacity.
+// Doubles the capacity to minimize reallocations during heavy insertion.
 #define ARRAY_RESIZE_FACTOR 2
+
+// Shrink threshold divisor: shrink only if size < capacity / 6.
+// Prevents frequent shrinking when usage temporarily dips, reducing realloc
+// overhead.
+#define ARRAY_SHRINK_THRESHOLD_DIVISOR 6
+
+// Shrink factor used when reducing capacity.
+// Halves the capacity when shrinking is triggered.
+#define ARRAY_SHRINK_FACTOR 2
+
+// Minimum allowed capacity after shrinking.
+// Avoids thrashing by maintaining a reasonable base size even after large
+// removals.
+#define ARRAY_MIN_CAPACITY 16
 
 typedef enum
 {
@@ -43,9 +59,9 @@ typedef struct
  * @param print_f Pointer to a function that prints an element.
  * @return Pointer to the new array, or NULL on failure.
  */
-array_t *array_create(size_t initial_capacity,
-                      const del_func del_f,
-                      const cmp_func cmp_f,
+array_t *array_create(size_t           initial_capacity,
+                      const del_func   del_f,
+                      const cmp_func   cmp_f,
                       const print_func print_f);
 
 /**
@@ -122,10 +138,10 @@ ssize_t array_set(array_t *p_array, size_t index, void *p_value);
  * @brief Find the index of a value using linear search.
  *
  * @param p_array Pointer to the array.
- * @param key Key to search for.
+ * @param p_key Key to search for.
  * @return Index of the element if found, negative error code otherwise.
  */
-ssize_t array_find(const array_t *p_array, void *key);
+ssize_t array_find(const array_t *p_array, void *p_key);
 
 /**
  * @brief Get the current number of elements in the array.
@@ -139,7 +155,8 @@ ssize_t array_size(const array_t *p_array);
  * @brief Get the current capacity of the array.
  *
  * @param p_array Pointer to the array.
- * @return Maximum number of elements the array can hold, or negative error code.
+ * @return Maximum number of elements the array can hold, or negative error
+ * code.
  */
 ssize_t array_capacity(const array_t *p_array);
 
@@ -163,10 +180,10 @@ bool array_is_full(const array_t *p_array);
  * @brief Ensure the array has at least the given capacity.
  *
  * @param p_array Pointer to the array.
- * @param new_capacity Minimum capacity to reserve.
+ * @param new_cap Minimum capacity to reserve.
  * @return 0 on success, negative error code on failure.
  */
-ssize_t array_reserve(array_t *p_array, size_t new_capacity);
+ssize_t array_reserve(array_t *p_array, size_t new_cap);
 
 /**
  * @brief Shrink the array's allocated memory to match its size.
@@ -177,21 +194,25 @@ ssize_t array_reserve(array_t *p_array, size_t new_capacity);
 ssize_t array_shrink_to_fit(array_t *p_array);
 
 /**
- * @brief Sort the array in-place using a custom comparator.
+ * @brief Sort the array using bubble sort and a custom comparator.
  *
- * @param p_array Pointer to the array.
+ * This function performs an in-place bubble sort on the dynamic array using the
+ * user-provided comparison function (`cmp_f`) stored in the array structure.
+ *
+ * @param p_array Pointer to the dynamic array.
+ * @return 0 on success, or a negative error code on failure (e.g., invalid
+ * input).
  */
-void array_sort(array_t *p_array);
+ssize_t array_bubblesort(array_t *p_array);
 
 /**
  * @brief Find an element using binary search (requires sorted array).
  *
  * @param p_array Pointer to the array.
- * @param key Key to search for.
+ * @param p_key Key to search for.
  * @return Index of the element if found, negative error code otherwise.
  */
-ssize_t array_binary_search(const array_t *p_array, void *key);
-
+ssize_t array_sorted_search(const array_t *p_array, void *p_key);
 
 #endif // ARRAY_H
 
