@@ -30,9 +30,6 @@ static void test_doubly_linked_list_swap(void);
 static void test_doubly_linked_list_update(void);
 static void test_doubly_linked_list_extreme(void);
 static void test_doubly_linked_list_null(void);
-static void print_int(void *p_data);
-static void delete_int(void *p_data);
-static int  compare_ints(void *p_lhs, void *p_rhs);
 
 // Suite Creation Function
 CU_pSuite
@@ -950,28 +947,4 @@ test_doubly_linked_list_null (void)
     CU_ASSERT_EQUAL(index, DOUBLY_LINKED_LIST_INVALID_ARGUMENT);
 }
 
-// Function to delete an integer (free the memory)
-static void
-delete_int (void *p_data)
-{
-    free(p_data);
-    p_data = NULL;
-    return;
-}
-
-// Function to compare two integers
-static int
-compare_ints (void *p_lhs, void *p_rhs)
-{
-    int lhs = *(int *)p_lhs;
-    int rhs = *(int *)p_rhs;
-    return (lhs > rhs) - (lhs < rhs);
-}
-
-// Function to print an integer
-static void
-print_int (void *p_data)
-{
-    printf("%d ", *(int *)p_data);
-    return;
-}
+/*** end of file ***/

@@ -18,3 +18,5 @@
 void hello();
 
 #endif // EXAMPLE_H
+
+/*** end of file ***/

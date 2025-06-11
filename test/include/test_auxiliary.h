@@ -27,6 +27,30 @@
 #define INFO_LOG(fmt, ...) fprintf(stderr, "\n[Info]: " fmt "\n", ##__VA_ARGS__)
 
 /**
+ * @brief   Deletes an integer pointer by freeing its allocated memory.
+ *
+ * @param p_data  Pointer to the dynamically allocated integer to delete.
+ */
+void delete_int(void *p_data);
+
+/**
+ * @brief   Compares two integer values.
+ *
+ * @param p_lhs  Pointer to the left-hand-side integer.
+ * @param p_rhs  Pointer to the right-hand-side integer.
+ *
+ * @return Result of integer comparison.
+ */
+int compare_ints(void *p_lhs, void *p_rhs);
+
+/**
+ * @brief   Prints an integer value to standard output.
+ *
+ * @param p_data  Pointer to the integer to print.
+ */
+void print_int(void *p_data);
+
+/**
  * @brief Captures the stdout output of a function that takes a void* argument.
  *
  * This function temporarily redirects stdout to a temporary file, executes the
@@ -83,3 +107,5 @@ char *capture_stdout(void (*func)(void *), void *input);
 bool is_name_match(const char *string_1, const char *string_2);
 
 #endif // TEST_AUXILIARY_H
+
+/*** end of file ***/

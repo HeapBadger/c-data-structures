@@ -88,6 +88,7 @@ c-data-structures/
 ├── src/
 │   ├── ✅ linked_list.c
 │   ├── ✅ doubly_linked_list.c
+│   ├── ✅ array.c
 │   ├── matrix.c
 │   ├── stack.c
 │   ├── queue.c

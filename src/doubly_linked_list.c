@@ -32,11 +32,13 @@
 #include "doubly_linked_list.h"
 
 static void doubly_linked_list_del_node(doubly_linked_list_node_t *p_node,
-                                        const del_func del_f);
+                                        const del_func             del_f);
 static doubly_linked_list_node_t *doubly_linked_list_create_node(void *p_data);
 
 doubly_linked_list_t *
-doubly_linked_list_create (const del_func del_f, const cmp_func cmp_f, const print_func print_f)
+doubly_linked_list_create (const del_func   del_f,
+                           const cmp_func   cmp_f,
+                           const print_func print_f)
 {
     doubly_linked_list_t *p_list = NULL;
 
@@ -424,7 +426,8 @@ EXIT:
  * data.
  */
 static void
-doubly_linked_list_del_node (doubly_linked_list_node_t *p_node, const del_func del_f)
+doubly_linked_list_del_node (doubly_linked_list_node_t *p_node,
+                             const del_func             del_f)
 {
     if (NULL != p_node)
     {
@@ -466,3 +469,5 @@ doubly_linked_list_create_node (void *p_data)
 
     return p_node;
 }
+
+/*** end of file ***/

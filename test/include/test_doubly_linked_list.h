@@ -20,3 +20,5 @@
 CU_pSuite doubly_linked_list_suite(void);
 
 #endif // TEST_DOUBLY_LINKED_LIST_H
+
+/*** end of file ***/

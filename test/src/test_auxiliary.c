@@ -17,6 +17,34 @@
 #define MAX_STRING_LENGTH  256
 #define TEMP_FILE_PATH     "/tmp/test_output.txt"
 
+// Function to delete an integer (free the memory)
+void
+delete_int (void *p_data)
+{
+    free(p_data);
+    p_data = NULL;
+    return;
+}
+
+// Function to compare two integers
+int
+compare_ints (void *p_lhs, void *p_rhs)
+{
+    int lhs = *(int *)p_lhs;
+    int rhs = *(int *)p_rhs;
+    return (lhs > rhs) - (lhs < rhs);
+}
+
+// Function to print an integer
+void
+print_int (void *p_data)
+{
+    if (NULL != p_data)
+        printf("%d ", *(int *)p_data);
+    
+    return;
+}
+
 // Compares two strings
 bool
 is_name_match (const char *string_1, const char *string_2)
@@ -148,3 +176,5 @@ CLEANUP:
 
     return NULL;
 }
+
+/*** end of file ***/

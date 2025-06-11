@@ -22,3 +22,5 @@
 CU_pSuite example_suite(void);
 
 #endif // TEST_EXAMPLE_H
+
+/*** end of file ***/

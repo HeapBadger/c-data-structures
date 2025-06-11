@@ -19,3 +19,5 @@
 CU_pSuite array_suite(void);
 
 #endif // TEST_ARRAY_H
+
+/*** end of file ***/

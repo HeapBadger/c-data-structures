@@ -72,3 +72,5 @@ test_hello (void)
     buffer = NULL;
     return;
 }
+
+/*** end of file ***/

@@ -153,3 +153,5 @@ int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
 int linked_list_update(linked_list_t *p_list, int index, void *p_data);
 
 #endif // LINKED_LIST_H
+
+/*** end of file ***/

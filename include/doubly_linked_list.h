@@ -13,11 +13,12 @@
 
 typedef enum
 {
-    DOUBLY_LINKED_LIST_SUCCESS = 0,          /**< Operation succeeded. */
-    DOUBLY_LINKED_LIST_NOT_FOUND = -1,       /**< Element not found. */
-    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS = -2,   /**< Index out of range. */
-    DOUBLY_LINKED_LIST_INVALID_ARGUMENT = -3,/**< Invalid argument. */
-    DOUBLY_LINKED_LIST_ALLOCATION_FAILURE = -4, /**< Memory allocation failed. */
+    DOUBLY_LINKED_LIST_SUCCESS          = 0,  /**< Operation succeeded. */
+    DOUBLY_LINKED_LIST_NOT_FOUND        = -1, /**< Element not found. */
+    DOUBLY_LINKED_LIST_OUT_OF_BOUNDS    = -2, /**< Index out of range. */
+    DOUBLY_LINKED_LIST_INVALID_ARGUMENT = -3, /**< Invalid argument. */
+    DOUBLY_LINKED_LIST_ALLOCATION_FAILURE
+    = -4, /**< Memory allocation failed. */
 } doubly_linked_list_error_code_t;
 
 /**
@@ -110,8 +111,8 @@ int doubly_linked_list_del_at(doubly_linked_list_t *p_list, int index);
  *
  * @return Pointer to the node, or NULL if out of bounds or list is NULL.
  */
-doubly_linked_list_node_t *doubly_linked_list_at(const doubly_linked_list_t *p_list,
-                                                 int                   index);
+doubly_linked_list_node_t *doubly_linked_list_at(
+    const doubly_linked_list_t *p_list, int index);
 
 /**
  * @brief Finds the index of the node containing specified data.
@@ -179,3 +180,5 @@ int doubly_linked_list_update(doubly_linked_list_t *p_list,
                               void                 *p_data);
 
 #endif // DOUBLY_LINKED_LIST_H
+
+/*** end of file ***/

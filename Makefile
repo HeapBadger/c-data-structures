@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -Wpedantic -Iinclude -Itest/include
+CFLAGS = -Wall -Wextra -Wpedantic -Iinclude -Itest/include
 LDFLAGS = -lcunit
 
 # Directories

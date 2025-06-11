@@ -19,3 +19,5 @@
 CU_pSuite linked_list_suite(void);
 
 #endif // TEST_LINKED_LIST_H
+
+/*** end of file ***/
