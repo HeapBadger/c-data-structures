@@ -1,38 +1,39 @@
 /**
  * @file    linked_list.h
- * @brief   Header for singly linked list implementation.
+ * @brief   Header for `linked_list.c`.
  *
  * @author  heapbadger
- * @date    August 21, 2024
  */
 
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
+#include <stdbool.h>
+#include <sys/types.h>
 #include "auxiliary.h"
 
 typedef enum
 {
-    LINKED_LIST_SUCCESS            = 0,  /**< Operation succeeded. */
-    LINKED_LIST_NOT_FOUND          = -1, /**< Element not found. */
-    LINKED_LIST_OUT_OF_BOUNDS      = -2, /**< Index out of range. */
-    LINKED_LIST_INVALID_ARGUMENT   = -3, /**< Invalid argument provided. */
-    LINKED_LIST_ALLOCATION_FAILURE = -4, /**< Memory allocation failed. */
-} linked_list_error_code_t;
+    LL_SUCCESS            = 0,  /**< Operation succeeded. */
+    LL_NOT_FOUND          = -1, /**< Element not found. */
+    LL_OUT_OF_BOUNDS      = -2, /**< Index out of range. */
+    LL_INVALID_ARGUMENT   = -3, /**< Invalid argument provided. */
+    LL_ALLOCATION_FAILURE = -4, /**< Memory allocation failed. */
+} ll_error_code_t;
 
-typedef struct linked_list_node
+typedef struct ll_node
 {
-    void                    *p_data;
-    struct linked_list_node *p_next;
-} linked_list_node_t;
+    void           *p_data;
+    struct ll_node *p_next;
+} ll_node_t;
 
 typedef struct
 {
-    linked_list_node_t *p_head;
-    del_func            del_f;
-    cmp_func            cmp_f;
-    print_func          print_f;
-} linked_list_t;
+    ll_node_t *p_head;
+    del_func   del_f;
+    cmp_func   cmp_f;
+    print_func print_f;
+} ll_t;
 
 /**
  * @brief Creates a new linked list with custom handlers.
@@ -43,16 +44,23 @@ typedef struct
  *
  * @return Pointer to new list, or NULL on failure.
  */
-linked_list_t *linked_list_create(const del_func   del_f,
-                                  const cmp_func   cmp_f,
-                                  const print_func print_f);
+ll_t *ll_create(const del_func   del_f,
+                const cmp_func   cmp_f,
+                const print_func print_f);
 
 /**
  * @brief Frees the entire linked list and its data.
  *
  * @param p_list List to destroy.
  */
-void linked_list_destroy(linked_list_t *p_list);
+void ll_destroy(ll_t *p_list);
+
+/**
+ * @brief Clears all elements from the linked list.
+ *
+ * @param p_list Pointer to the linked list.
+ */
+ssize_t ll_clear(ll_t *p_list);
 
 /**
  * @brief Inserts a new node at the start of the list.
@@ -62,7 +70,7 @@ void linked_list_destroy(linked_list_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_preappend(linked_list_t *p_list, void *p_data);
+ssize_t ll_preappend(ll_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node at a given index (or appends if out of bounds).
@@ -73,7 +81,7 @@ int linked_list_preappend(linked_list_t *p_list, void *p_data);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_insert(linked_list_t *p_list, void *p_data, int index);
+ssize_t ll_insert(ll_t *p_list, void *p_data, size_t index);
 
 /**
  * @brief Deletes the node at the specified index.
@@ -83,7 +91,16 @@ int linked_list_insert(linked_list_t *p_list, void *p_data, int index);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_del_at(linked_list_t *p_list, int index);
+ssize_t ll_del_at(ll_t *p_list, size_t index);
+
+/**
+ * @brief Checks whether the linked list is empty.
+ *
+ * @param p_list Pointer to the linked list.
+ *
+ * @return true if the list is empty or NULL, false otherwise.
+ */
+bool ll_is_empty(const ll_t *p_list);
 
 /**
  * @brief Retrieves the node at the specified index.
@@ -93,7 +110,7 @@ int linked_list_del_at(linked_list_t *p_list, int index);
  *
  * @return Pointer to node or NULL if invalid.
  */
-linked_list_node_t *linked_list_at(const linked_list_t *p_list, int index);
+ll_node_t *ll_at(const ll_t *p_list, size_t index);
 
 /**
  * @brief Finds the index of the node containing matching data.
@@ -103,7 +120,7 @@ linked_list_node_t *linked_list_at(const linked_list_t *p_list, int index);
  *
  * @return Index on success, error code otherwise.
  */
-int linked_list_find(const linked_list_t *p_list, void *p_data);
+ssize_t ll_find(const ll_t *p_list, void *p_data);
 
 /**
  * @brief Returns the number of nodes in the list.
@@ -112,7 +129,7 @@ int linked_list_find(const linked_list_t *p_list, void *p_data);
  *
  * @return Number of nodes on success, error code.
  */
-int linked_list_size(const linked_list_t *p_list);
+ssize_t ll_size(const ll_t *p_list);
 
 /**
  * @brief Reverses the order of nodes in the list.
@@ -121,14 +138,14 @@ int linked_list_size(const linked_list_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_reverse(linked_list_t *p_list);
+ssize_t ll_reverse(ll_t *p_list);
 
 /**
  * @brief Prints the data of all nodes using the print function.
  *
  * @param p_list Target list.
  */
-void linked_list_print(const linked_list_t *p_list);
+void ll_print(const ll_t *p_list);
 
 /**
  * @brief Swaps data between two nodes at given indices.
@@ -139,7 +156,7 @@ void linked_list_print(const linked_list_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
+ssize_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
 
 /**
  * @brief Updates the data at a specified node index.
@@ -150,7 +167,7 @@ int linked_list_swap(linked_list_t *p_list, int index_1, int index_2);
  *
  * @return 0 on success, error code otherwise.
  */
-int linked_list_update(linked_list_t *p_list, int index, void *p_data);
+ssize_t ll_update(ll_t *p_list, size_t index, void *p_data);
 
 #endif // LINKED_LIST_H
 

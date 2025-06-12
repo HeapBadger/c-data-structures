@@ -3,7 +3,6 @@
  * @brief   Header file for `array.c`.
  *
  * @author  heapbadger
- * @date    June 09, 2025
  */
 
 #ifndef ARRAY_H
@@ -13,22 +12,28 @@
 #include <sys/types.h>
 #include "auxiliary.h"
 
-// Growth factor used when expanding array capacity.
-// Doubles the capacity to minimize reallocations during heavy insertion.
+/**
+ * Growth factor used when expanding array capacity.
+ * Should be tuned to minimize reallocations during heavy insertion.
+ */
 #define ARRAY_RESIZE_FACTOR 2
 
-// Shrink threshold divisor: shrink only if size < capacity / 6.
-// Prevents frequent shrinking when usage temporarily dips, reducing realloc
-// overhead.
+/**
+ * Shrink threshold divisor: shrink only if size < capacity /
+ * ARRAY_SHRINK_THRESHOLD_DIVISOR. Prevents frequent shrinking when usage
+ * temporarily dips, reducing realloc overhead
+ */
 #define ARRAY_SHRINK_THRESHOLD_DIVISOR 6
 
-// Shrink factor used when reducing capacity.
-// Halves the capacity when shrinking is triggered.
+/**
+ * Shrink factor used when reducing capacity.
+ */
 #define ARRAY_SHRINK_FACTOR 2
 
-// Minimum allowed capacity after shrinking.
-// Avoids thrashing by maintaining a reasonable base size even after large
-// removals.
+/**
+ * Minimum allowed capacity after shrinking.
+ * Should be tuned to avoid thrashing by maintaining a reasonable base size.
+ */
 #define ARRAY_MIN_CAPACITY 16
 
 typedef enum

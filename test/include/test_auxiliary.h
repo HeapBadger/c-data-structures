@@ -3,7 +3,6 @@
  * @brief   Header file for `test_auxiliary.c`.
  *
  * @author  heapbadger
- * @date    August 20, 2024
  */
 
 #ifndef TEST_AUXILIARY_H
@@ -59,7 +58,7 @@ void print_int(void *p_data);
  *
  * @param func   The function whose output is to be captured. The function
  * should accept a single void* argument and return void.
- * @param input  The input parameter to be passed to the function `func`.
+ * @param p_input  The p_input parameter to be passed to the function `func`.
  *               This parameter is of type void* and can be any data type.
  *
  * @return A pointer to a string containing the captured output. If an error
@@ -76,8 +75,8 @@ void print_int(void *p_data);
  *
  * Example usage:
  * @code
- * void my_function(void *input) {
- *     printf("Input is: %s\n", (char *)input);
+ * void my_function(void *p_input) {
+ *     printf("Input is: %s\n", (char *)p_input);
  * }
  *
  * char *output = capture_stdout(my_function, "Hello, World!");
@@ -89,7 +88,7 @@ void print_int(void *p_data);
  * }
  * @endcode
  */
-char *capture_stdout(void (*func)(void *), void *input);
+char *capture_stdout(void (*func)(void *), void *p_input);
 
 /**
  * @brief   Compare two strings for equality, checking length and null
@@ -98,13 +97,13 @@ char *capture_stdout(void (*func)(void *), void *input);
  * This function checks if two strings are of the same length, null-terminated,
  * and if their content matches up to the length of the shorter string.
  *
- * @param string_1  Pointer to the first string to compare.
- * @param string_2  Pointer to the second string to compare.
+ * @param p_str1  Pointer to the first string to compare.
+ * @param p_str2  Pointer to the second string to compare.
  *
  * @return  True if both strings are of the same length, null-terminated,
  *          and match in content. False otherwise.
  */
-bool is_name_match(const char *string_1, const char *string_2);
+bool is_name_match(const char *p_str1, const char *p_str2);
 
 #endif // TEST_AUXILIARY_H
 

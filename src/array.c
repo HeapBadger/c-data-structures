@@ -3,7 +3,6 @@
  * @brief Implementation of the dynamic array data structure.
  *
  * @author  heapbadger
- * @date    June 09, 2025
  */
 
 #include <stdio.h>

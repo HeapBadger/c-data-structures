@@ -1,3 +1,10 @@
+/**
+ * @file    auxiliary.h
+ * @brief   Header file containing auxiliary definitions.
+ *
+ * @author  heapbadger
+ */
+
 #ifndef AUXILIARY_H
 #define AUXILIARY_H
 
@@ -19,7 +26,8 @@
  * @example
  * To delete integers/chars/strings:
  * @code
- * void delete_function(void *p_data) {
+ * void delete_function(void *p_data)
+ * {
  *     free(p_data);
  *     p_data = NULL;
  * }

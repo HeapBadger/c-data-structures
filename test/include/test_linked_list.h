@@ -3,21 +3,15 @@
  * @brief   Header file for `test_linked_list.c`.
  *
  * @author  heapbadger
- * @date    August 21, 2024
  */
 
-#ifndef TEST_LINKED_LIST_H
-#define TEST_LINKED_LIST_H
+#ifndef TEST_LL_H
+#define TEST_LL_H
 
 #include <CUnit/Basic.h>
 
-/**
- * @brief   Creates a test suite for the Linked List file.
- *
- * @return  Returns a pointer to the created test suite.
- */
-CU_pSuite linked_list_suite(void);
+CU_pSuite ll_suite(void);
 
-#endif // TEST_LINKED_LIST_H
+#endif // TEST_LL_H
 
 /*** end of file ***/

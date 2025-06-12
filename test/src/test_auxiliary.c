@@ -3,7 +3,6 @@
  * @brief   File contains helper functions for test suites.
  *
  * @author  heapbadger
- * @date    August 20, 2024
  */
 
 #include "test_auxiliary.h"
@@ -17,7 +16,9 @@
 #define MAX_STRING_LENGTH  256
 #define TEMP_FILE_PATH     "/tmp/test_output.txt"
 
-// Function to delete an integer (free the memory)
+/**
+ * @brief Function to delete an integer (free the memory).
+ */
 void
 delete_int (void *p_data)
 {
@@ -26,7 +27,9 @@ delete_int (void *p_data)
     return;
 }
 
-// Function to compare two integers
+/**
+ * @brief Function to compare two integers.
+ */
 int
 compare_ints (void *p_lhs, void *p_rhs)
 {
@@ -35,7 +38,9 @@ compare_ints (void *p_lhs, void *p_rhs)
     return (lhs > rhs) - (lhs < rhs);
 }
 
-// Function to print an integer
+/**
+ * @brief Function to print an integer.
+ */
 void
 print_int (void *p_data)
 {
@@ -47,19 +52,21 @@ print_int (void *p_data)
     return;
 }
 
-// Compares two strings
+/**
+ * @brief Compares two strings.
+ */
 bool
-is_name_match (const char *string_1, const char *string_2)
+is_name_match (const char *p_str1, const char *p_str2)
 {
     // Check if strings are null-terminated
     bool b_is_null_terminated;
     int  length_1;
     int  length_2;
 
-    length_1 = strnlen(string_1, MAX_STRING_LENGTH);
-    length_2 = strnlen(string_2, MAX_STRING_LENGTH);
+    length_1 = strnlen(p_str1, MAX_STRING_LENGTH);
+    length_2 = strnlen(p_str2, MAX_STRING_LENGTH);
     b_is_null_terminated
-        = ('\0' == string_1[length_1]) && ('\0' == string_2[length_2]);
+        = ('\0' == p_str1[length_1]) && ('\0' == p_str2[length_2]);
 
     // Check if strings are the same length
     bool b_same_length;
@@ -67,14 +74,15 @@ is_name_match (const char *string_1, const char *string_2)
 
     // Check if the strings are the same length and match in content
     bool b_name_matches;
-    b_name_matches
-        = b_same_length && (0 == strncmp(string_1, string_2, length_1));
+    b_name_matches = b_same_length && (0 == strncmp(p_str1, p_str2, length_1));
     return b_name_matches && b_is_null_terminated;
 }
 
-// Captures stdout output and saves to buffer
+/**
+ * @brief Captures stdout output and saves to buffer.
+ */
 char *
-capture_stdout (void (*func)(void *), void *input)
+capture_stdout (void (*func)(void *), void *p_input)
 {
     int   fd;              // File descriptor to save current stdout
     FILE *tmp_file = NULL; // File to hold function output
@@ -106,7 +114,7 @@ capture_stdout (void (*func)(void *), void *input)
     }
 
     // Execute the function and capture its output
-    (void)func(input);
+    (void)func(p_input);
 
     // Flush stdout (ensure all output is written)
     fflush(stdout);

@@ -3,22 +3,15 @@
  * @brief   Header file for `test_doubly_linked_list.c`.
  *
  * @author  heapbadger
- * @date    August 26, 2024
  */
 
-#ifndef TEST_DOUBLY_LINKED_LIST_H
-#define TEST_DOUBLY_LINKED_LIST_H
+#ifndef TEST_DL_H
+#define TEST_DL_H
 
 #include <CUnit/Basic.h>
 
-/**
- * @brief   Creates a test suite for the Doubly Linked List
- *          file.
- *
- * @return  Returns a pointer to the created test suite.
- */
-CU_pSuite doubly_linked_list_suite(void);
+CU_pSuite dl_suite(void);
 
-#endif // TEST_DOUBLY_LINKED_LIST_H
+#endif // TEST_DL_H
 
 /*** end of file ***/

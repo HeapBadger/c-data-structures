@@ -2,11 +2,7 @@
  * @file    test_array.c
  * @brief   Test suite for the dynamic array.
  *
- * This file contains the test suite creation for 'array.c'.
- * Each test validates the behavior of core dynamic array operations.
- *
  * @author  heapbadger
- * @date    June 09, 2025
  */
 
 #include "test_array.h"
@@ -17,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Function Declarations
 static void test_array_create_destroy(void);
 static void test_array_insert_remove(void);
 static void test_array_size_capacity(void);
@@ -27,7 +22,6 @@ static void test_array_null_inputs(void);
 static void test_array_bounds_and_sort_search(void);
 static void test_array_resize_behavior(void);
 
-// Suite Creation Function
 CU_pSuite
 array_suite (void)
 {

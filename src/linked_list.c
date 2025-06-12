@@ -2,434 +2,376 @@
  * @file linked_list.c
  * @brief Implementation of the singly Linked List data structure.
  *
- * @section operations Operations
- * - **Create**: Creates an empty linked list.
- * - **Destroy**: Deletes all elements in the linked list and destroys the list.
- * - **Insert**: Adds a new element to the beginning, end, or any position in
- *               the linked list.
- * - **Delete**: Removes an element from the linked list by position.
- * - **Search By Index**: Finds an element in the linked list by position.
- * - **Search By Key**: Finds the position of an element by key.
- * - **Reversal**: Reverses the linked list order.
- * - **Size**: Returns the number of elements in the list.
- * - **Swap**: Swaps data between two nodes at given positions.
- * - **Update**: Updates the data in a node at a given position.
- *
- * @section complexity Complexity
- * - **Time Complexity**:   O(1) for insertion and deletion at the head,
- *                          O(N) for insertion, deletion, and search, where N is
- *                          the number of nodes.
- * - **Space Complexity**:  O(N) for storing elements in the linked list, where
- *                          N is the number of nodes.
- *
- * @author  heapbadger
- * @date    August 21, 2024
+ * @author heapbadger
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include "auxiliary.h"
 #include "linked_list.h"
 
-static void                linked_list_del_node(linked_list_node_t *p_node,
-                                                const del_func      del_f);
-static linked_list_node_t *linked_list_create_node(void *p_data);
+static void       ll_del_node(ll_node_t *p_node, const del_func del_f);
+static ll_node_t *ll_create_node(void *p_data);
 
-linked_list_t *
-linked_list_create (const del_func   del_f,
-                    const cmp_func   cmp_f,
-                    const print_func print_f)
+ll_t *
+ll_create (const del_func del_f, const cmp_func cmp_f, const print_func print_f)
 {
-    linked_list_t *p_list = NULL;
-
-    if ((NULL != del_f) && (NULL != cmp_f) && (NULL != print_f))
+    if ((NULL == del_f) || (NULL == cmp_f) || (NULL == print_f))
     {
-        p_list = calloc(1, sizeof(linked_list_t));
-
-        if (NULL != p_list)
-        {
-            p_list->p_head  = NULL;
-            p_list->cmp_f   = cmp_f;
-            p_list->del_f   = del_f;
-            p_list->print_f = print_f;
-        }
+        return NULL;
     }
+
+    ll_t *p_list = (ll_t *)calloc(1U, sizeof(ll_t));
+
+    if (NULL == p_list)
+    {
+        return NULL;
+    }
+
+    p_list->p_head  = NULL;
+    p_list->del_f   = del_f;
+    p_list->cmp_f   = cmp_f;
+    p_list->print_f = print_f;
 
     return p_list;
 }
 
 void
-linked_list_destroy (linked_list_t *p_list)
+ll_destroy (ll_t *p_list)
 {
-    if (NULL != p_list)
+    if (NULL == p_list)
     {
-        linked_list_node_t *p_head = p_list->p_head;
-
-        while (NULL != p_head)
-        {
-            linked_list_node_t *p_current = p_head;
-            p_head                        = p_head->p_next;
-            linked_list_del_node(p_current, p_list->del_f);
-        }
-
-        p_list->cmp_f   = NULL;
-        p_list->del_f   = NULL;
-        p_list->print_f = NULL;
-
-        free(p_list);
-        p_list = NULL;
+        return;
     }
 
-    return;
+    ll_clear(p_list);
+    free(p_list);
 }
 
-int
-linked_list_preappend (linked_list_t *p_list, void *p_data)
+ssize_t
+ll_clear (ll_t *p_list)
 {
-    return linked_list_insert(p_list, p_data, 0);
+    if ((NULL == p_list) || (NULL == p_list->del_f))
+    {
+        return LL_INVALID_ARGUMENT;
+    }
+
+    ll_node_t *p_curr = p_list->p_head;
+
+    while (NULL != p_curr)
+    {
+        ll_node_t *p_next = p_curr->p_next;
+        ll_del_node(p_curr, p_list->del_f);
+        p_curr = p_next;
+    }
+
+    p_list->p_head = NULL;
+    return LL_SUCCESS;
 }
 
-int
-linked_list_insert (linked_list_t *p_list, void *p_data, int index)
+ssize_t
+ll_preappend (ll_t *p_list, void *p_data)
 {
-    int p_return = LINKED_LIST_SUCCESS;
+    return ll_insert(p_list, p_data, 0U);
+}
 
+ssize_t
+ll_insert (ll_t *p_list, void *p_data, size_t index)
+{
     if ((NULL == p_list) || (NULL == p_list->del_f) || (NULL == p_data))
     {
-        p_return = LINKED_LIST_INVALID_ARGUMENT;
-        goto EXIT;
+        return LL_INVALID_ARGUMENT;
     }
 
-    if (0 > index)
+    ssize_t size = ll_size(p_list);
+
+    if (0 > size)
+    {
+        return LL_INVALID_ARGUMENT;
+    }
+
+    if (index > (size_t)size)
     {
         p_list->del_f(p_data);
-        p_return = LINKED_LIST_OUT_OF_BOUNDS;
-        goto EXIT;
+        return LL_OUT_OF_BOUNDS;
     }
 
-    // create new node
-    linked_list_node_t *p_new_node = NULL;
-    p_new_node                     = linked_list_create_node(p_data);
+    ll_node_t *p_new_node = ll_create_node(p_data);
 
     if (NULL == p_new_node)
     {
-        p_return = LINKED_LIST_ALLOCATION_FAILURE;
-        goto EXIT;
+        return LL_ALLOCATION_FAILURE;
     }
 
-    // handle preappend operations
-    if (0 == index)
+    if (0U == index)
     {
         p_new_node->p_next = p_list->p_head;
         p_list->p_head     = p_new_node;
+        return LL_SUCCESS;
     }
-    else
+
+    ll_node_t *p_curr = p_list->p_head;
+
+    for (size_t i = 0U; i < (index - 1U); i++)
     {
-        int                 count  = 0;
-        linked_list_node_t *p_curr = p_list->p_head;
-        linked_list_node_t *p_prev = NULL;
-
-        while ((NULL != p_curr) && (count < index))
-        {
-            p_prev = p_curr;
-            p_curr = p_curr->p_next;
-            count++;
-        }
-
-        if ((count == index)
-            && (NULL != p_prev)) // handle insertion operation at specific index
-        {
-            p_new_node->p_next = p_curr;
-            p_prev->p_next     = p_new_node;
-        }
-        else // count exceeds index; remove new node
-        {
-            p_return = LINKED_LIST_OUT_OF_BOUNDS;
-            linked_list_del_node(p_new_node, p_list->del_f);
-        }
+        p_curr = p_curr->p_next;
     }
 
-EXIT:
-    return p_return;
+    p_new_node->p_next = p_curr->p_next;
+    p_curr->p_next     = p_new_node;
+
+    return LL_SUCCESS;
 }
 
-int
-linked_list_del_at (linked_list_t *p_list, int index)
+ssize_t
+ll_del_at (ll_t *p_list, size_t index)
 {
-    int p_return = LINKED_LIST_INVALID_ARGUMENT;
-
-    if ((NULL != p_list) && (0 <= index) && (NULL != p_list->del_f))
+    if ((NULL == p_list) || (NULL == p_list->del_f))
     {
-        int                 count     = 0;
-        linked_list_node_t *p_current = p_list->p_head;
-        linked_list_node_t *p_prev    = NULL;
+        return LL_INVALID_ARGUMENT;
+    }
 
-        while (NULL != p_current)
+    if (ll_is_empty(p_list))
+    {
+        return LL_OUT_OF_BOUNDS;
+    }
+
+    if (0U == index)
+    {
+        ll_node_t *p_to_delete = p_list->p_head;
+        p_list->p_head         = p_to_delete->p_next;
+        ll_del_node(p_to_delete, p_list->del_f);
+        return LL_SUCCESS;
+    }
+
+    ll_node_t *p_curr = p_list->p_head;
+
+    for (size_t i = 0U; i < (index - 1U); i++)
+    {
+        if (NULL == p_curr->p_next)
         {
-            p_return = LINKED_LIST_OUT_OF_BOUNDS;
-
-            if (0 == index)
-            {
-                p_list->p_head = p_current->p_next;
-                linked_list_del_node(p_current, p_list->del_f);
-                p_return = LINKED_LIST_SUCCESS;
-                break;
-            }
-            else if (index == count)
-            {
-                linked_list_node_t *p_delete = p_current;
-                p_current                    = p_current->p_next;
-                p_prev->p_next               = p_current;
-                linked_list_del_node(p_delete, p_list->del_f);
-                p_return = LINKED_LIST_SUCCESS;
-                break;
-            }
-
-            count++;
-            p_prev    = p_current;
-            p_current = p_current->p_next;
+            return LL_OUT_OF_BOUNDS;
         }
+        p_curr = p_curr->p_next;
     }
 
-    if (0 > index)
+    ll_node_t *p_to_delete = p_curr->p_next;
+
+    if (NULL == p_to_delete)
     {
-        p_return = LINKED_LIST_OUT_OF_BOUNDS;
+        return LL_OUT_OF_BOUNDS;
     }
 
-    return p_return;
+    p_curr->p_next = p_to_delete->p_next;
+    ll_del_node(p_to_delete, p_list->del_f);
+
+    return LL_SUCCESS;
 }
 
-linked_list_node_t *
-linked_list_at (const linked_list_t *p_list, int index)
+bool
+ll_is_empty (const ll_t *p_list)
 {
-    linked_list_node_t *p_current = NULL;
-    linked_list_node_t *p_node    = NULL;
-
-    if ((NULL != p_list) && (0 <= index) && (NULL != p_list->p_head))
+    if (NULL == p_list)
     {
-        int count = 0;
-        p_current = p_list->p_head;
-
-        while (NULL != p_current)
-        {
-            if (index == count)
-            {
-                p_node = p_current;
-                break;
-            }
-
-            count++;
-            p_current = p_current->p_next;
-        }
+        return true;
     }
 
-    return p_node;
+    return (NULL == p_list->p_head);
 }
 
-int
-linked_list_find (const linked_list_t *p_list, void *p_data)
+ll_node_t *
+ll_at (const ll_t *p_list, size_t index)
 {
-    int index = LINKED_LIST_NOT_FOUND;
-    int count = 0;
-
-    if ((NULL != p_list) && (NULL != p_data) && (NULL != p_list->p_head))
+    if (NULL == p_list)
     {
-        linked_list_node_t *p_current = p_list->p_head;
+        return NULL;
+    }
 
-        while (NULL != p_current)
+    ll_node_t *p_curr = p_list->p_head;
+    size_t     count  = 0U;
+
+    while (NULL != p_curr)
+    {
+        if (count == index)
         {
-            if (0 == p_list->cmp_f(p_data, p_current->p_data))
-            {
-                index = count;
-                break;
-            }
-
-            count++;
-            p_current = p_current->p_next;
+            return p_curr;
         }
-    }
-    else
-    {
-        index = LINKED_LIST_INVALID_ARGUMENT;
+
+        p_curr = p_curr->p_next;
+        count++;
     }
 
-    return index;
+    return NULL;
 }
 
-int
-linked_list_size (const linked_list_t *p_list)
+ssize_t
+ll_find (const ll_t *p_list, void *p_data)
 {
-    int size = 0;
-
-    if ((NULL != p_list) && (NULL != p_list->p_head))
+    if ((NULL == p_list) || (NULL == p_data))
     {
-        linked_list_node_t *p_current = p_list->p_head;
-
-        while (NULL != p_current)
-        {
-            size++;
-            p_current = p_current->p_next;
-        }
+        return LL_INVALID_ARGUMENT;
     }
 
-    return size;
+    ll_node_t *p_curr = p_list->p_head;
+    size_t     index  = 0U;
+
+    while (NULL != p_curr)
+    {
+        if (0 == p_list->cmp_f(p_data, p_curr->p_data))
+        {
+            return (ssize_t)index;
+        }
+
+        p_curr = p_curr->p_next;
+        index++;
+    }
+
+    return LL_NOT_FOUND;
 }
 
-int
-linked_list_reverse (linked_list_t *p_list)
+ssize_t
+ll_size (const ll_t *p_list)
 {
-    int p_return = LINKED_LIST_INVALID_ARGUMENT;
-
-    if ((NULL != p_list) && (NULL != p_list->p_head))
+    if (NULL == p_list)
     {
-        linked_list_node_t *p_current = p_list->p_head;
-        linked_list_node_t *p_next    = p_list->p_head->p_next;
-        linked_list_node_t *p_prev    = NULL;
-
-        while (NULL != p_current)
-        {
-            p_next            = p_current->p_next;
-            p_current->p_next = p_prev;
-            p_prev            = p_current;
-            p_current         = p_next;
-        }
-
-        p_list->p_head
-            = p_prev; // Update the head of the list to the new first element
-
-        p_return = LINKED_LIST_SUCCESS;
+        return LL_INVALID_ARGUMENT;
     }
 
-    return p_return;
+    size_t     count  = 0U;
+    ll_node_t *p_curr = p_list->p_head;
+
+    while (NULL != p_curr)
+    {
+        count++;
+        p_curr = p_curr->p_next;
+    }
+
+    return (ssize_t)count;
+}
+
+ssize_t
+ll_reverse (ll_t *p_list)
+{
+    if ((NULL == p_list) || (NULL == p_list->p_head))
+    {
+        return LL_INVALID_ARGUMENT;
+    }
+
+    ll_node_t *p_prev = NULL;
+    ll_node_t *p_curr = p_list->p_head;
+    ll_node_t *p_next = NULL;
+
+    while (NULL != p_curr)
+    {
+        p_next         = p_curr->p_next;
+        p_curr->p_next = p_prev;
+        p_prev         = p_curr;
+        p_curr         = p_next;
+    }
+
+    p_list->p_head = p_prev;
+    return LL_SUCCESS;
 }
 
 void
-linked_list_print (const linked_list_t *p_list)
+ll_print (const ll_t *p_list)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f)
-        && (NULL != p_list->p_head))
+    if ((NULL == p_list) || (NULL == p_list->print_f))
     {
-        printf("\nLinked List: ");
-        linked_list_node_t *p_current = p_list->p_head;
-
-        while (NULL != p_current)
-        {
-            p_list->print_f(p_current->p_data);
-            p_current = p_current->p_next;
-        }
-
-        printf("\n\n");
+        return;
     }
 
-    return;
+    ll_node_t *p_curr = p_list->p_head;
+
+    printf("\nLinked List: ");
+
+    while (NULL != p_curr)
+    {
+        p_list->print_f(p_curr->p_data);
+        p_curr = p_curr->p_next;
+    }
+
+    printf("\n\n");
 }
 
-int
-linked_list_swap (linked_list_t *p_list, int index_1, int index_2)
+ssize_t
+ll_swap (ll_t *p_list, size_t index_1, size_t index_2)
 {
-    int result = LINKED_LIST_OUT_OF_BOUNDS;
-
     if (NULL == p_list)
     {
-        result = LINKED_LIST_INVALID_ARGUMENT;
-        goto EXIT;
+        return LL_INVALID_ARGUMENT;
     }
 
-    if ((0 > index_1) || (0 > index_2))
+    if (index_1 == index_2)
     {
-        goto EXIT;
+        return LL_SUCCESS;
     }
 
-    linked_list_node_t *p_node_1 = linked_list_at(p_list, index_1);
-    linked_list_node_t *p_node_2 = linked_list_at(p_list, index_2);
+    ll_node_t *p_node1 = ll_at(p_list, index_1);
+    ll_node_t *p_node2 = ll_at(p_list, index_2);
 
-    if ((NULL != p_node_1) && (NULL != p_node_2))
+    if ((NULL == p_node1) || (NULL == p_node2))
     {
-        void *p_data_1   = p_node_1->p_data;
-        void *p_data_2   = p_node_2->p_data;
-        p_node_1->p_data = p_data_2;
-        p_node_2->p_data = p_data_1;
-        result           = LINKED_LIST_SUCCESS;
+        return LL_OUT_OF_BOUNDS;
     }
 
-EXIT:
-    return result;
+    void *p_tmp     = p_node1->p_data;
+    p_node1->p_data = p_node2->p_data;
+    p_node2->p_data = p_tmp;
+
+    return LL_SUCCESS;
 }
 
-int
-linked_list_update (linked_list_t *p_list, int index, void *p_data)
+ssize_t
+ll_update (ll_t *p_list, size_t index, void *p_data)
 {
-    int result = LINKED_LIST_OUT_OF_BOUNDS;
-
     if ((NULL == p_list) || (NULL == p_data))
     {
-        result = LINKED_LIST_INVALID_ARGUMENT;
-        goto EXIT;
+        return LL_INVALID_ARGUMENT;
     }
 
-    if (0 > index)
+    ll_node_t *p_node = ll_at(p_list, index);
+
+    if (NULL == p_node)
     {
-        goto EXIT;
+        return LL_OUT_OF_BOUNDS;
     }
 
-    linked_list_node_t *p_node = linked_list_at(p_list, index);
+    p_list->del_f(p_node->p_data);
+    p_node->p_data = p_data;
 
-    if (NULL != p_node)
-    {
-        p_list->del_f(p_node->p_data);
-        p_node->p_data = p_data;
-        result         = LINKED_LIST_SUCCESS;
-    }
-
-EXIT:
-    return result;
+    return LL_SUCCESS;
 }
 
-/**
- * @brief Deletes a node from the linked list and frees its memory.
- *
- * @param p_node Pointer to the node to be deleted.
- * @param del_f  Custom delete function.
- */
 static void
-linked_list_del_node (linked_list_node_t *p_node, const del_func del_f)
+ll_del_node (ll_node_t *p_node, const del_func del_f)
 {
-    if (NULL != p_node)
+    if (NULL == p_node)
     {
-        if (NULL != del_f)
-        {
-            del_f(p_node->p_data);
-            p_node->p_data = NULL;
-            p_node->p_next = NULL;
-        }
-
-        free(p_node);
-        p_node = NULL;
+        return;
     }
 
-    return;
+    if (NULL != del_f)
+    {
+        del_f(p_node->p_data);
+    }
+
+    free(p_node);
 }
 
-/**
- * @brief Creates and initializes a new node for the linked list.
- *
- * @param p_data Pointer to the data for the new node.
- *
- * @return linked_list_node_t* Pointer to the newly created node, or NULL if
- * memory allocation fails.
- */
-static linked_list_node_t *
-linked_list_create_node (void *p_data)
+static ll_node_t *
+ll_create_node (void *p_data)
 {
-    linked_list_node_t *p_node = NULL;
-    p_node                     = calloc(1, sizeof(linked_list_node_t));
+    ll_node_t *p_node = (ll_node_t *)calloc(1U, sizeof(ll_node_t));
 
-    if (NULL != p_node)
+    if (NULL == p_node)
     {
-        p_node->p_data = p_data;
-        p_node->p_next = NULL;
+        return NULL;
     }
 
+    p_node->p_data = p_data;
+    p_node->p_next = NULL;
     return p_node;
 }
 

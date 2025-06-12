@@ -12,7 +12,6 @@
 #include <CUnit/Basic.h>
 #include "test_array.h"
 #include "test_auxiliary.h"
-#include "test_example.h"
 #include "test_doubly_linked_list.h"
 #include "test_linked_list.h"
 
@@ -36,8 +35,8 @@ static void run_suite(const char *suite_name);
 int
 main (int argc, char *argv[])
 {
-    int retval = CUE_SUCCESS;          // Assume success unless an error occurs
-    CU_basic_set_mode(CU_BRM_VERBOSE); // maximum output of test runs
+    int retval = CUE_SUCCESS;
+    CU_basic_set_mode(CU_BRM_VERBOSE);
 
     // Initialize the CUnit registry
     if (CUE_SUCCESS != CU_initialize_registry())
@@ -174,16 +173,8 @@ create_suites (void)
 {
     int retval = CUE_SUCCESS; // Assume success unless an error occurs
 
-    // Example
-    if (NULL == example_suite())
-    {
-        ERROR_LOG("Failed to create Example Suite\n");
-        retval = CU_get_error();
-        goto EXIT;
-    }
-
     // Linked List
-    if (NULL == linked_list_suite())
+    if (NULL == ll_suite())
     {
         ERROR_LOG("Failed to create the Linked List Suite\n");
         retval = CU_get_error();
@@ -191,7 +182,7 @@ create_suites (void)
     }
 
     // Doubly Linked List
-    if (NULL == doubly_linked_list_suite())
+    if (NULL == dl_suite())
     {
         ERROR_LOG("Failed to create the Doubly Linked List Suite\n");
         retval = CU_get_error();
