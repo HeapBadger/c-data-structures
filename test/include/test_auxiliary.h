@@ -9,6 +9,7 @@
 #define TEST_AUXILIARY_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 /**
  * @brief Provides global error logging.
@@ -46,8 +47,9 @@ int compare_ints(void *p_lhs, void *p_rhs);
  * @brief   Prints an integer value to standard output.
  *
  * @param p_data  Pointer to the integer to print.
+ * @param index   Index for the node.
  */
-void print_int(void *p_data);
+void print_int(void *p_data, size_t index);
 
 /**
  * @brief Captures the stdout output of a function that takes a void* argument.

@@ -15,6 +15,8 @@
 static void test_ll_create_destroy(void);
 static void test_ll_insert_remove(void);
 static void test_ll_find_at(void);
+static void multiply_by_five(void *data, size_t index);
+static void test_ll_foreach_multiply(void);
 static void test_ll_reverse_swap_update(void);
 static void test_ll_null_invalid_inputs(void);
 
@@ -50,6 +52,15 @@ ll_suite (void)
     if (NULL == (CU_add_test(suite, "test_ll_find_at", test_ll_find_at)))
     {
         ERROR_LOG("Failed to add test_ll_find_at to suite\n");
+        suite = NULL;
+        goto CLEANUP;
+    }
+
+    if (NULL
+        == (CU_add_test(
+            suite, "test_ll_foreach_multiply", test_ll_foreach_multiply)))
+    {
+        ERROR_LOG("Failed to add test_ll_foreach_multiply to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -146,7 +157,24 @@ test_ll_insert_remove (void)
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0U)->p_next->p_data, 20);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1U)->p_next->p_data, 10);
 
+    // Test Append
+    int *val6 = malloc(sizeof(int));
+    *val6     = 60;
+    CU_ASSERT_EQUAL(ll_append(p_list, val6), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_size(p_list), 4);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 3U)->p_data, 60);
     ll_destroy(p_list);
+
+    // Try append to empty list
+    ll_t *p_list2 = ll_create(delete_int, compare_ints, print_int);
+    CU_ASSERT_PTR_NOT_NULL(p_list2);
+    int *val7 = malloc(sizeof(int));
+    *val7     = 600;
+    CU_ASSERT_EQUAL(ll_append(p_list2, val7), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_size(p_list2), 1);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list2, 0U)->p_data, 600);
+    CU_ASSERT_PTR_NULL(ll_at(p_list2, 0U)->p_next);
+    ll_destroy(p_list2);
 }
 
 /**
@@ -181,6 +209,45 @@ test_ll_find_at (void)
     CU_ASSERT_EQUAL(ll_find(p_list, &key2), 1);
     CU_ASSERT_EQUAL(ll_find(p_list, &key3), 2);
     CU_ASSERT_EQUAL(ll_find(p_list, &key4), LL_NOT_FOUND);
+
+    ll_destroy(p_list);
+}
+
+/**
+ * @brief Helper function to multiply int data by 5.
+ */
+static void
+multiply_by_five (void *data, size_t index)
+{
+    (void)index; // unused
+    int *val = (int *)data;
+    *val *= 5;
+}
+
+/**
+ * @brief Test foreach by multiplying all values by 5.
+ */
+static void
+test_ll_foreach_multiply (void)
+{
+    ll_t *p_list = ll_create(delete_int, compare_ints, print_int);
+
+    int *a = malloc(sizeof(int));
+    int *b = malloc(sizeof(int));
+    int *c = malloc(sizeof(int));
+    *a     = 2;
+    *b     = 4;
+    *c     = 6;
+
+    ll_insert(p_list, a, 0); // 2
+    ll_insert(p_list, b, 1); // 4
+    ll_insert(p_list, c, 2); // 6
+
+    CU_ASSERT_EQUAL(ll_foreach(p_list, multiply_by_five), 0);
+
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 10);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 20);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 30);
 
     ll_destroy(p_list);
 }

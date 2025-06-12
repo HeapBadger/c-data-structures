@@ -42,7 +42,8 @@ typedef void (*del_func)(void *p_data);
  * printing or displaying the contents of a single data element in a human-
  * readable format.
  *
- * @param p_data Pointer to the data element to be printed.
+ * @param p_data  Pointer to the integer to print.
+ * @param index   Index for the node.
  *
  * @note The function should handle formatting according to the data type.
  *
@@ -50,25 +51,25 @@ typedef void (*del_func)(void *p_data);
  * To print integers:
  * @code
  * void print_int(void *p_data) {
- *     printf("%d\n", *(int *)p_data);
+ *      printf("Node[%zu] = %d\n", index, *(int *)p_data);
  * }
  * @endcode
  *
  * To print characters:
  * @code
  * void print_char(void *p_data) {
- *     printf("%c\n", *(char *)p_data);
+ *      printf("Node[%zu] = %c\n", index, *(char *)p_data);
  * }
  * @endcode
  *
  * To print strings:
  * @code
  * void print_string(void *p_data) {
- *     printf("%s\n", (char *)p_data);
+ *      printf("Node[%zu] = %s\n", index, (char *)p_data);
  * }
  * @endcode
  */
-typedef void (*print_func)(void *p_data);
+typedef void (*print_func)(void *p_data, size_t index);
 
 /**
  * @brief Function pointer type for a generic data comparison function.

@@ -42,11 +42,11 @@ compare_ints (void *p_lhs, void *p_rhs)
  * @brief Function to print an integer.
  */
 void
-print_int (void *p_data)
+print_int (void *p_data, size_t index)
 {
-    if (NULL != p_data)
+    if (p_data != NULL)
     {
-        printf("%d ", *(int *)p_data);
+        printf("Node[%zu] = %d\n", index, *(int *)p_data);
     }
 
     return;

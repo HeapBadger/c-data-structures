@@ -59,7 +59,6 @@ array_destroy (array_t *p_array)
     {
         array_clear(p_array);
         free(p_array->pp_array);
-        p_array->pp_array = NULL;
         free(p_array);
     }
 }
@@ -83,13 +82,15 @@ array_insert (array_t *p_array, size_t index, void *p_value)
 
     if ((NULL == p_array) || (NULL == p_value))
     {
-        return ARRAY_INVALID_ARGUMENT;
+        ret = ARRAY_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
     if (index > p_array->len)
     {
         p_array->del_f(p_value);
-        return ARRAY_OUT_OF_BOUNDS;
+        ret = ARRAY_OUT_OF_BOUNDS;
+        goto EXIT;
     }
 
     if (true == array_is_full(p_array))
@@ -112,6 +113,7 @@ array_insert (array_t *p_array, size_t index, void *p_value)
         p_array->del_f(p_value);
     }
 
+EXIT:
     return ret;
 }
 
@@ -147,8 +149,12 @@ array_remove (array_t *p_array, size_t index)
 ssize_t
 array_push (array_t *p_array, void *p_value)
 {
-    return array_insert(
-        p_array, (NULL != p_array) ? p_array->len : 0U, p_value);
+    if ((NULL == p_array) || (NULL == p_value))
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    return array_insert(p_array, p_array->len, p_value);
 }
 
 ssize_t
@@ -213,6 +219,7 @@ array_find (const array_t *p_array, void *p_key)
     for (size_t idx = 0U; idx < p_array->len; ++idx)
     {
         void *item = p_array->pp_array[idx];
+
         if (0 == p_array->cmp_f(p_key, item))
         {
             return (ssize_t)idx;
@@ -225,13 +232,23 @@ array_find (const array_t *p_array, void *p_key)
 ssize_t
 array_size (const array_t *p_array)
 {
-    return (NULL != p_array) ? (ssize_t)p_array->len : ARRAY_INVALID_ARGUMENT;
+    if (NULL == p_array)
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    return (ssize_t)p_array->len;
 }
 
 ssize_t
 array_capacity (const array_t *p_array)
 {
-    return (NULL != p_array) ? (ssize_t)p_array->cap : ARRAY_INVALID_ARGUMENT;
+    if (NULL == p_array)
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    return (ssize_t)p_array->cap;
 }
 
 bool
@@ -249,14 +266,18 @@ array_is_full (const array_t *p_array)
 ssize_t
 array_reserve (array_t *p_array, size_t new_cap)
 {
+    ssize_t ret = ARRAY_SUCCESS;
+
     if (NULL == p_array)
     {
-        return ARRAY_INVALID_ARGUMENT;
+        ret = ARRAY_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
     if (p_array->cap >= new_cap)
     {
-        return ARRAY_OUT_OF_BOUNDS;
+        ret = ARRAY_OUT_OF_BOUNDS;
+        goto EXIT;
     }
 
     void **new_pp_array
@@ -264,7 +285,8 @@ array_reserve (array_t *p_array, size_t new_cap)
 
     if (NULL == new_pp_array)
     {
-        return ARRAY_ALLOCATION_FAILURE;
+        ret = ARRAY_ALLOCATION_FAILURE;
+        goto EXIT;
     }
 
     memset(&new_pp_array[p_array->cap],
@@ -273,21 +295,25 @@ array_reserve (array_t *p_array, size_t new_cap)
     p_array->pp_array = new_pp_array;
     p_array->cap      = new_cap;
 
-    return ARRAY_SUCCESS;
+EXIT:
+    return ret;
 }
 
 ssize_t
 array_shrink_to_fit (array_t *p_array)
 {
+    ssize_t ret = ARRAY_SUCCESS;
+
     if ((NULL == p_array) || (NULL == p_array->pp_array))
     {
-        return ARRAY_INVALID_ARGUMENT;
+        ret = ARRAY_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
     if ((p_array->len >= p_array->cap / ARRAY_SHRINK_THRESHOLD_DIVISOR)
         || (p_array->cap <= ARRAY_MIN_CAPACITY))
     {
-        return ARRAY_SUCCESS;
+        goto EXIT; // don't need to shrink array
     }
 
     size_t new_cap = p_array->cap / ARRAY_SHRINK_FACTOR;
@@ -302,13 +328,16 @@ array_shrink_to_fit (array_t *p_array)
 
     if (NULL == new_data)
     {
-        return ARRAY_ALLOCATION_FAILURE;
+        ret = ARRAY_ALLOCATION_FAILURE;
+        goto EXIT;
     }
 
+    // Update array with new sized array
     p_array->pp_array = new_data;
     p_array->cap      = new_cap;
 
-    return ARRAY_SUCCESS;
+EXIT:
+    return ret;
 }
 
 ssize_t

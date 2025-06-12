@@ -147,47 +147,40 @@ EXIT:
 ssize_t
 dl_del_at (dl_t *p_list, size_t index)
 {
+    ssize_t ret = DL_SUCCESS;
+
     if ((NULL == p_list) || (NULL == p_list->del_f))
     {
-        return DL_INVALID_ARGUMENT;
+        ret = DL_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
     if (dl_is_empty(p_list))
     {
-        return DL_OUT_OF_BOUNDS;
+        ret = DL_OUT_OF_BOUNDS;
+        goto EXIT;
     }
 
-    dl_node_t *p_to_delete = NULL;
-
-    // Deleting the head node
-    if (0 == index)
-    {
-        p_to_delete    = p_list->p_head;
-        p_list->p_head = p_to_delete->p_next;
-
-        if (p_list->p_head != NULL)
-        {
-            p_list->p_head->p_prev = NULL;
-        }
-
-        dl_del_node(p_to_delete, p_list->del_f);
-        return DL_SUCCESS;
-    }
-
-    // Traverse to the node at index
     dl_node_t *p_curr = p_list->p_head;
 
-    for (size_t i = 0U; (i < index) && (p_curr != NULL); ++i)
+    for (size_t i = 0; (i < index) && (p_curr != NULL); ++i)
     {
         p_curr = p_curr->p_next;
     }
 
     if (NULL == p_curr)
     {
-        return DL_OUT_OF_BOUNDS;
+        ret = DL_OUT_OF_BOUNDS;
+        goto EXIT;
     }
 
-    // Remove p_curr from the list
+    // Update head if removing the first node
+    if (p_curr == p_list->p_head)
+    {
+        p_list->p_head = p_curr->p_next;
+    }
+
+    // Update neighboring nodes
     if (p_curr->p_prev != NULL)
     {
         p_curr->p_prev->p_next = p_curr->p_next;
@@ -199,7 +192,9 @@ dl_del_at (dl_t *p_list, size_t index)
     }
 
     dl_del_node(p_curr, p_list->del_f);
-    return DL_SUCCESS;
+
+EXIT:
+    return ret;
 }
 
 bool
@@ -320,25 +315,25 @@ dl_reverse (dl_t *p_list)
     return result;
 }
 
-void
-dl_print (const dl_t *p_list)
+ssize_t
+dl_foreach (dl_t *p_list, foreach_func func)
 {
-    if ((NULL != p_list) && (NULL != p_list->print_f)
-        && (NULL != p_list->p_head))
+    if ((NULL == p_list) || (NULL == func))
     {
-        printf("\nLinked List: ");
-        dl_node_t *p_current = p_list->p_head;
-
-        while (NULL != p_current)
-        {
-            p_list->print_f(p_current->p_data);
-            p_current = p_current->p_next;
-        }
-
-        printf("\n\n");
+        return DL_INVALID_ARGUMENT;
     }
 
-    return;
+    dl_node_t *p_curr = p_list->p_head;
+    size_t     index  = 0;
+
+    while (p_curr != NULL)
+    {
+        func(p_curr->p_data, index);
+        p_curr = p_curr->p_next;
+        index++;
+    }
+
+    return DL_SUCCESS;
 }
 
 ssize_t

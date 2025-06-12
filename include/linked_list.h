@@ -36,6 +36,14 @@ typedef struct
 } ll_t;
 
 /**
+ * @brief Function type for applying an operation to each element.
+ *
+ * @param p_data Pointer to the data stored in the current node.
+ * @param index  Zero-based index of the node in the list.
+ */
+typedef void (*foreach_func)(void *p_data, size_t index);
+
+/**
  * @brief Creates a new linked list with custom handlers.
  *
  * @param del_f   Custom delete function.
@@ -71,6 +79,16 @@ ssize_t ll_clear(ll_t *p_list);
  * @return 0 on success, error code otherwise.
  */
 ssize_t ll_preappend(ll_t *p_list, void *p_data);
+
+/**
+ * @brief Inserts a new node at the end of the list.
+ *
+ * @param p_list Target list.
+ * @param p_data Data to store.
+ *
+ * @return 0 on success, error code otherwise.
+ */
+ssize_t ll_append(ll_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node at a given index (or appends if out of bounds).
@@ -141,11 +159,19 @@ ssize_t ll_size(const ll_t *p_list);
 ssize_t ll_reverse(ll_t *p_list);
 
 /**
- * @brief Prints the data of all nodes using the print function.
+ * @brief Apply a function to each element in the linked list.
  *
- * @param p_list Target list.
+ * This function iterates over each node in the list and applies the provided
+ * callback function to the node's data and its index.
+ *
+ * @param p_list Pointer to the linked list.
+ * @param func   Function pointer to apply on each node's data.
+ *                    The function should accept a `void*` to the data and
+ *                    a `size_t` index.
+ *
+ * @return 0 on success, error code otherwise.
  */
-void ll_print(const ll_t *p_list);
+ssize_t ll_foreach(ll_t *p_list, foreach_func func);
 
 /**
  * @brief Swaps data between two nodes at given indices.

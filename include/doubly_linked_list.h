@@ -37,6 +37,14 @@ typedef struct
 } dl_t;
 
 /**
+ * @brief Function type for applying an operation to each element.
+ *
+ * @param p_data Pointer to the data stored in the current node.
+ * @param index  Zero-based index of the node in the list.
+ */
+typedef void (*foreach_func)(void *p_data, size_t index);
+
+/**
  * @brief Creates and initializes a new doubly linked list.
  *
  * @param del_f   Function to delete node data.
@@ -148,11 +156,19 @@ ssize_t dl_size(const dl_t *p_list);
 ssize_t dl_reverse(dl_t *p_list);
 
 /**
- * @brief Prints all node data using the print function.
+ * @brief Apply a function to each element in the doubly linked list.
+ *
+ * This function iterates over each node in the list and applies the provided
+ * callback function to the node's data and its index.
  *
  * @param p_list Pointer to the doubly linked list.
+ * @param func   Function pointer to apply on each node's data.
+ *                    The function should accept a `void*` to the data and
+ *                    a `size_t` index.
+ *
+ * @return 0 on success, error code otherwise.
  */
-void dl_print(const dl_t *p_list);
+ssize_t dl_foreach(dl_t *p_list, foreach_func func);
 
 /**
  * @brief Swaps data between two nodes at given indices.
