@@ -158,7 +158,7 @@ array_push (array_t *p_array, void *p_value)
 }
 
 ssize_t
-array_pop (array_t *p_array)
+array_pop (array_t *p_array, void **p_out)
 {
     if (NULL == p_array)
     {
@@ -170,7 +170,14 @@ array_pop (array_t *p_array)
         return ARRAY_OUT_OF_BOUNDS;
     }
 
-    return array_remove(p_array, p_array->len - 1U);
+    size_t last_index = p_array->len - 1U;
+    *p_out            = p_array->pp_array[last_index];
+
+    // Do NOT call del_f — the caller now owns the element.
+    p_array->pp_array[last_index] = NULL;
+    p_array->len--;
+
+    return array_shrink_to_fit(p_array);
 }
 
 ssize_t
@@ -338,6 +345,60 @@ array_shrink_to_fit (array_t *p_array)
 
 EXIT:
     return ret;
+}
+
+ssize_t
+array_foreach (array_t *p_array, foreach_func func)
+{
+    if ((NULL == p_array) || (NULL == func))
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    for (size_t idx = 0; idx < p_array->len; idx++)
+    {
+        func(p_array->pp_array[idx], idx);
+    }
+
+    return ARRAY_SUCCESS;
+}
+
+array_t *
+array_clone (const array_t *p_ori, copy_func cpy_f)
+{
+    array_t *p_new = NULL;
+
+    if ((NULL == p_ori) || (NULL == cpy_f))
+    {
+        goto EXIT;
+    }
+
+    p_new
+        = array_create(p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f);
+
+    if (NULL == p_new)
+    {
+        goto EXIT;
+    }
+
+    p_new->len = p_ori->len;
+
+    for (size_t idx = 0; idx < p_ori->len; ++idx)
+    {
+        void *copied_elem = cpy_f(p_ori->pp_array[idx]);
+
+        if (NULL == copied_elem)
+        {
+            array_destroy(p_new); // clean up partially created clone
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        p_new->pp_array[idx] = copied_elem;
+    }
+
+EXIT:
+    return p_new;
 }
 
 ssize_t

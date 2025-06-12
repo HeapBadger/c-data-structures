@@ -17,6 +17,27 @@
 #define TEMP_FILE_PATH     "/tmp/test_output.txt"
 
 /**
+ * @brief Function to copy an interger.
+ */
+void *
+copy_int (const void *p_data)
+{
+    if (NULL == p_data)
+    {
+        return NULL;
+    }
+
+    int *p_copy = malloc(sizeof(int));
+
+    if (NULL != p_copy)
+    {
+        *p_copy = *(const int *)p_data;
+    }
+
+    return p_copy;
+}
+
+/**
  * @brief Function to delete an integer (free the memory).
  */
 void
@@ -185,6 +206,17 @@ CLEANUP:
     }
 
     return NULL;
+}
+
+/**
+ * @brief Helper function to multiply int data by 5.
+ */
+void
+multiply_by_five (void *data, size_t index)
+{
+    (void)index; // unused
+    int *val = (int *)data;
+    *val *= 5;
 }
 
 /*** end of file ***/

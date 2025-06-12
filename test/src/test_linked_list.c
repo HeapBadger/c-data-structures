@@ -15,8 +15,7 @@
 static void test_ll_create_destroy(void);
 static void test_ll_insert_remove(void);
 static void test_ll_find_at(void);
-static void multiply_by_five(void *data, size_t index);
-static void test_ll_foreach_multiply(void);
+static void test_ll_foreach_clone(void);
 static void test_ll_reverse_swap_update(void);
 static void test_ll_null_invalid_inputs(void);
 
@@ -58,9 +57,9 @@ ll_suite (void)
 
     if (NULL
         == (CU_add_test(
-            suite, "test_ll_foreach_multiply", test_ll_foreach_multiply)))
+            suite, "test_ll_foreach_clone", test_ll_foreach_clone)))
     {
-        ERROR_LOG("Failed to add test_ll_foreach_multiply to suite\n");
+        ERROR_LOG("Failed to add test_ll_foreach_clone to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -106,7 +105,7 @@ test_ll_create_destroy (void)
 }
 
 /**
- * @brief   Test insert, preappend, and delete operations.
+ * @brief   Test insert, prepend, and delete operations.
  */
 static void
 test_ll_insert_remove (void)
@@ -124,7 +123,7 @@ test_ll_insert_remove (void)
     *val4     = 40;
 
     // Insert at index 0
-    CU_ASSERT_EQUAL(ll_preappend(p_list, val1), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_prepend(p_list, val1), LL_SUCCESS);
     CU_ASSERT_EQUAL(ll_insert(p_list, val2, 0U), LL_SUCCESS);
     CU_ASSERT_EQUAL(ll_insert(p_list, val3, 0U), LL_SUCCESS);
 
@@ -214,21 +213,10 @@ test_ll_find_at (void)
 }
 
 /**
- * @brief Helper function to multiply int data by 5.
- */
-static void
-multiply_by_five (void *data, size_t index)
-{
-    (void)index; // unused
-    int *val = (int *)data;
-    *val *= 5;
-}
-
-/**
  * @brief Test foreach by multiplying all values by 5.
  */
 static void
-test_ll_foreach_multiply (void)
+test_ll_foreach_clone (void)
 {
     ll_t *p_list = ll_create(delete_int, compare_ints, print_int);
 
@@ -243,13 +231,26 @@ test_ll_foreach_multiply (void)
     ll_insert(p_list, b, 1); // 4
     ll_insert(p_list, c, 2); // 6
 
+    // Test foreach
     CU_ASSERT_EQUAL(ll_foreach(p_list, multiply_by_five), 0);
-
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 10);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 20);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 30);
 
+    // Test deep clone: should have same elements but different pointers
+    ll_t *p_clone = ll_clone(p_list, copy_int);
+    CU_ASSERT_PTR_NOT_NULL(p_clone);
+    CU_ASSERT_EQUAL(ll_size(p_clone), ll_size(p_list));
+
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 0)->p_data, ll_at(p_clone, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, *(int *)ll_at(p_clone, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 1)->p_data, ll_at(p_clone, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, *(int *)ll_at(p_clone, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 2)->p_data, ll_at(p_clone, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, *(int *)ll_at(p_clone, 2)->p_data);
+
     ll_destroy(p_list);
+    ll_destroy(p_clone);
 }
 
 /**
@@ -304,7 +305,7 @@ static void
 test_ll_null_invalid_inputs (void)
 {
     CU_ASSERT_EQUAL(ll_insert(NULL, NULL, 0), LL_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(ll_preappend(NULL, NULL), LL_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(ll_prepend(NULL, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_del_at(NULL, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_at(NULL, 0), NULL);
     CU_ASSERT_EQUAL(ll_find(NULL, NULL), LL_INVALID_ARGUMENT);

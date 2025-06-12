@@ -27,6 +27,13 @@
 #define INFO_LOG(fmt, ...) fprintf(stderr, "\n[Info]: " fmt "\n", ##__VA_ARGS__)
 
 /**
+ * @brief   Copies an integer into another allocated pointer.
+ *
+ * @param p_data  Pointer to the dynamically allocated integer to copy.
+ */
+void *copy_int(const void *p_data);
+
+/**
  * @brief   Deletes an integer pointer by freeing its allocated memory.
  *
  * @param p_data  Pointer to the dynamically allocated integer to delete.
@@ -106,6 +113,11 @@ char *capture_stdout(void (*func)(void *), void *p_input);
  *          and match in content. False otherwise.
  */
 bool is_name_match(const char *p_str1, const char *p_str2);
+
+/**
+ * @brief Helper function to multiply int data by 5.
+ */
+void multiply_by_five(void *data, size_t index);
 
 #endif // TEST_AUXILIARY_H
 

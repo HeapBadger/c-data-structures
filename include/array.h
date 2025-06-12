@@ -107,17 +107,19 @@ ssize_t array_remove(array_t *p_array, size_t index);
  *
  * @param p_array Pointer to the array.
  * @param p_value The value to append.
- * @return New length of the array on success, negative error code on failure.
+ * @return 0 on success, negative error code on failure.
  */
 ssize_t array_push(array_t *p_array, void *p_value);
 
 /**
  * @brief Remove the last element of the array.
  *
+ * @note Caller is responsible for freeing data.
+ *
  * @param p_array Pointer to the array.
  * @return 0 on success, negative error code if array is empty or NULL.
  */
-ssize_t array_pop(array_t *p_array);
+ssize_t array_pop(array_t *p_array, void **p_out);
 
 /**
  * @brief Retrieve an element from the array.
@@ -197,6 +199,28 @@ ssize_t array_reserve(array_t *p_array, size_t new_cap);
  * @return 0 on success, negative error code on failure.
  */
 ssize_t array_shrink_to_fit(array_t *p_array);
+
+/**
+ * @brief Apply a function to each element in the array.
+ *
+ * @param p_array Pointer to the array.
+ * @param func    Function to apply to each element. The function should
+ *                accept a `void *` to the element and a `size_t` index.
+ *
+ * @return 0 on success, or a negative error code on failure.
+ */
+ssize_t array_foreach(array_t *p_array, foreach_func func);
+
+/**
+ * @brief Create a deep copy of the array structure using a user-provided copy
+ * function.
+ *
+ * @param p_array Pointer to the source array.
+ * @param cpy_f   Function to deep copy each element.
+ *
+ * @return Pointer to a new array on success, or NULL on failure.
+ */
+array_t *array_clone(const array_t *p_ori, copy_func cpy_f);
 
 /**
  * @brief Sort the array using bubble sort and a custom comparator.

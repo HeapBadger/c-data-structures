@@ -15,8 +15,7 @@
 static void test_dll_create_destroy(void);
 static void test_dll_insert_remove(void);
 static void test_dll_find_at(void);
-static void multiply_by_five(void *data, size_t index);
-static void test_dl_foreach_multiply(void);
+static void test_dl_foreach_clone(void);
 static void test_dll_reverse_swap_update(void);
 static void test_dll_null_invalid_inputs(void);
 
@@ -59,9 +58,9 @@ dl_suite (void)
 
     if (NULL
         == (CU_add_test(
-            suite, "test_dl_foreach_multiply", test_dl_foreach_multiply)))
+            suite, "test_dl_foreach_clone", test_dl_foreach_clone)))
     {
-        ERROR_LOG("Failed to add test_dl_foreach_multiply to suite\n");
+        ERROR_LOG("Failed to add test_dl_foreach_clone to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -109,7 +108,7 @@ test_dll_create_destroy (void)
 }
 
 /**
- * @brief   Test insert, preappend, and delete operations.
+ * @brief   Test insert, prepend, and delete operations.
  */
 static void
 test_dll_insert_remove (void)
@@ -127,7 +126,7 @@ test_dll_insert_remove (void)
     *val4     = 40;
 
     // Insert at index 0
-    CU_ASSERT_EQUAL(dl_preappend(p_list, val1), DL_SUCCESS);
+    CU_ASSERT_EQUAL(dl_prepend(p_list, val1), DL_SUCCESS);
     CU_ASSERT_EQUAL(dl_insert(p_list, val2, 0U), DL_SUCCESS);
     CU_ASSERT_EQUAL(dl_insert(p_list, val3, 0U), DL_SUCCESS);
 
@@ -206,21 +205,10 @@ test_dll_find_at (void)
 }
 
 /**
- * @brief Helper function to multiply int data by 5.
- */
-static void
-multiply_by_five (void *data, size_t index)
-{
-    (void)index; // unused
-    int *val = (int *)data;
-    *val *= 5;
-}
-
-/**
  * @brief Test foreach by multiplying all values by 5.
  */
 static void
-test_dl_foreach_multiply (void)
+test_dl_foreach_clone (void)
 {
     dl_t *p_list = dl_create(delete_int, compare_ints, print_int);
 
@@ -235,13 +223,26 @@ test_dl_foreach_multiply (void)
     dl_insert(p_list, b, 1); // 4
     dl_insert(p_list, c, 2); // 6
 
+    // Test foreach
     CU_ASSERT_EQUAL(dl_foreach(p_list, multiply_by_five), 0);
-
     CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 0)->p_data, 10);
     CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 1)->p_data, 20);
     CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 2)->p_data, 30);
 
+    // Test deep clone: should have same elements but different pointers
+    dl_t *p_clone = dl_clone(p_list, copy_int);
+    CU_ASSERT_PTR_NOT_NULL(p_clone);
+    CU_ASSERT_EQUAL(dl_size(p_clone), dl_size(p_list));
+
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 0)->p_data, dl_at(p_clone, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 0)->p_data, *(int *)dl_at(p_clone, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 1)->p_data, dl_at(p_clone, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 1)->p_data, *(int *)dl_at(p_clone, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 2)->p_data, dl_at(p_clone, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 2)->p_data, *(int *)dl_at(p_clone, 2)->p_data);
+
     dl_destroy(p_list);
+    dl_destroy(p_clone);
 }
 
 /**
@@ -299,7 +300,7 @@ static void
 test_dll_null_invalid_inputs (void)
 {
     CU_ASSERT_EQUAL(dl_insert(NULL, NULL, 0U), DL_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(dl_preappend(NULL, NULL), DL_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(dl_prepend(NULL, NULL), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_del_at(NULL, 0U), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_at(NULL, 0U), NULL);
     CU_ASSERT_EQUAL(dl_find(NULL, NULL), DL_INVALID_ARGUMENT);

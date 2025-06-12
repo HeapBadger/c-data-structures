@@ -71,7 +71,7 @@ ll_clear (ll_t *p_list)
 }
 
 ssize_t
-ll_preappend (ll_t *p_list, void *p_data)
+ll_prepend (ll_t *p_list, void *p_data)
 {
     return ll_insert(p_list, p_data, 0U);
 }
@@ -356,6 +356,51 @@ ll_update (ll_t *p_list, size_t index, void *p_data)
     p_node->p_data = p_data;
 
     return LL_SUCCESS;
+}
+
+ll_t *
+ll_clone(const ll_t *p_ori, copy_func cpy_f)
+{
+    ll_t *p_new = NULL;
+
+    if ((NULL == p_ori) || (NULL == cpy_f))
+    {
+        goto EXIT;
+    }
+
+    p_new = ll_create(p_ori->del_f, p_ori->cmp_f, p_ori->print_f);
+
+    if (NULL == p_new)
+    {
+        goto EXIT;
+    }
+
+    ll_node_t *p_curr = p_ori->p_head;
+
+    while (p_curr != NULL)
+    {
+        void *p_copied_data = cpy_f(p_curr->p_data);
+
+        if (p_copied_data == NULL)
+        {
+            ll_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        if (LL_SUCCESS != ll_append(p_new, p_copied_data))
+        {
+            p_new->del_f(p_copied_data);
+            ll_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        p_curr = p_curr->p_next;
+    }
+
+EXIT:
+    return p_new;
 }
 
 static void

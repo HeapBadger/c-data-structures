@@ -36,14 +36,6 @@ typedef struct
 } ll_t;
 
 /**
- * @brief Function type for applying an operation to each element.
- *
- * @param p_data Pointer to the data stored in the current node.
- * @param index  Zero-based index of the node in the list.
- */
-typedef void (*foreach_func)(void *p_data, size_t index);
-
-/**
  * @brief Creates a new linked list with custom handlers.
  *
  * @param del_f   Custom delete function.
@@ -78,7 +70,7 @@ ssize_t ll_clear(ll_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_preappend(ll_t *p_list, void *p_data);
+ssize_t ll_prepend(ll_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node at the end of the list.
@@ -194,6 +186,17 @@ ssize_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
  * @return 0 on success, error code otherwise.
  */
 ssize_t ll_update(ll_t *p_list, size_t index, void *p_data);
+
+/**
+ * @brief Create a deep copy of the list structure using a user-provided copy
+ * function.
+ *
+ * @param p_ori Pointer to the source list.
+ * @param cpy_f Function to deep copy each element.
+ *
+ * @return Pointer to a new list on success, or NULL on failure.
+ */
+ll_t *ll_clone(const ll_t *p_ori, copy_func cpy_f);
 
 #endif // LINKED_LIST_H
 

@@ -70,9 +70,15 @@ dl_clear (dl_t *p_list)
 }
 
 ssize_t
-dl_preappend (dl_t *p_list, void *p_data)
+dl_prepend (dl_t *p_list, void *p_data)
 {
     return dl_insert(p_list, p_data, 0);
+}
+
+ssize_t
+dl_append (dl_t *p_list, void *p_data)
+{
+    return dl_insert(p_list, p_data, dl_size(p_list));
 }
 
 ssize_t
@@ -96,7 +102,7 @@ dl_insert (dl_t *p_list, void *p_data, size_t index)
         goto EXIT;
     }
 
-    // handle preappend operations
+    // handle prepend operations
     if (0 == index)
     {
         p_new_node->p_next = p_list->p_head;
@@ -385,6 +391,50 @@ dl_update (dl_t *p_list, size_t index, void *p_data)
 
 EXIT:
     return result;
+}
+
+dl_t *dl_clone(const dl_t *p_ori, copy_func cpy_f)
+{
+    dl_t *p_new = NULL;
+
+    if ((NULL == p_ori) || (NULL == cpy_f))
+    {
+        goto EXIT;
+    }
+
+    p_new = dl_create(p_ori->del_f, p_ori->cmp_f, p_ori->print_f);
+
+    if (NULL == p_new)
+    {
+        goto EXIT;
+    }
+
+    dl_node_t *p_curr = p_ori->p_head;
+
+    while (p_curr != NULL)
+    {
+        void *p_copied_data = cpy_f(p_curr->p_data);
+
+        if (p_copied_data == NULL)
+        {
+            dl_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        if (DL_SUCCESS != dl_append(p_new, p_copied_data))
+        {
+            p_new->del_f(p_copied_data);
+            dl_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        p_curr = p_curr->p_next;
+    }
+
+EXIT:
+    return p_new;
 }
 
 static void

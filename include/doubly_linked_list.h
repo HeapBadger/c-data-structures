@@ -37,14 +37,6 @@ typedef struct
 } dl_t;
 
 /**
- * @brief Function type for applying an operation to each element.
- *
- * @param p_data Pointer to the data stored in the current node.
- * @param index  Zero-based index of the node in the list.
- */
-typedef void (*foreach_func)(void *p_data, size_t index);
-
-/**
  * @brief Creates and initializes a new doubly linked list.
  *
  * @param del_f   Function to delete node data.
@@ -81,7 +73,17 @@ ssize_t dl_clear(dl_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t dl_preappend(dl_t *p_list, void *p_data);
+ssize_t dl_prepend(dl_t *p_list, void *p_data);
+
+/**
+ * @brief Inserts a new node at the end of the list.
+ *
+ * @param p_list Target list.
+ * @param p_data Data to store.
+ *
+ * @return 0 on success, error code otherwise.
+ */
+ssize_t dl_append(dl_t *p_list, void *p_data);
 
 /**
  * @brief Inserts data at a given index in the doubly linked list.
@@ -193,6 +195,17 @@ ssize_t dl_swap(dl_t *p_list, size_t index_1, size_t index_2);
  * @note Caller manages memory of p_data.
  */
 ssize_t dl_update(dl_t *p_list, size_t index, void *p_data);
+
+/**
+ * @brief Create a deep copy of the list structure using a user-provided copy
+ * function.
+ *
+ * @param p_ori Pointer to the source list.
+ * @param cpy_f Function to deep copy each element.
+ *
+ * @return Pointer to a new list on success, or NULL on failure.
+ */
+dl_t *dl_clone(const dl_t *p_ori, copy_func cpy_f);
 
 #endif // DL_H
 
