@@ -98,9 +98,8 @@ array_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(suite,
-                        "test_array_foreach_clone",
-                        test_array_foreach_clone)))
+        == (CU_add_test(
+            suite, "test_array_foreach_clone", test_array_foreach_clone)))
     {
         ERROR_LOG("Failed to add test_array_foreach_clone to suite\n");
         suite = NULL;
@@ -460,6 +459,7 @@ test_array_foreach_clone (void)
 static void
 test_array_null_inputs (void)
 {
+    CU_ASSERT_PTR_NULL(array_create(0, NULL, NULL, NULL));
     CU_ASSERT_EQUAL(array_size(NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_capacity(NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_push(NULL, NULL), ARRAY_INVALID_ARGUMENT);

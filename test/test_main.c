@@ -24,9 +24,6 @@ static void run_suite(const char *suite_name);
 /**
  * @brief   Main function to run all tests.
  *
- * The function initializes the CUnit test registry, creates test suites,
- * and runs the tests based on command-line input.
- *
  * @param argc  Number of command-line arguments.
  * @param argv  Array of command-line arguments.
  *
@@ -88,8 +85,6 @@ CLEANUP:
 
 /**
  * @brief   Print help instructions.
- *
- * @return  None.
  */
 static void
 print_help (void)
@@ -105,8 +100,6 @@ print_help (void)
 
 /**
  * @brief   List all available test suites.
- *
- * @return  None.
  */
 static void
 list_suites (void)

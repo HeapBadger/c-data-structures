@@ -56,8 +56,7 @@ ll_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(
-            suite, "test_ll_foreach_clone", test_ll_foreach_clone)))
+        == (CU_add_test(suite, "test_ll_foreach_clone", test_ll_foreach_clone)))
     {
         ERROR_LOG("Failed to add test_ll_foreach_clone to suite\n");
         suite = NULL;
@@ -196,13 +195,13 @@ test_ll_find_at (void)
     ll_insert(p_list, b, 1);
     ll_insert(p_list, c, 2);
 
-    // Test at()
+    // Test at
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 1);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 2);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 3);
     CU_ASSERT_PTR_NULL(ll_at(p_list, 3));
 
-    // Test find()
+    // Test find
     int key1 = 1, key2 = 2, key3 = 3, key4 = 4;
     CU_ASSERT_EQUAL(ll_find(p_list, &key1), 0);
     CU_ASSERT_EQUAL(ll_find(p_list, &key2), 1);
@@ -242,12 +241,18 @@ test_ll_foreach_clone (void)
     CU_ASSERT_PTR_NOT_NULL(p_clone);
     CU_ASSERT_EQUAL(ll_size(p_clone), ll_size(p_list));
 
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 0)->p_data, ll_at(p_clone, 0)->p_data);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, *(int *)ll_at(p_clone, 0)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 1)->p_data, ll_at(p_clone, 1)->p_data);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, *(int *)ll_at(p_clone, 1)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 2)->p_data, ll_at(p_clone, 2)->p_data);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, *(int *)ll_at(p_clone, 2)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 0)->p_data,
+                            ll_at(p_clone, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data,
+                    *(int *)ll_at(p_clone, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 1)->p_data,
+                            ll_at(p_clone, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data,
+                    *(int *)ll_at(p_clone, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 2)->p_data,
+                            ll_at(p_clone, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data,
+                    *(int *)ll_at(p_clone, 2)->p_data);
 
     ll_destroy(p_list);
     ll_destroy(p_clone);
@@ -304,8 +309,11 @@ test_ll_reverse_swap_update (void)
 static void
 test_ll_null_invalid_inputs (void)
 {
+    CU_ASSERT_PTR_NULL(ll_create(NULL, NULL, NULL));
+    CU_ASSERT_EQUAL(ll_clear(NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_insert(NULL, NULL, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_prepend(NULL, NULL), LL_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(ll_append(NULL, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_del_at(NULL, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_at(NULL, 0), NULL);
     CU_ASSERT_EQUAL(ll_find(NULL, NULL), LL_INVALID_ARGUMENT);
@@ -313,6 +321,7 @@ test_ll_null_invalid_inputs (void)
     CU_ASSERT_EQUAL(ll_reverse(NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_swap(NULL, 0, 1), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_update(NULL, 0, NULL), LL_INVALID_ARGUMENT);
+    CU_ASSERT_PTR_NULL(ll_clone(NULL, NULL));
 }
 
 /*** end of file ***/

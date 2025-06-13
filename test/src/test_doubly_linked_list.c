@@ -57,8 +57,7 @@ dl_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(
-            suite, "test_dl_foreach_clone", test_dl_foreach_clone)))
+        == (CU_add_test(suite, "test_dl_foreach_clone", test_dl_foreach_clone)))
     {
         ERROR_LOG("Failed to add test_dl_foreach_clone to suite\n");
         suite = NULL;
@@ -234,12 +233,18 @@ test_dl_foreach_clone (void)
     CU_ASSERT_PTR_NOT_NULL(p_clone);
     CU_ASSERT_EQUAL(dl_size(p_clone), dl_size(p_list));
 
-    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 0)->p_data, dl_at(p_clone, 0)->p_data);
-    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 0)->p_data, *(int *)dl_at(p_clone, 0)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 1)->p_data, dl_at(p_clone, 1)->p_data);
-    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 1)->p_data, *(int *)dl_at(p_clone, 1)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 2)->p_data, dl_at(p_clone, 2)->p_data);
-    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 2)->p_data, *(int *)dl_at(p_clone, 2)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 0)->p_data,
+                            dl_at(p_clone, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 0)->p_data,
+                    *(int *)dl_at(p_clone, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 1)->p_data,
+                            dl_at(p_clone, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 1)->p_data,
+                    *(int *)dl_at(p_clone, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(dl_at(p_list, 2)->p_data,
+                            dl_at(p_clone, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)dl_at(p_list, 2)->p_data,
+                    *(int *)dl_at(p_clone, 2)->p_data);
 
     dl_destroy(p_list);
     dl_destroy(p_clone);
@@ -299,8 +304,11 @@ test_dll_reverse_swap_update (void)
 static void
 test_dll_null_invalid_inputs (void)
 {
+    CU_ASSERT_PTR_NULL(dl_create(NULL, NULL, NULL));
+    CU_ASSERT_EQUAL(dl_clear(NULL), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_insert(NULL, NULL, 0U), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_prepend(NULL, NULL), DL_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(dl_append(NULL, NULL), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_del_at(NULL, 0U), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_at(NULL, 0U), NULL);
     CU_ASSERT_EQUAL(dl_find(NULL, NULL), DL_INVALID_ARGUMENT);
@@ -308,6 +316,7 @@ test_dll_null_invalid_inputs (void)
     CU_ASSERT_EQUAL(dl_reverse(NULL), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_swap(NULL, 0U, 1U), DL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(dl_update(NULL, 0U, NULL), DL_INVALID_ARGUMENT);
+    CU_ASSERT_PTR_NULL(dl_clone(NULL, NULL));
 }
 
 /*** end of file ***/

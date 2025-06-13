@@ -44,8 +44,6 @@ dl_destroy (dl_t *p_list)
         p_list->print_f = NULL;
         free(p_list);
     }
-
-    return;
 }
 
 ssize_t
@@ -393,7 +391,8 @@ EXIT:
     return result;
 }
 
-dl_t *dl_clone(const dl_t *p_ori, copy_func cpy_f)
+dl_t *
+dl_clone (const dl_t *p_ori, copy_func cpy_f)
 {
     dl_t *p_new = NULL;
 

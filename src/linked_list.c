@@ -40,13 +40,11 @@ ll_create (const del_func del_f, const cmp_func cmp_f, const print_func print_f)
 void
 ll_destroy (ll_t *p_list)
 {
-    if (NULL == p_list)
+    if (NULL != p_list)
     {
-        return;
+        ll_clear(p_list);
+        free(p_list);
     }
-
-    ll_clear(p_list);
-    free(p_list);
 }
 
 ssize_t
@@ -312,14 +310,17 @@ ll_foreach (ll_t *p_list, foreach_func func)
 ssize_t
 ll_swap (ll_t *p_list, size_t index_1, size_t index_2)
 {
+    ssize_t ret = LL_SUCCESS;
+
     if (NULL == p_list)
     {
-        return LL_INVALID_ARGUMENT;
+        ret = LL_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
     if (index_1 == index_2)
     {
-        return LL_SUCCESS;
+        goto EXIT;
     }
 
     ll_node_t *p_node1 = ll_at(p_list, index_1);
@@ -327,14 +328,16 @@ ll_swap (ll_t *p_list, size_t index_1, size_t index_2)
 
     if ((NULL == p_node1) || (NULL == p_node2))
     {
-        return LL_OUT_OF_BOUNDS;
+        ret = LL_OUT_OF_BOUNDS;
+        goto EXIT;
     }
 
     void *p_tmp     = p_node1->p_data;
     p_node1->p_data = p_node2->p_data;
     p_node2->p_data = p_tmp;
 
-    return LL_SUCCESS;
+EXIT:
+    return ret;
 }
 
 ssize_t
@@ -359,7 +362,7 @@ ll_update (ll_t *p_list, size_t index, void *p_data)
 }
 
 ll_t *
-ll_clone(const ll_t *p_ori, copy_func cpy_f)
+ll_clone (const ll_t *p_ori, copy_func cpy_f)
 {
     ll_t *p_new = NULL;
 
@@ -406,31 +409,25 @@ EXIT:
 static void
 ll_del_node (ll_node_t *p_node, const del_func del_f)
 {
-    if (NULL == p_node)
-    {
-        return;
-    }
-
-    if (NULL != del_f)
+    if ((NULL != p_node) && (NULL != del_f))
     {
         del_f(p_node->p_data);
+        free(p_node);
     }
-
-    free(p_node);
 }
 
 static ll_node_t *
 ll_create_node (void *p_data)
 {
-    ll_node_t *p_node = (ll_node_t *)calloc(1U, sizeof(ll_node_t));
+    ll_node_t *p_node = NULL;
+    p_node            = (ll_node_t *)calloc(1U, sizeof(ll_node_t));
 
-    if (NULL == p_node)
+    if (NULL != p_node)
     {
-        return NULL;
+        p_node->p_data = p_data;
+        p_node->p_next = NULL;
     }
 
-    p_node->p_data = p_data;
-    p_node->p_next = NULL;
     return p_node;
 }
 
