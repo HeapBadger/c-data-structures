@@ -7,13 +7,10 @@ This repository provides a collection of fundamental **data structure implementa
 
 ## 🧭 Table of Contents
 
-- [Usage](#🚀-usage)
-  - [Requirements](#📝-requirements)
-  - [Setup](#⚙️-setup)
-  - [Building and Cleaning](#🛠️-building-and-cleaning)
-  - [Testing](#🧪-testing)
-- [Repository Structure](#📁-repository-structure)
-- [Known Issues](#🪲-known-issues)
+- [Usage](#-usage)
+- [Using as a Static Library](#-using-as-a-static-library)
+- [Repository Structure](#-repository-structure)
+- [Known Issues](#-known-issues)
 
 ## 🚀 Usage
 
@@ -75,6 +72,51 @@ make format
 - Run all tests under Valgrind to check memory usage:
 ```sh
 make valgrind
+```
+
+## 🧩 Using as a Static Library
+
+You can build and use the data structures as a **static library** (`libcds.a`) in your own C projects.
+
+### 🔧 Step 1: Build the Library
+
+```
+make lib
+```
+
+This generates:
+
+```
+lib/libcds.a     # Static library archive
+include/*.h      # Public headers
+```
+
+### 📦 Step 2: Use in Your Project
+
+1. **Include headers** in your source files:
+
+```
+#include "linked_list.h"
+#include "stack.h"
+// etc.
+```
+
+2. **Link against the library** when compiling:
+
+```
+gcc your_app.c -I./include -L./lib -lcds -o your_app
+```
+
+### 🛠 Example Directory Structure
+
+```
+your-project/
+├── main.c
+├── Makefile
+└── c-data-structures/    # Submodule or copy of this repo
+    ├── include/
+    ├── lib/
+    └── libcds.a
 ```
 
 ## 📁 Repository Structure

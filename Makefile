@@ -47,6 +47,11 @@ format:
 	clang-format-15 -i $(SRC_SOURCES) $(wildcard include/*.h) $(TEST_SOURCES) $(wildcard test/include/*.h)
 	@echo "Formatting complete."
 
+# Create a custom library
+lib: $(OBJS)
+	@mkdir -p lib
+	ar rcs lib/libcds.a $(OBJS)
+
 # Create necessary directories
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
@@ -57,4 +62,5 @@ $(BIN_DIR):
 # Clean object and executable files
 clean:
 	rm -rf $(BIN_DIR)
+	rm -rf lib
 	@echo "Clean complete."
