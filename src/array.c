@@ -19,12 +19,13 @@ array_t *
 array_create (size_t           initial_capacity,
               const del_func   del_f,
               const cmp_func   cmp_f,
-              const print_func print_f)
+              const print_func print_f,
+              const copy_func  cpy_f)
 {
     array_t *p_array = NULL;
 
     if ((0 < initial_capacity) && (NULL != del_f) && (NULL != cmp_f)
-        && (NULL != print_f))
+        && (NULL != print_f) && (NULL != cpy_f))
     {
         p_array = (array_t *)calloc(1, sizeof(array_t));
 
@@ -40,6 +41,7 @@ array_create (size_t           initial_capacity,
                 p_array->del_f   = del_f;
                 p_array->cmp_f   = cmp_f;
                 p_array->print_f = print_f;
+                p_array->cpy_f   = cpy_f;
             }
             else
             {
@@ -75,6 +77,15 @@ array_clear (array_t *p_array)
     }
 }
 
+void
+array_delete_element (array_t *p_array, void *p_value)
+{
+    if (NULL != p_array)
+    {
+        p_array->del_f(p_value);
+    }
+}
+
 ssize_t
 array_insert (array_t *p_array, size_t index, void *p_value)
 {
@@ -88,7 +99,7 @@ array_insert (array_t *p_array, size_t index, void *p_value)
 
     if (index > p_array->len)
     {
-        p_array->del_f(p_value);
+        array_delete_element(p_array, p_value);
         ret = ARRAY_OUT_OF_BOUNDS;
         goto EXIT;
     }
@@ -110,7 +121,7 @@ array_insert (array_t *p_array, size_t index, void *p_value)
     }
     else
     {
-        p_array->del_f(p_value);
+        array_delete_element(p_array, p_value);
     }
 
 EXIT:
@@ -130,7 +141,7 @@ array_remove (array_t *p_array, size_t index)
         return ARRAY_OUT_OF_BOUNDS;
     }
 
-    p_array->del_f(p_array->pp_array[index]);
+    array_delete_element(p_array, p_array->pp_array[index]);
 
     for (size_t i = index; i < p_array->len - 1U; ++i)
     {
@@ -205,12 +216,21 @@ array_set (array_t *p_array, size_t index, void *p_value)
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    if (index >= p_array->len)
+    if ((index > p_array->len) || (index >= p_array->cap))
     {
+        array_delete_element(p_array, p_value);
         return ARRAY_OUT_OF_BOUNDS;
     }
+    else if (index == p_array->len)
+    {
+        p_array->len++;
+    }
 
-    p_array->del_f(p_array->pp_array[index]);
+    if (NULL != p_array->pp_array[index])
+    {
+        array_delete_element(p_array, p_array->pp_array[index]);
+    }
+
     p_array->pp_array[index] = p_value;
     return ARRAY_SUCCESS;
 }
@@ -223,11 +243,11 @@ array_find (const array_t *p_array, void *p_key)
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    for (size_t idx = 0U; idx < p_array->len; ++idx)
+    for (size_t idx = 0U; idx < p_array->len; idx++)
     {
-        void *item = p_array->pp_array[idx];
+        void *p_item = p_array->pp_array[idx];
 
-        if (0 == p_array->cmp_f(p_key, item))
+        if (0 == p_array->cmp_f(p_key, p_item))
         {
             return (ssize_t)idx;
         }
@@ -268,6 +288,47 @@ bool
 array_is_full (const array_t *p_array)
 {
     return (array_size(p_array) >= array_capacity(p_array));
+}
+
+bool
+array_is_equal (const array_t *p_array_a, const array_t *p_array_b)
+{
+    bool is_equal = true;
+
+    if ((NULL == p_array_a) && (NULL == p_array_b))
+    {
+        goto EXIT;
+    }
+
+    if ((NULL == p_array_a) || (NULL == p_array_b))
+    {
+        is_equal = false;
+        goto EXIT;
+    }
+
+    if ((array_size(p_array_a) != array_size(p_array_b))
+        || (p_array_a->cmp_f != p_array_b->cmp_f))
+    {
+        is_equal = false;
+        goto EXIT;
+    }
+
+    size_t len = array_size(p_array_a);
+
+    for (size_t idx = 0U; idx < len; idx++)
+    {
+        void *p_a_out = p_array_a->pp_array[idx];
+        void *p_b_out = p_array_b->pp_array[idx];
+
+        if (0 != p_array_a->cmp_f(p_a_out, p_b_out))
+        {
+            is_equal = false;
+            break;
+        }
+    }
+
+EXIT:
+    return is_equal;
 }
 
 ssize_t
@@ -364,17 +425,17 @@ array_foreach (array_t *p_array, foreach_func func)
 }
 
 array_t *
-array_clone (const array_t *p_ori, copy_func cpy_f)
+array_clone (const array_t *p_ori)
 {
     array_t *p_new = NULL;
 
-    if ((NULL == p_ori) || (NULL == cpy_f))
+    if ((NULL == p_ori) || (NULL == p_ori->cpy_f))
     {
         goto EXIT;
     }
 
-    p_new
-        = array_create(p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f);
+    p_new = array_create(
+        p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
 
     if (NULL == p_new)
     {
@@ -385,7 +446,7 @@ array_clone (const array_t *p_ori, copy_func cpy_f)
 
     for (size_t idx = 0; idx < p_ori->len; ++idx)
     {
-        void *copied_elem = cpy_f(p_ori->pp_array[idx]);
+        void *copied_elem = p_ori->cpy_f(p_ori->pp_array[idx]);
 
         if (NULL == copied_elem)
         {

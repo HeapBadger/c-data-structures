@@ -68,11 +68,11 @@ Run tests with:
 - `<specific suite name>`: Runs a specific test suite.
 
 Additional Makefile commands:
-- Format all code:         **REMOVE AFTER COMPLETE!**
+- Format all code:
 ```sh
 make format
 ```
-- Run tests under Valgrind to check memory usage:
+- Run all tests under Valgrind to check memory usage:
 ```sh
 make valgrind
 ```
@@ -86,10 +86,10 @@ c-data-structures/
 │   ├── ...
 │
 ├── src/
-│   ├── ✅ linked_list.c
+│   ├── ✅ linked_list.c // maybe return and make data generic
 │   ├── ✅ doubly_linked_list.c
 │   ├── ✅ array.c
-│   ├── matrix.c
+│   ├── ✅ matrix.c
 │   ├── stack.c
 │   ├── queue.c
 │   ├── binary_tree.c

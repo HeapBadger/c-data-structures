@@ -53,6 +53,7 @@ typedef struct
     del_func   del_f;
     cmp_func   cmp_f;
     print_func print_f;
+    copy_func  cpy_f;
 } array_t;
 
 /**
@@ -67,7 +68,8 @@ typedef struct
 array_t *array_create(size_t           initial_capacity,
                       const del_func   del_f,
                       const cmp_func   cmp_f,
-                      const print_func print_f);
+                      const print_func print_f,
+                      const copy_func  cpy_f);
 
 /**
  * @brief Free all memory and destroy the array.
@@ -82,6 +84,14 @@ void array_destroy(array_t *p_array);
  * @param p_array Pointer to the array.
  */
 void array_clear(array_t *p_array);
+
+/**
+ * @brief Deletes a single element using the array's delete function.
+ *
+ * @param p_array Pointer to the array.
+ * @param p_value Pointer to the element to delete.
+ */
+void array_delete_element(array_t *p_array, void *p_value);
 
 /**
  * @brief Insert an element at a specific index.
@@ -184,6 +194,15 @@ bool array_is_empty(const array_t *p_array);
 bool array_is_full(const array_t *p_array);
 
 /**
+ * @brief Check whether two arrays are equal.
+ *
+ * @param p_array_a Pointer to the array a.
+ * @param p_array_b Pointer to the array b.
+ * @return true if equal, false otherwise.
+ */
+bool array_is_equal(const array_t *p_array_a, const array_t *p_array_b);
+
+/**
  * @brief Ensure the array has at least the given capacity.
  *
  * @param p_array Pointer to the array.
@@ -216,11 +235,10 @@ ssize_t array_foreach(array_t *p_array, foreach_func func);
  * function.
  *
  * @param p_array Pointer to the source array.
- * @param cpy_f   Function to deep copy each element.
  *
  * @return Pointer to a new array on success, or NULL on failure.
  */
-array_t *array_clone(const array_t *p_ori, copy_func cpy_f);
+array_t *array_clone(const array_t *p_ori);
 
 /**
  * @brief Sort the array using bubble sort and a custom comparator.

@@ -14,6 +14,7 @@
 #include "test_auxiliary.h"
 #include "test_doubly_linked_list.h"
 #include "test_linked_list.h"
+#include "test_matrix.h"
 
 // Function Declarations
 static void print_help(void);
@@ -186,6 +187,14 @@ create_suites (void)
     if (NULL == array_suite())
     {
         ERROR_LOG("Failed to create the Array Suite\n");
+        retval = CU_get_error();
+        goto EXIT;
+    }
+
+    // Matrix
+    if (NULL == matrix_suite())
+    {
+        ERROR_LOG("Failed to create the Matrix Suite\n");
         retval = CU_get_error();
         goto EXIT;
     }
