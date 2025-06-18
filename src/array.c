@@ -331,7 +331,7 @@ array_size (const array_t *p_array, size_t *p_size)
 array_error_code_t
 array_capacity (const array_t *p_array, size_t *p_cap)
 {
-    if ((NULL == p_array) || (NULL == p_size))
+    if ((NULL == p_array) || (NULL == p_cap))
     {
         return ARRAY_INVALID_ARGUMENT;
     }
