@@ -109,14 +109,15 @@ stack_peek (const stack_t *p_stack, void **p_top)
 {
     if (NULL != p_stack)
     {
-        size_t size = 0;
-    
-        if ((STACK_SUCCESS != stack_size(p_stack, &size) )|| (0U == size))
+        size_t size = 0U;
+
+        if ((STACK_SUCCESS != stack_size(p_stack, &size)) || (0U == size))
         {
             return STACK_EMPTY;
         }
 
-        return stack_error_from_array(array_get(p_stack->p_array, size - 1, p_top));
+        return stack_error_from_array(
+            array_get(p_stack->p_array, size - 1, p_top));
     }
 
     return STACK_INVALID_ARGUMENT;
@@ -145,11 +146,11 @@ stack_size (const stack_t *p_stack, size_t *p_size)
 }
 
 stack_t *
-stack_clone(const stack_t *p_ori)
+stack_clone (const stack_t *p_ori)
 {
     stack_t *p_new = NULL;
 
-    if ((NULL == p_ori )|| (NULL == p_ori->p_array))
+    if ((NULL == p_ori) || (NULL == p_ori->p_array))
     {
         goto EXIT;
     }

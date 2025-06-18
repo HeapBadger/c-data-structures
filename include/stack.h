@@ -71,7 +71,7 @@ stack_error_code_t stack_clear(stack_t *p_stack);
  *
  * @return STACK_SUCCESS on success, error code otherwise.
  */
-stack_error_code_t stack_fill (stack_t *p_stack, void *p_value);
+stack_error_code_t stack_fill(stack_t *p_stack, void *p_value);
 
 /**
  * @brief Pushes an element onto the stack.

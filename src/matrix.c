@@ -23,7 +23,7 @@
 static matrix_error_code_t matrix_error_from_array(array_error_code_t ret);
 
 /**
- * @brief Delete a value using the matrix's deletion function pointer.
+ * @brief Delete a value using the a custom deletion function pointer.
  *
  * @param p_matrix Pointer to the matrix.
  * @param p_value Pointer to the value to delete.
@@ -328,7 +328,7 @@ matrix_print (const matrix_t *p_matrix)
         return;
     }
 
-    for (size_t row = 0; row < p_matrix->rows; row++)
+    for (size_t row = 0U; row < p_matrix->rows; row++)
     {
         array_print(p_matrix->pp_matrix[row]);
         printf("\n");
@@ -359,7 +359,7 @@ static void
 matrix_delete_value (matrix_t *p_matrix, void *p_value)
 {
     if ((NULL != p_matrix) && (NULL != p_matrix->pp_matrix) && (NULL != p_value)
-        && (0 < p_matrix->rows))
+        && (0U < p_matrix->rows))
     {
         array_delete_element(p_matrix->pp_matrix[0], p_value);
     }
@@ -370,7 +370,7 @@ matrix_alloc_empty (size_t rows, size_t cols)
 {
     matrix_t *p_matrix = NULL;
 
-    if ((0 == rows) || (0 == cols))
+    if ((0U == rows) || (0U == cols))
     {
         goto EXIT;
     }

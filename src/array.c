@@ -39,7 +39,7 @@ array_create (size_t           initial_capacity,
 {
     array_t *p_array = NULL;
 
-    if ((0 < initial_capacity) && (NULL != del_f) && (NULL != cmp_f)
+    if ((0U < initial_capacity) && (NULL != del_f) && (NULL != cmp_f)
         && (NULL != print_f) && (NULL != cpy_f))
     {
         p_array = (array_t *)calloc(1, sizeof(array_t));
@@ -85,7 +85,7 @@ array_clear (array_t *p_array)
 {
     if ((NULL != p_array) && (NULL != p_array->pp_array))
     {
-        for (size_t idx = 0; idx < p_array->len; ++idx)
+        for (size_t idx = 0U; idx < p_array->len; ++idx)
         {
             array_delete_element(p_array, p_array->pp_array[idx]);
             p_array->pp_array[idx] = NULL;
@@ -98,7 +98,7 @@ array_clear (array_t *p_array)
 void
 array_delete_element (array_t *p_array, void *p_value)
 {
-    if (NULL != p_array)
+    if ((NULL != p_array) && (NULL != p_value))
     {
         p_array->del_f(p_value);
     }
@@ -421,7 +421,7 @@ array_foreach (array_t *p_array, foreach_func func)
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    for (size_t idx = 0; idx < p_array->len; idx++)
+    for (size_t idx = 0U; idx < p_array->len; idx++)
     {
         func(p_array->pp_array[idx], idx);
     }
@@ -483,7 +483,7 @@ array_print (const array_t *p_array)
 
     printf("[");
 
-    for (size_t idx = 0; idx < p_array->len; ++idx)
+    for (size_t idx = 0U; idx < p_array->len; ++idx)
     {
         p_array->print_f(p_array->pp_array[idx], idx);
 

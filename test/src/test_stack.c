@@ -87,7 +87,8 @@ CLEANUP:
 static void
 test_stack_create_destroy_clear (void)
 {
-    stack_t *p_stack = stack_create(5, delete_int, compare_ints, print_int, copy_int);
+    stack_t *p_stack
+        = stack_create(5, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_stack);
 
     size_t size = 0U;
@@ -112,7 +113,8 @@ test_stack_create_destroy_clear (void)
     p_stack = stack_create(0, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NULL(p_stack);
 
-    // Creating with NULL function pointers should fail (assuming your create checks that)
+    // Creating with NULL function pointers should fail (assuming your create
+    // checks that)
     p_stack = stack_create(5, NULL, NULL, NULL, NULL);
     CU_ASSERT_PTR_NULL(p_stack);
 }
@@ -120,11 +122,12 @@ test_stack_create_destroy_clear (void)
 static void
 test_stack_push_pop_size (void)
 {
-    stack_t *p_stack = stack_create(5, delete_int, compare_ints, print_int, copy_int);
+    stack_t *p_stack
+        = stack_create(5, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_stack);
 
     // Push three values
-    int vals[] = {10, 20, 30};
+    int vals[] = { 10, 20, 30 };
 
     for (size_t i = 0; i < 3; ++i)
     {
@@ -160,7 +163,8 @@ test_stack_push_pop_size (void)
 static void
 test_stack_peak_isempty (void)
 {
-    stack_t *p_stack = stack_create(5, delete_int, compare_ints, print_int, copy_int);
+    stack_t *p_stack
+        = stack_create(5, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_stack);
 
     // Initially empty
@@ -171,11 +175,11 @@ test_stack_peak_isempty (void)
     CU_ASSERT_EQUAL(stack_peek(p_stack, &p_top), STACK_EMPTY);
 
     int *val1 = calloc(1, sizeof(int));
-    *val1 = 42;
+    *val1     = 42;
     CU_ASSERT_EQUAL(stack_push(p_stack, val1), STACK_SUCCESS);
 
     int *val2 = calloc(1, sizeof(int));
-    *val2 = 100;
+    *val2     = 100;
     CU_ASSERT_EQUAL(stack_push(p_stack, val2), STACK_SUCCESS);
 
     // Now peek should succeed and give val
@@ -189,10 +193,12 @@ test_stack_peak_isempty (void)
     stack_destroy(p_stack);
 }
 
-static void test_stack_clone_and_resize(void)
+static void
+test_stack_clone_and_resize (void)
 {
     const size_t initial_capacity = 5;
-    stack_t *p_stack = stack_create(initial_capacity, delete_int, compare_ints, print_int, copy_int);
+    stack_t     *p_stack          = stack_create(
+        initial_capacity, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_stack);
 
     // Push initial_capacity elements
@@ -234,11 +240,13 @@ static void test_stack_clone_and_resize(void)
     // Check that all elements are equal in order (LIFO order)
     for (size_t i = 0; i < size; i++)
     {
-        void *orig_val = NULL;
+        void *orig_val  = NULL;
         void *clone_val = NULL;
 
-        CU_ASSERT_EQUAL(array_get(p_stack->p_array, i, &orig_val), ARRAY_SUCCESS);
-        CU_ASSERT_EQUAL(array_get(p_clone->p_array, i, &clone_val), ARRAY_SUCCESS);
+        CU_ASSERT_EQUAL(array_get(p_stack->p_array, i, &orig_val),
+                        ARRAY_SUCCESS);
+        CU_ASSERT_EQUAL(array_get(p_clone->p_array, i, &clone_val),
+                        ARRAY_SUCCESS);
         CU_ASSERT_PTR_NOT_NULL(orig_val);
         CU_ASSERT_PTR_NOT_NULL(clone_val);
 
