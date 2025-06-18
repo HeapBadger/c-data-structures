@@ -29,10 +29,7 @@ stack_suite (void)
         goto CLEANUP;
     }
 
-    if (NULL
-        == (CU_add_test(suite,
-                        "test_stack_create_destroy_clear",
-                        test_stack_create_destroy_clear)))
+    if (NULL == (CU_add_test(suite, "test_stack_create_destroy_clear", test_stack_create_destroy_clear)))
     {
         ERROR_LOG("Failed to add test_stack_create_destroy_clear to suite\n");
         suite = NULL;

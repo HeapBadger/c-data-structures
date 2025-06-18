@@ -33,6 +33,7 @@ typedef struct
     del_func   del_f;
     cmp_func   cmp_f;
     print_func print_f;
+    copy_func  cpy_f;
 } ll_t;
 
 /**
@@ -46,7 +47,8 @@ typedef struct
  */
 ll_t *ll_create(const del_func   del_f,
                 const cmp_func   cmp_f,
-                const print_func print_f);
+                const print_func print_f,
+                const copy_func  cpy_f);
 
 /**
  * @brief Frees the entire linked list and its data.
@@ -60,7 +62,7 @@ void ll_destroy(ll_t *p_list);
  *
  * @param p_list Pointer to the linked list.
  */
-ssize_t ll_clear(ll_t *p_list);
+ll_error_code_t ll_clear(ll_t *p_list);
 
 /**
  * @brief Inserts a new node at the start of the list.
@@ -70,7 +72,7 @@ ssize_t ll_clear(ll_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_prepend(ll_t *p_list, void *p_data);
+ll_error_code_t ll_prepend(ll_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node at the end of the list.
@@ -80,7 +82,7 @@ ssize_t ll_prepend(ll_t *p_list, void *p_data);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_append(ll_t *p_list, void *p_data);
+ll_error_code_t ll_append(ll_t *p_list, void *p_data);
 
 /**
  * @brief Inserts a new node at a given index (or appends if out of bounds).
@@ -91,7 +93,7 @@ ssize_t ll_append(ll_t *p_list, void *p_data);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_insert(ll_t *p_list, void *p_data, size_t index);
+ll_error_code_t ll_insert(ll_t *p_list, void *p_data, size_t index);
 
 /**
  * @brief Deletes the node at the specified index.
@@ -101,7 +103,7 @@ ssize_t ll_insert(ll_t *p_list, void *p_data, size_t index);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_del_at(ll_t *p_list, size_t index);
+ll_error_code_t ll_del_at(ll_t *p_list, size_t index);
 
 /**
  * @brief Checks whether the linked list is empty.
@@ -127,19 +129,21 @@ ll_node_t *ll_at(const ll_t *p_list, size_t index);
  *
  * @param p_list Target list.
  * @param p_data Data to find.
+ * @param p_idx  Index of the matching node.
  *
  * @return Index on success, error code otherwise.
  */
-ssize_t ll_find(const ll_t *p_list, void *p_data);
+ll_error_code_t ll_find(const ll_t *p_list, void *p_data, size_t *p_idx);
 
 /**
  * @brief Returns the number of nodes in the list.
  *
  * @param p_list Target list.
+ * @param p_size Number of nodes in list.
  *
  * @return Number of nodes on success, error code.
  */
-ssize_t ll_size(const ll_t *p_list);
+ll_error_code_t ll_size(const ll_t *p_list, size_t *p_size);
 
 /**
  * @brief Reverses the order of nodes in the list.
@@ -148,7 +152,7 @@ ssize_t ll_size(const ll_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_reverse(ll_t *p_list);
+ll_error_code_t ll_reverse(ll_t *p_list);
 
 /**
  * @brief Apply a function to each element in the linked list.
@@ -163,7 +167,7 @@ ssize_t ll_reverse(ll_t *p_list);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_foreach(ll_t *p_list, foreach_func func);
+ll_error_code_t ll_foreach(ll_t *p_list, foreach_func func);
 
 /**
  * @brief Swaps data between two nodes at given indices.
@@ -174,7 +178,7 @@ ssize_t ll_foreach(ll_t *p_list, foreach_func func);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
+ll_error_code_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
 
 /**
  * @brief Updates the data at a specified node index.
@@ -185,18 +189,42 @@ ssize_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
  *
  * @return 0 on success, error code otherwise.
  */
-ssize_t ll_update(ll_t *p_list, size_t index, void *p_data);
+ll_error_code_t ll_update(ll_t *p_list, size_t index, void *p_data);
 
 /**
- * @brief Create a deep copy of the list structure using a user-provided copy
- * function.
+ * @brief Create a deep copy of the list structure.
  *
  * @param p_ori Pointer to the source list.
- * @param cpy_f Function to deep copy each element.
  *
  * @return Pointer to a new list on success, or NULL on failure.
  */
-ll_t *ll_clone(const ll_t *p_ori, copy_func cpy_f);
+ll_t *ll_clone(const ll_t *p_ori);
+
+/**
+ * @brief Retrieves the first node in the list.
+ *
+ * @param p_list Pointer to the linked list.
+ * @return Pointer to the head node, or NULL if empty or invalid.
+ */
+ll_node_t *ll_head(const ll_t *p_list);
+
+/**
+ * @brief Retrieves the last node in the list.
+ *
+ * @param p_list Pointer to the linked list.
+ * @return Pointer to the tail node, or NULL if empty or invalid.
+ */
+ll_node_t *ll_tail(const ll_t *p_list);
+
+/**
+ * @brief Checks if the list contains a given value using cmp_func.
+ *
+ * @param p_list Pointer to the linked list.
+ * @param p_data Pointer to the data to find.
+ *
+ * @return true if found, false otherwise.
+ */
+bool ll_contains(const ll_t *p_list, void *p_data);
 
 #endif // LINKED_LIST_H
 

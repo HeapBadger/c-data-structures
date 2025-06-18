@@ -74,8 +74,12 @@ array_destroy (array_t *p_array)
 {
     if (NULL != p_array)
     {
-        array_clear(p_array);
-        free(p_array->pp_array);
+        if (NULL != p_array->pp_array)
+        {
+            array_clear(p_array);
+            free(p_array->pp_array);
+        }
+
         free(p_array);
     }
 }
@@ -128,7 +132,6 @@ array_fill (array_t *p_array, void *p_value)
 
         if (ARRAY_SUCCESS != ret)
         {
-            array_delete_element(p_array, p_copy);
             break;
         }
     }
