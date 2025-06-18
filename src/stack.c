@@ -167,6 +167,7 @@ stack_clone (const stack_t *p_ori)
     if (NULL == p_new->p_array)
     {
         free(p_new);
+        p_new = NULL;
     }
 
 EXIT:

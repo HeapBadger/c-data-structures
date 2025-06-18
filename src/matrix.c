@@ -105,7 +105,7 @@ matrix_clear (matrix_t *p_matrix)
 matrix_error_code_t
 matrix_row_size (const matrix_t *p_matrix, size_t *p_size)
 {
-    if (NULL != p_matrix)
+    if ((NULL != p_matrix) && (NULL != p_size))
     {
         *p_size = p_matrix->rows;
         return MATRIX_SUCCESS;
@@ -117,7 +117,7 @@ matrix_row_size (const matrix_t *p_matrix, size_t *p_size)
 matrix_error_code_t
 matrix_column_size (const matrix_t *p_matrix, size_t *p_size)
 {
-    if (NULL != p_matrix)
+    if ((NULL != p_matrix) && (NULL != p_size))
     {
         *p_size = p_matrix->cols;
         return MATRIX_SUCCESS;
