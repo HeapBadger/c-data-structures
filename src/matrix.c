@@ -76,7 +76,11 @@ matrix_destroy (matrix_t *p_matrix)
 {
     if (NULL != p_matrix)
     {
-        matrix_clear(p_matrix);
+        if (NULL != p_matrix->pp_matrix)
+        {
+            matrix_clear(p_matrix);
+        }
+
         free(p_matrix);
     }
 }

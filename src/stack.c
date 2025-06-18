@@ -62,9 +62,13 @@ stack_destroy (stack_t *p_stack)
 stack_error_code_t
 stack_clear (stack_t *p_stack)
 {
-    if (NULL != p_stack)
+    if (NULL != p_stack) 
     {
-        array_clear(p_stack->p_array);
+        if (NULL != p_stack->p_array)
+        {
+            array_clear(p_stack->p_array);
+        }
+
         return STACK_SUCCESS;
     }
 
