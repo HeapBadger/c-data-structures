@@ -13,6 +13,11 @@
 #include "auxiliary.h"
 
 /**
+ * Max number of elements that array can have.
+ */
+#define ARRAY_MAX_SIZE 500
+
+/**
  * Growth factor used when expanding array capacity.
  * Should be tuned to minimize reallocations during heavy insertion.
  */
@@ -21,7 +26,7 @@
 /**
  * Shrink threshold divisor: shrink only if size < capacity /
  * ARRAY_SHRINK_THRESHOLD_DIVISOR. Prevents frequent shrinking when usage
- * temporarily dips, reducing realloc overhead
+ * temporarily dips, reducing realloc overhead.
  */
 #define ARRAY_SHRINK_THRESHOLD_DIVISOR 6
 
@@ -63,6 +68,7 @@ typedef struct
  * @param del_f Pointer to a function that frees an element.
  * @param cmp_f Pointer to a comparison function for elements.
  * @param print_f Pointer to a function that prints an element.
+ *
  * @return Pointer to the new array, or NULL on failure.
  */
 array_t *array_create(size_t           initial_capacity,
@@ -94,93 +100,122 @@ void array_clear(array_t *p_array);
 void array_delete_element(array_t *p_array, void *p_value);
 
 /**
- * @brief Insert an element at a specific index.
+ * @brief Fill the entire array with copies of the given value.
  *
- * @param p_array Pointer to the array.
- * @param index Index at which to insert the new element.
- * @param p_value Value to insert.
- * @return 0 on success, negative error code on failure.
+ * @param p_array Pointer to the array to fill.
+ * @param p_value Pointer to the value to copy into each element.
+ *
+ * @note Caller is responsible for freeing p_value.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_insert(array_t *p_array, size_t index, void *p_value);
+array_error_code_t array_fill(array_t *p_array, void *p_value);
 
 /**
- * @brief Remove an element at a specific index.
+ * @brief Insert an element at the specified index.
  *
  * @param p_array Pointer to the array.
- * @param index Index of the element to remove.
- * @return 0 on success, negative error code on failure.
+ * @param index Index to insert at.
+ * @param p_value Pointer to the value to insert.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_remove(array_t *p_array, size_t index);
+array_error_code_t array_insert(array_t *p_array, size_t index, void *p_value);
+
+/**
+ * @brief Remove the element at the specified index.
+ *
+ * @param p_array Pointer to the array.
+ * @param index Index to remove from.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
+ */
+array_error_code_t array_remove(array_t *p_array, size_t index);
 
 /**
  * @brief Append an element to the end of the array.
  *
  * @param p_array Pointer to the array.
- * @param p_value The value to append.
- * @return 0 on success, negative error code on failure.
+ * @param p_value Pointer to the value to append.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_push(array_t *p_array, void *p_value);
+array_error_code_t array_push(array_t *p_array, void *p_value);
 
 /**
- * @brief Remove the last element of the array.
- *
- * @note Caller is responsible for freeing data.
+ * @brief Remove the last element from the array.
  *
  * @param p_array Pointer to the array.
- * @return 0 on success, negative error code if array is empty or NULL.
+ * @param p_out Output parameter to hold the removed element.
+ *
+ * @note Caller must free p_out appropriately.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_pop(array_t *p_array, void **p_out);
+array_error_code_t array_pop(array_t *p_array, void **p_out);
 
 /**
- * @brief Retrieve an element from the array.
+ * @brief Retrieve the element at the given index.
  *
  * @param p_array Pointer to the array.
  * @param index Index of the element to retrieve.
- * @param out Output pointer for the element.
- * @return 0 on success, negative error code on failure.
+ * @param p_out Output parameter to hold the retrieved element.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_get(const array_t *p_array, size_t index, void **p_out);
+array_error_code_t array_get(const array_t *p_array,
+                             size_t         index,
+                             void         **p_out);
 
 /**
- * @brief Set an element at a given index in the array.
+ * @brief Replace the element at the given index.
  *
  * @param p_array Pointer to the array.
- * @param index Index to set the element at.
- * @param p_value The value to insert.
- * @return 0 on success, negative error code on failure.
+ * @param index Index of the element to replace.
+ * @param p_value Pointer to the new value.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_set(array_t *p_array, size_t index, void *p_value);
+array_error_code_t array_set(array_t *p_array, size_t index, void *p_value);
 
 /**
- * @brief Find the index of a value using linear search.
+ * @brief Find the index of the given key using the comparison function.
  *
  * @param p_array Pointer to the array.
- * @param p_key Key to search for.
- * @return Index of the element if found, negative error code otherwise.
+ * @param p_key Pointer to the key to find.
+ * @param p_idx Output parameter for the found index.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_find(const array_t *p_array, void *p_key);
+array_error_code_t array_find(const array_t *p_array,
+                              void          *p_key,
+                              size_t        *p_idx);
 
 /**
- * @brief Get the current number of elements in the array.
+ * @brief Get the number of elements in the array.
  *
  * @param p_array Pointer to the array.
- * @return Number of elements, or negative error code if p_array is NULL.
+ * @param p_size Output parameter to store the array's current size.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_size(const array_t *p_array);
+array_error_code_t array_size(const array_t *p_array, size_t *p_size);
 
 /**
- * @brief Get the current capacity of the array.
+ * @brief Get the total capacity of the array.
  *
  * @param p_array Pointer to the array.
- * @return Maximum number of elements the array can hold, or negative error
- * code.
+ * @param p_cap Output parameter to store the array's capacity.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_capacity(const array_t *p_array);
+array_error_code_t array_capacity(const array_t *p_array, size_t *p_cap);
 
 /**
  * @brief Check whether the array is empty.
  *
  * @param p_array Pointer to the array.
+ *
  * @return true if empty, false otherwise.
  */
 bool array_is_empty(const array_t *p_array);
@@ -189,6 +224,7 @@ bool array_is_empty(const array_t *p_array);
  * @brief Check whether the array is full.
  *
  * @param p_array Pointer to the array.
+ *
  * @return true if full, false otherwise.
  */
 bool array_is_full(const array_t *p_array);
@@ -198,68 +234,36 @@ bool array_is_full(const array_t *p_array);
  *
  * @param p_array_a Pointer to the array a.
  * @param p_array_b Pointer to the array b.
+ *
  * @return true if equal, false otherwise.
  */
 bool array_is_equal(const array_t *p_array_a, const array_t *p_array_b);
 
 /**
- * @brief Ensure the array has at least the given capacity.
- *
- * @param p_array Pointer to the array.
- * @param new_cap Minimum capacity to reserve.
- * @return 0 on success, negative error code on failure.
- */
-ssize_t array_reserve(array_t *p_array, size_t new_cap);
-
-/**
- * @brief Shrink the array's allocated memory to match its size.
- *
- * @param p_array Pointer to the array.
- * @return 0 on success, negative error code on failure.
- */
-ssize_t array_shrink_to_fit(array_t *p_array);
-
-/**
  * @brief Apply a function to each element in the array.
  *
  * @param p_array Pointer to the array.
- * @param func    Function to apply to each element. The function should
- *                accept a `void *` to the element and a `size_t` index.
+ * @param func Function to apply to each element.
  *
- * @return 0 on success, or a negative error code on failure.
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t array_foreach(array_t *p_array, foreach_func func);
+array_error_code_t array_foreach(array_t *p_array, foreach_func func);
 
 /**
- * @brief Create a deep copy of the array structure using a user-provided copy
- * function.
+ * @brief Create a deep copy of the array structure.
  *
- * @param p_array Pointer to the source array.
+ * @param p_ori Pointer to the source array.
  *
  * @return Pointer to a new array on success, or NULL on failure.
  */
 array_t *array_clone(const array_t *p_ori);
 
 /**
- * @brief Sort the array using bubble sort and a custom comparator.
- *
- * This function performs an in-place bubble sort on the dynamic array using the
- * user-provided comparison function (`cmp_f`) stored in the array structure.
- *
- * @param p_array Pointer to the dynamic array.
- * @return 0 on success, or a negative error code on failure (e.g., invalid
- * input).
- */
-ssize_t array_bubblesort(array_t *p_array);
-
-/**
- * @brief Find an element using binary search (requires sorted array).
+ * @brief Prints an array.
  *
  * @param p_array Pointer to the array.
- * @param p_key Key to search for.
- * @return Index of the element if found, negative error code otherwise.
  */
-ssize_t array_sorted_search(const array_t *p_array, void *p_key);
+void array_print(const array_t *p_array);
 
 #endif // ARRAY_H
 

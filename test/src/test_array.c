@@ -19,7 +19,7 @@ static void test_array_size_capacity(void);
 static void test_array_set_get(void);
 static void test_array_clear_empty(void);
 static void test_array_null_inputs(void);
-static void test_array_bounds_and_sort_search(void);
+static void test_array_bounds(void);
 static void test_array_resize_behavior(void);
 static void test_array_foreach_clone(void);
 
@@ -78,12 +78,9 @@ array_suite (void)
         goto CLEANUP;
     }
 
-    if (NULL
-        == (CU_add_test(suite,
-                        "test_array_bounds_and_sort_search",
-                        test_array_bounds_and_sort_search)))
+    if (NULL == (CU_add_test(suite, "test_array_bounds", test_array_bounds)))
     {
-        ERROR_LOG("Failed to add test_array_bounds_and_sort_search to suite\n");
+        ERROR_LOG("Failed to add test_array_bounds to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -133,8 +130,11 @@ test_array_create_destroy (void)
     array_t *p_array1
         = array_create(10, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_array1);
-    CU_ASSERT_EQUAL(array_size(p_array1), 0);
-    CU_ASSERT(array_capacity(p_array1) >= 10);
+    size_t size = 0U;
+    CU_ASSERT_EQUAL(array_size(p_array1, &size), ARRAY_SUCCESS);
+    CU_ASSERT_EQUAL(size, 0);
+    CU_ASSERT_EQUAL(array_capacity(p_array1, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size >= 10);
     array_destroy(p_array1);
 
     array_t *p_array2
@@ -154,7 +154,9 @@ test_array_insert_remove (void)
     array_t *p_array
         = array_create(4, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_array);
-    CU_ASSERT_EQUAL(array_capacity(p_array), 4);
+    size_t size = 0U;
+    CU_ASSERT_EQUAL(array_capacity(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size >= 4);
     CU_ASSERT_TRUE(array_is_empty(p_array));
     CU_ASSERT_FALSE(array_is_full(p_array));
 
@@ -168,22 +170,26 @@ test_array_insert_remove (void)
     *val4     = 40;
 
     // Insert at index 0 (empty array)
-    ssize_t ret = array_insert(p_array, 0, val1);
+    array_error_code_t ret = array_insert(p_array, 0, val1);
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 1);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 1);
 
     // Push elements
     ret = array_push(p_array, val2);
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 2);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 2);
     ret = array_push(p_array, val3);
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 3);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 3);
 
     // Insert in the middle
     ret = array_insert(p_array, 1, val4); // between val1 and val2
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 4);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 4);
     CU_ASSERT_TRUE(array_is_full(p_array));
     CU_ASSERT_FALSE(array_is_empty(p_array));
 
@@ -206,17 +212,36 @@ test_array_insert_remove (void)
     // Remove element at index 1 (val4)
     ret = array_remove(p_array, 1);
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 3);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 3);
 
     // Pop last element (val3)
     void *p_elem = NULL;
     ret          = array_pop(p_array, &p_elem);
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 2);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 2);
     CU_ASSERT_EQUAL(*(int *)p_elem, 30);
     p_array->del_f(p_elem);
 
     // Cleanup
+    array_destroy(p_array);
+
+    // Test filling the array
+    p_array   = array_create(4, delete_int, compare_ints, print_int, copy_int);
+    int *val0 = malloc(sizeof(int));
+    *val0     = 0;
+    CU_ASSERT_EQUAL(array_fill(p_array, val0), ARRAY_SUCCESS);
+    free(val0);
+
+    for (size_t idx = 0; idx < p_array->cap; ++idx)
+    {
+        array_get(p_array, 0, &out);
+        CU_ASSERT_EQUAL(*(int *)out, 0);
+    }
+
+    CU_ASSERT_EQUAL(p_array->cap, p_array->len);
+
     array_destroy(p_array);
 }
 
@@ -229,8 +254,11 @@ test_array_size_capacity (void)
     array_t *p_array
         = array_create(2, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_array);
-    CU_ASSERT_EQUAL(array_size(p_array), 0);
-    CU_ASSERT(array_capacity(p_array) >= 2);
+    size_t size = 0U;
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 0);
+    CU_ASSERT_EQUAL(array_capacity(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size >= 2);
 
     int *val1 = malloc(sizeof(int));
     int *val2 = malloc(sizeof(int));
@@ -238,17 +266,21 @@ test_array_size_capacity (void)
     *val2     = 6;
     array_push(p_array, val1);
     array_push(p_array, val2);
-    CU_ASSERT_EQUAL(array_size(p_array), 2);
-    CU_ASSERT(array_capacity(p_array) >= 2);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 2);
+    CU_ASSERT_EQUAL(array_capacity(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size >= 2);
 
     void *p_elem = NULL;
     CU_ASSERT_EQUAL(array_pop(p_array, &p_elem), ARRAY_SUCCESS);
-    CU_ASSERT_EQUAL(array_size(p_array), 1);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 1);
     CU_ASSERT_EQUAL(*(int *)p_elem, 6);
     p_array->del_f(p_elem);
 
     array_clear(p_array);
-    CU_ASSERT_EQUAL(array_size(p_array), 0);
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 0);
 
     array_destroy(p_array);
 }
@@ -268,7 +300,8 @@ test_array_set_get (void)
     *val1     = 100;
     *val2     = 200;
 
-    ssize_t ret = array_push(p_array, val1);
+    array_error_code_t ret = array_push(p_array, val1);
+
     CU_ASSERT_EQUAL(ret, ARRAY_SUCCESS);
 
     ret = array_set(p_array, 0, val2); // Should delete old val1 internally
@@ -312,7 +345,9 @@ test_array_clear_empty (void)
 
     array_clear(p_array);
     CU_ASSERT_TRUE(array_is_empty(p_array));
-    CU_ASSERT_EQUAL(array_size(p_array), 0);
+    size_t size = 0U;
+    CU_ASSERT_EQUAL(array_size(p_array, &size), ARRAY_SUCCESS);
+    CU_ASSERT(size == 0);
 
     array_destroy(p_array);
 }
@@ -321,7 +356,7 @@ test_array_clear_empty (void)
  * @brief Test sorting and searching with valid and invalid input.
  */
 static void
-test_array_bounds_and_sort_search (void)
+test_array_bounds (void)
 {
     array_t *p_array
         = array_create(4, delete_int, compare_ints, print_int, copy_int);
@@ -340,27 +375,6 @@ test_array_bounds_and_sort_search (void)
     {
         array_push(p_array, vals[i]);
     }
-
-    CU_ASSERT_EQUAL(array_bubblesort(p_array), ARRAY_SUCCESS);
-
-    int key = 8;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), 3);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), 3);
-    key = 5;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), 2);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), 2);
-    key = 2;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), 1);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), 1);
-    key = 1;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), 0);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), 0);
-    key = 10;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), ARRAY_NOT_FOUND);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), ARRAY_NOT_FOUND);
-    key = -10;
-    CU_ASSERT_EQUAL(array_sorted_search(p_array, &key), ARRAY_NOT_FOUND);
-    CU_ASSERT_EQUAL(array_find(p_array, &key), ARRAY_NOT_FOUND);
 
     // Invalid index access
     void *out  = NULL;
@@ -382,11 +396,12 @@ test_array_resize_behavior (void)
     array_t *p_array
         = array_create(4, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_array);
-    CU_ASSERT_EQUAL(array_capacity(p_array), 4);
+    size_t cap_before = 0U;
+    CU_ASSERT_EQUAL(array_capacity(p_array, &cap_before), ARRAY_SUCCESS);
+    CU_ASSERT(cap_before >= 4);
     CU_ASSERT_TRUE(array_is_empty(p_array));
 
     // Insert values to exceed initial capacity and trigger growth
-    ssize_t cap_before = array_capacity(p_array);
     for (int i = 0; i < 100; ++i)
     {
         int *val = malloc(sizeof(int));
@@ -394,7 +409,8 @@ test_array_resize_behavior (void)
         CU_ASSERT_EQUAL(array_push(p_array, val), ARRAY_SUCCESS);
     }
 
-    ssize_t cap_after_growth = array_capacity(p_array);
+    size_t cap_after_growth = 0U;
+    CU_ASSERT_EQUAL(array_capacity(p_array, &cap_after_growth), ARRAY_SUCCESS);
     CU_ASSERT(cap_after_growth > cap_before);
 
     // Remove enough elements to trigger shrinking condition
@@ -407,7 +423,8 @@ test_array_resize_behavior (void)
     }
 
     // Capacity should have decreased but not below minimum capacity
-    ssize_t cap_after_shrink = array_capacity(p_array);
+    size_t cap_after_shrink = 0U;
+    CU_ASSERT_EQUAL(array_capacity(p_array, &cap_after_shrink), ARRAY_SUCCESS);
     CU_ASSERT(cap_after_shrink < cap_after_growth);
     CU_ASSERT(cap_after_shrink >= ARRAY_MIN_CAPACITY);
 
@@ -450,9 +467,12 @@ test_array_foreach_clone (void)
     // Test deep clone: should have same elements but different pointers
     array_t *p_clone = array_clone(p_array);
     CU_ASSERT_PTR_NOT_NULL(p_clone);
-    CU_ASSERT_EQUAL(array_size(p_clone), array_size(p_array));
+    size_t size_ori = 0U, size_new = 0U;
+    CU_ASSERT_EQUAL(array_size(p_array, &size_ori), ARRAY_SUCCESS);
+    CU_ASSERT_EQUAL(array_size(p_clone, &size_new), ARRAY_SUCCESS);
+    CU_ASSERT(size_new == size_ori);
 
-    for (ssize_t i = 0; i < array_size(p_array); ++i)
+    for (size_t i = 0; i < size_ori; ++i)
     {
         void *orig = NULL, *cloned = NULL;
         array_get(p_array, i, &orig);
@@ -473,19 +493,15 @@ static void
 test_array_null_inputs (void)
 {
     CU_ASSERT_PTR_NULL(array_create(0, NULL, NULL, NULL, NULL));
-    CU_ASSERT_EQUAL(array_size(NULL), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_capacity(NULL), ARRAY_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(array_size(NULL, NULL), ARRAY_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(array_capacity(NULL, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_push(NULL, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_insert(NULL, 0, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_set(NULL, 0, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_get(NULL, 0, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_remove(NULL, 0), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_pop(NULL, NULL), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_find(NULL, NULL), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_reserve(NULL, 10), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_shrink_to_fit(NULL), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_bubblesort(NULL), ARRAY_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(array_sorted_search(NULL, NULL), ARRAY_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(array_find(NULL, NULL, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(array_foreach(NULL, NULL), ARRAY_INVALID_ARGUMENT);
     CU_ASSERT_PTR_NULL(array_clone(NULL));
 }

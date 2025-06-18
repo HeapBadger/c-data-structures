@@ -1,3 +1,4 @@
+
 /**
  * @file array.c
  * @brief Implementation of the dynamic array data structure.
@@ -10,10 +11,24 @@
 #include <string.h>
 #include "array.h"
 
-static ssize_t array_binary_search(const array_t *p_array,
-                                   size_t         low,
-                                   size_t         high,
-                                   void          *p_key);
+/**
+ * @brief Ensure the array has at least the specified capacity.
+ *
+ * @param p_array Pointer to the array.
+ * @param new_cap The new minimum capacity required.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
+ */
+static array_error_code_t array_reserve(array_t *p_array, size_t new_cap);
+
+/**
+ * @brief Reduce the array's capacity to better fit its current size.
+ *
+ * @param p_array Pointer to the array.
+ *
+ * @return ARRAY_SUCCESS on success, appropriate error code otherwise.
+ */
+static array_error_code_t array_shrink_to_fit(array_t *p_array);
 
 array_t *
 array_create (size_t           initial_capacity,
@@ -70,10 +85,13 @@ array_clear (array_t *p_array)
 {
     if ((NULL != p_array) && (NULL != p_array->pp_array))
     {
-        for (size_t idx = p_array->len; idx-- > 0U;)
+        for (size_t idx = 0; idx < p_array->len; ++idx)
         {
-            (void)array_remove(p_array, idx);
+            array_delete_element(p_array, p_array->pp_array[idx]);
+            p_array->pp_array[idx] = NULL;
         }
+
+        p_array->len = 0U;
     }
 }
 
@@ -86,10 +104,47 @@ array_delete_element (array_t *p_array, void *p_value)
     }
 }
 
-ssize_t
+array_error_code_t
+array_fill (array_t *p_array, void *p_value)
+{
+    if ((NULL == p_array) || (NULL == p_value) || (NULL == p_array->cpy_f))
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    array_error_code_t ret = ARRAY_SUCCESS;
+
+    for (size_t idx = 0U; idx < p_array->cap; ++idx)
+    {
+        void *p_copy = p_array->cpy_f(p_value);
+
+        if (NULL == p_copy)
+        {
+            ret = ARRAY_ALLOCATION_FAILURE;
+            break;
+        }
+
+        ret = array_push(p_array, p_copy);
+
+        if (ARRAY_SUCCESS != ret)
+        {
+            array_delete_element(p_array, p_copy);
+            break;
+        }
+    }
+
+    if (ARRAY_SUCCESS != ret)
+    {
+        array_clear(p_array);
+    }
+
+    return ret;
+}
+
+array_error_code_t
 array_insert (array_t *p_array, size_t index, void *p_value)
 {
-    ssize_t ret = ARRAY_SUCCESS;
+    array_error_code_t ret = ARRAY_SUCCESS;
 
     if ((NULL == p_array) || (NULL == p_value))
     {
@@ -128,7 +183,7 @@ EXIT:
     return ret;
 }
 
-ssize_t
+array_error_code_t
 array_remove (array_t *p_array, size_t index)
 {
     if (NULL == p_array)
@@ -157,7 +212,7 @@ array_remove (array_t *p_array, size_t index)
     return ARRAY_SUCCESS;
 }
 
-ssize_t
+array_error_code_t
 array_push (array_t *p_array, void *p_value)
 {
     if ((NULL == p_array) || (NULL == p_value))
@@ -168,10 +223,10 @@ array_push (array_t *p_array, void *p_value)
     return array_insert(p_array, p_array->len, p_value);
 }
 
-ssize_t
+array_error_code_t
 array_pop (array_t *p_array, void **p_out)
 {
-    if (NULL == p_array)
+    if ((NULL == p_array) || (NULL == p_out))
     {
         return ARRAY_INVALID_ARGUMENT;
     }
@@ -184,14 +239,13 @@ array_pop (array_t *p_array, void **p_out)
     size_t last_index = p_array->len - 1U;
     *p_out            = p_array->pp_array[last_index];
 
-    // Do NOT call del_f — the caller now owns the element.
     p_array->pp_array[last_index] = NULL;
     p_array->len--;
 
     return array_shrink_to_fit(p_array);
 }
 
-ssize_t
+array_error_code_t
 array_get (const array_t *p_array, size_t index, void **p_out)
 {
     if ((NULL == p_array) || (NULL == p_out))
@@ -208,7 +262,7 @@ array_get (const array_t *p_array, size_t index, void **p_out)
     return ARRAY_SUCCESS;
 }
 
-ssize_t
+array_error_code_t
 array_set (array_t *p_array, size_t index, void *p_value)
 {
     if ((NULL == p_array) || (NULL == p_value))
@@ -216,16 +270,20 @@ array_set (array_t *p_array, size_t index, void *p_value)
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    if ((index > p_array->len) || (index >= p_array->cap))
+    // If setting past current end, error.
+    if (index > p_array->len)
     {
         array_delete_element(p_array, p_value);
         return ARRAY_OUT_OF_BOUNDS;
     }
-    else if (index == p_array->len)
+
+    // If appending at the end, use array_insert to handle all logic safely.
+    if (index == p_array->len)
     {
-        p_array->len++;
+        return array_insert(p_array, index, p_value);
     }
 
+    // Replace value at index.
     if (NULL != p_array->pp_array[index])
     {
         array_delete_element(p_array, p_array->pp_array[index]);
@@ -235,10 +293,11 @@ array_set (array_t *p_array, size_t index, void *p_value)
     return ARRAY_SUCCESS;
 }
 
-ssize_t
-array_find (const array_t *p_array, void *p_key)
+array_error_code_t
+array_find (const array_t *p_array, void *p_key, size_t *p_idx)
 {
-    if ((NULL == p_array) || (NULL == p_key) || (NULL == p_array->cmp_f))
+    if ((NULL == p_array) || (NULL == p_key) || (NULL == p_array->cmp_f)
+        || (NULL == p_idx))
     {
         return ARRAY_INVALID_ARGUMENT;
     }
@@ -249,45 +308,62 @@ array_find (const array_t *p_array, void *p_key)
 
         if (0 == p_array->cmp_f(p_key, p_item))
         {
-            return (ssize_t)idx;
+            *p_idx = idx;
+            return ARRAY_SUCCESS;
         }
     }
 
     return ARRAY_NOT_FOUND;
 }
 
-ssize_t
-array_size (const array_t *p_array)
+array_error_code_t
+array_size (const array_t *p_array, size_t *p_size)
 {
     if (NULL == p_array)
     {
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    return (ssize_t)p_array->len;
+    *p_size = p_array->len;
+    return ARRAY_SUCCESS;
 }
 
-ssize_t
-array_capacity (const array_t *p_array)
+array_error_code_t
+array_capacity (const array_t *p_array, size_t *p_cap)
 {
     if (NULL == p_array)
     {
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    return (ssize_t)p_array->cap;
+    *p_cap = p_array->cap;
+    return ARRAY_SUCCESS;
 }
 
 bool
 array_is_empty (const array_t *p_array)
 {
-    return (array_size(p_array) <= 0);
+    size_t size = 0U;
+
+    if ((NULL == p_array) || (ARRAY_SUCCESS != array_size(p_array, &size)))
+    {
+        return true;
+    }
+
+    return (size == 0U);
 }
 
 bool
 array_is_full (const array_t *p_array)
 {
-    return (array_size(p_array) >= array_capacity(p_array));
+    size_t size = 0U;
+
+    if ((NULL == p_array) || (ARRAY_SUCCESS != array_size(p_array, &size)))
+    {
+        return false;
+    }
+
+    return (size >= p_array->cap);
 }
 
 bool
@@ -306,16 +382,22 @@ array_is_equal (const array_t *p_array_a, const array_t *p_array_b)
         goto EXIT;
     }
 
-    if ((array_size(p_array_a) != array_size(p_array_b))
-        || (p_array_a->cmp_f != p_array_b->cmp_f))
+    size_t size_a = 0U, size_b = 0U;
+
+    if ((ARRAY_SUCCESS != array_size(p_array_a, &size_a))
+        || (ARRAY_SUCCESS != array_size(p_array_b, &size_b)))
     {
         is_equal = false;
         goto EXIT;
     }
 
-    size_t len = array_size(p_array_a);
+    if (size_a != size_b)
+    {
+        is_equal = false;
+        goto EXIT;
+    }
 
-    for (size_t idx = 0U; idx < len; idx++)
+    for (size_t idx = 0U; idx < size_a; idx++)
     {
         void *p_a_out = p_array_a->pp_array[idx];
         void *p_b_out = p_array_b->pp_array[idx];
@@ -331,10 +413,93 @@ EXIT:
     return is_equal;
 }
 
-ssize_t
+array_error_code_t
+array_foreach (array_t *p_array, foreach_func func)
+{
+    if ((NULL == p_array) || (NULL == func))
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    for (size_t idx = 0; idx < p_array->len; idx++)
+    {
+        func(p_array->pp_array[idx], idx);
+    }
+
+    return ARRAY_SUCCESS;
+}
+
+array_t *
+array_clone (const array_t *p_ori)
+{
+    array_t *p_new = NULL;
+
+    if (NULL == p_ori)
+    {
+        goto EXIT;
+    }
+
+    p_new = array_create(
+        p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
+
+    if (NULL == p_new)
+    {
+        goto EXIT;
+    }
+
+    for (size_t idx = 0U; idx < p_ori->len; ++idx)
+    {
+        void *p_copy = p_ori->cpy_f(p_ori->pp_array[idx]);
+
+        if (NULL == p_copy)
+        {
+            array_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+
+        array_error_code_t ret = array_insert(p_new, idx, p_copy);
+
+        if (ARRAY_SUCCESS != ret)
+        {
+            array_delete_element(p_new, p_copy);
+            array_destroy(p_new);
+            p_new = NULL;
+            goto EXIT;
+        }
+    }
+
+EXIT:
+    return p_new;
+}
+
+void
+array_print (const array_t *p_array)
+{
+    if ((NULL == p_array) || (NULL == p_array->print_f))
+    {
+        return;
+    }
+
+    printf("[");
+
+    for (size_t idx = 0; idx < p_array->len; ++idx)
+    {
+        p_array->print_f(p_array->pp_array[idx], idx);
+
+        if (idx < p_array->len - 1)
+        {
+            printf(", ");
+        }
+    }
+
+    printf("]\n");
+}
+
+static array_error_code_t
 array_reserve (array_t *p_array, size_t new_cap)
 {
-    ssize_t ret = ARRAY_SUCCESS;
+    array_error_code_t ret = ARRAY_SUCCESS;
 
     if (NULL == p_array)
     {
@@ -342,7 +507,7 @@ array_reserve (array_t *p_array, size_t new_cap)
         goto EXIT;
     }
 
-    if (p_array->cap >= new_cap)
+    if ((p_array->cap >= new_cap) || (ARRAY_MAX_SIZE < new_cap))
     {
         ret = ARRAY_OUT_OF_BOUNDS;
         goto EXIT;
@@ -367,10 +532,10 @@ EXIT:
     return ret;
 }
 
-ssize_t
+static array_error_code_t
 array_shrink_to_fit (array_t *p_array)
 {
-    ssize_t ret = ARRAY_SUCCESS;
+    array_error_code_t ret = ARRAY_SUCCESS;
 
     if ((NULL == p_array) || (NULL == p_array->pp_array))
     {
@@ -406,146 +571,6 @@ array_shrink_to_fit (array_t *p_array)
 
 EXIT:
     return ret;
-}
-
-ssize_t
-array_foreach (array_t *p_array, foreach_func func)
-{
-    if ((NULL == p_array) || (NULL == func))
-    {
-        return ARRAY_INVALID_ARGUMENT;
-    }
-
-    for (size_t idx = 0; idx < p_array->len; idx++)
-    {
-        func(p_array->pp_array[idx], idx);
-    }
-
-    return ARRAY_SUCCESS;
-}
-
-array_t *
-array_clone (const array_t *p_ori)
-{
-    array_t *p_new = NULL;
-
-    if ((NULL == p_ori) || (NULL == p_ori->cpy_f))
-    {
-        goto EXIT;
-    }
-
-    p_new = array_create(
-        p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
-
-    if (NULL == p_new)
-    {
-        goto EXIT;
-    }
-
-    p_new->len = p_ori->len;
-
-    for (size_t idx = 0; idx < p_ori->len; ++idx)
-    {
-        void *copied_elem = p_ori->cpy_f(p_ori->pp_array[idx]);
-
-        if (NULL == copied_elem)
-        {
-            array_destroy(p_new); // clean up partially created clone
-            p_new = NULL;
-            goto EXIT;
-        }
-
-        p_new->pp_array[idx] = copied_elem;
-    }
-
-EXIT:
-    return p_new;
-}
-
-ssize_t
-array_bubblesort (array_t *p_array)
-{
-    if ((NULL == p_array) || (NULL == p_array->cmp_f))
-    {
-        return ARRAY_INVALID_ARGUMENT;
-    }
-
-    for (size_t i = 0U; i < p_array->len - 1U; ++i)
-    {
-        for (size_t j = 0U; j < p_array->len - i - 1U; ++j)
-        {
-            if (0 < p_array->cmp_f(p_array->pp_array[j],
-                                   p_array->pp_array[j + 1U]))
-            {
-                void *tmp                 = p_array->pp_array[j];
-                p_array->pp_array[j]      = p_array->pp_array[j + 1U];
-                p_array->pp_array[j + 1U] = tmp;
-            }
-        }
-    }
-
-    return ARRAY_SUCCESS;
-}
-
-ssize_t
-array_sorted_search (const array_t *p_array, void *p_key)
-{
-    if ((NULL == p_array) || (NULL == p_key) || (NULL == p_array->cmp_f))
-    {
-        return ARRAY_INVALID_ARGUMENT;
-    }
-
-    return array_binary_search(p_array, 0U, p_array->len - 1U, p_key);
-}
-
-/**
- * @brief Perform a recursive binary search on a sorted array.
- *
- * This internal utility function performs binary search recursively over the
- * range [low, high] in a dynamic array that is assumed to be sorted. It uses
- * the array's comparison function (`cmp_f`) to compare elements with the given
- * key.
- *
- * @note This function assumes the array is sorted and inputs are valid.
- *
- * @param p_array Pointer to the dynamic array.
- * @param low The lower index of the search range (inclusive).
- * @param high The upper index of the search range (inclusive).
- * @param p_key Pointer to the key to search for.
- * @return Index of the found element, or a negative error code if not found.
- */
-static ssize_t
-array_binary_search (const array_t *p_array,
-                     size_t         low,
-                     size_t         high,
-                     void          *p_key)
-{
-    if (low > high)
-    {
-        return ARRAY_NOT_FOUND;
-    }
-
-    ssize_t mid     = low + (high - low) / 2U;
-    void   *mid_val = p_array->pp_array[mid];
-    ssize_t cmp     = p_array->cmp_f(mid_val, p_key);
-
-    if (0 == cmp)
-    {
-        return mid;
-    }
-    else if (cmp > 0)
-    {
-        if (mid == 0) // check underflow
-        {
-            return ARRAY_NOT_FOUND;
-        }
-
-        return array_binary_search(p_array, low, mid - 1U, p_key);
-    }
-    else
-    {
-        return array_binary_search(p_array, mid + 1U, high, p_key);
-    }
 }
 
 /*** end of file ***/

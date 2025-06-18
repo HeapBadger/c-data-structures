@@ -23,13 +23,9 @@ typedef enum
 
 typedef struct
 {
-    array_t  **pp_matrix;
-    size_t     rows;
-    size_t     cols;
-    del_func   del_f;
-    cmp_func   cmp_f;
-    print_func print_f;
-    copy_func  cpy_f;
+    array_t **pp_matrix;
+    size_t    rows;
+    size_t    cols;
 } matrix_t;
 
 /**
@@ -70,19 +66,22 @@ void matrix_clear(matrix_t *p_matrix);
  * @brief Get the number of rows in the matrix.
  *
  * @param p_matrix Pointer to the matrix.
+ * @param p_size Output parameter for the found size.
  *
- * @return Number of rows, or error code on failure.
+ * @return MATRIX_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t matrix_row_size(const matrix_t *p_matrix);
+matrix_error_code_t matrix_row_size(const matrix_t *p_matrix, size_t *p_size);
 
 /**
  * @brief Get the number of columns in the matrix.
  *
  * @param p_matrix Pointer to the matrix.
+ * @param p_size Output parameter for the found size.
  *
- * @return Number of columns, or error code on failure.
+ * @return MATRIX_SUCCESS on success, appropriate error code otherwise.
  */
-ssize_t matrix_column_size(const matrix_t *p_matrix);
+matrix_error_code_t matrix_column_size(const matrix_t *p_matrix,
+                                       size_t         *p_size);
 
 /**
  * @brief Fill the entire matrix with copies of the given value.
@@ -94,7 +93,7 @@ ssize_t matrix_column_size(const matrix_t *p_matrix);
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_fill(matrix_t *p_matrix, void *p_value);
+matrix_error_code_t matrix_fill(matrix_t *p_matrix, void *p_value);
 
 /**
  * @brief Insert a value at a specific row and column in the matrix.
@@ -106,10 +105,10 @@ ssize_t matrix_fill(matrix_t *p_matrix, void *p_value);
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_insert(matrix_t *p_matrix,
-                      size_t    row,
-                      size_t    col,
-                      void     *p_value);
+matrix_error_code_t matrix_insert(matrix_t *p_matrix,
+                                  size_t    row,
+                                  size_t    col,
+                                  void     *p_value);
 
 /**
  * @brief Remove the value at a specific position in the matrix.
@@ -120,7 +119,7 @@ ssize_t matrix_insert(matrix_t *p_matrix,
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_remove(matrix_t *p_matrix, size_t row, size_t col);
+matrix_error_code_t matrix_remove(matrix_t *p_matrix, size_t row, size_t col);
 
 /**
  * @brief Retrieve the value at a specific row and column.
@@ -132,10 +131,10 @@ ssize_t matrix_remove(matrix_t *p_matrix, size_t row, size_t col);
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_get(const matrix_t *p_matrix,
-                   size_t          row,
-                   size_t          col,
-                   void          **p_out);
+matrix_error_code_t matrix_get(const matrix_t *p_matrix,
+                               size_t          row,
+                               size_t          col,
+                               void          **p_out);
 
 /**
  * @brief Set the value at a specific row and column.
@@ -147,7 +146,10 @@ ssize_t matrix_get(const matrix_t *p_matrix,
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_set(matrix_t *p_matrix, size_t row, size_t col, void *p_value);
+matrix_error_code_t matrix_set(matrix_t *p_matrix,
+                               size_t    row,
+                               size_t    col,
+                               void     *p_value);
 
 /**
  * @brief Find the first occurrence of a key in the matrix.
@@ -159,10 +161,10 @@ ssize_t matrix_set(matrix_t *p_matrix, size_t row, size_t col, void *p_value);
  *
  * @return MATRIX_SUCCESS on success, error code on failure.
  */
-ssize_t matrix_find(matrix_t *p_matrix,
-                    void     *p_key,
-                    size_t   *p_row,
-                    size_t   *p_col);
+matrix_error_code_t matrix_find(matrix_t *p_matrix,
+                                void     *p_key,
+                                size_t   *p_row,
+                                size_t   *p_col);
 
 /**
  * @brief Create a deep copy of a matrix.
@@ -171,7 +173,7 @@ ssize_t matrix_find(matrix_t *p_matrix,
  *
  * @return Pointer to the copied matrix, or NULL on failure.
  */
-matrix_t *matrix_copy(const matrix_t *p_ori);
+matrix_t *matrix_clone(const matrix_t *p_ori);
 
 /**
  * @brief Check if two matrices are equal in size and content.

@@ -82,8 +82,12 @@ test_matrix_create_destroy (void)
     matrix_t *p_matrix
         = matrix_create(5, 6, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_matrix);
-    CU_ASSERT_EQUAL(matrix_row_size(p_matrix), 5);
-    CU_ASSERT_EQUAL(matrix_column_size(p_matrix), 6);
+
+    size_t size = 0U;
+    CU_ASSERT_EQUAL(matrix_row_size(p_matrix, &size), MATRIX_SUCCESS);
+    CU_ASSERT(size == 5);
+    CU_ASSERT_EQUAL(matrix_column_size(p_matrix, &size), MATRIX_SUCCESS);
+    CU_ASSERT(size == 6);
     matrix_destroy(p_matrix);
 
     p_matrix
@@ -218,7 +222,7 @@ test_matrix_find_copy (void)
                     MATRIX_NOT_FOUND);
 
     // Copy matrix
-    p_copy = matrix_copy(p_matrix);
+    p_copy = matrix_clone(p_matrix);
     CU_ASSERT_PTR_NOT_NULL(p_copy);
 
     // Check equality
@@ -247,8 +251,8 @@ static void
 test_matrix_null_inputs (void)
 {
     CU_ASSERT_PTR_NULL(matrix_create(0, 0, NULL, NULL, NULL, NULL));
-    CU_ASSERT_EQUAL(matrix_row_size(NULL), MATRIX_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(matrix_column_size(NULL), MATRIX_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(matrix_row_size(NULL, NULL), MATRIX_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(matrix_column_size(NULL, NULL), MATRIX_INVALID_ARGUMENT);
 
     CU_ASSERT_EQUAL(matrix_insert(NULL, 0, 0, NULL), MATRIX_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(matrix_remove(NULL, 0, 0), MATRIX_INVALID_ARGUMENT);
@@ -257,7 +261,7 @@ test_matrix_null_inputs (void)
 
     CU_ASSERT_EQUAL(matrix_find(NULL, NULL, NULL, NULL),
                     MATRIX_INVALID_ARGUMENT);
-    CU_ASSERT_PTR_NULL(matrix_copy(NULL));
+    CU_ASSERT_PTR_NULL(matrix_clone(NULL));
     CU_ASSERT_TRUE(matrix_is_equal(NULL, NULL));
 
     return;
