@@ -42,6 +42,7 @@ typedef struct
  * @param del_f   Custom delete function.
  * @param cmp_f   Custom comparison function.
  * @param print_f Custom print function.
+ * @param cpy_f   Custom deep copy function. 
  *
  * @return Pointer to new list, or NULL on failure.
  */
@@ -51,143 +52,146 @@ ll_t *ll_create(const del_func   del_f,
                 const copy_func  cpy_f);
 
 /**
- * @brief Frees the entire linked list and its data.
+ * @brief Free all memory and destroy the linked list.
  *
- * @param p_list List to destroy.
+ * @param p_list Pointer to the list to destroy.
  */
 void ll_destroy(ll_t *p_list);
 
 /**
- * @brief Clears all elements from the linked list.
+ * @brief Remove all elements from the list.
  *
- * @param p_list Pointer to the linked list.
+ * @param p_list Pointer to the list.
  */
-ll_error_code_t ll_clear(ll_t *p_list);
+void ll_clear(ll_t *p_list);
 
 /**
- * @brief Inserts a new node at the start of the list.
+ * @brief Deletes a single element using the list's delete function.
  *
- * @param p_list Target list.
- * @param p_data Data to store.
+ * @param p_list Pointer to the list.
+ * @param p_value Pointer to the element to delete.
+ */
+void ll_delete_element(ll_t *p_list, void *p_value);
+
+/**
+ * @brief Insert an element at the start of the list.
  *
- * @return 0 on success, error code otherwise.
+ * @param p_list Pointer to the list.
+ * @param p_value Pointer to the value to insert.
+ *
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_prepend(ll_t *p_list, void *p_data);
 
 /**
- * @brief Inserts a new node at the end of the list.
+ * @brief Insert an element at the end of the list.
  *
- * @param p_list Target list.
- * @param p_data Data to store.
+ * @param p_list Pointer to the list.
+ * @param p_value Pointer to the value to insert.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_append(ll_t *p_list, void *p_data);
 
 /**
- * @brief Inserts a new node at a given index (or appends if out of bounds).
+ * @brief Insert an element at the specified index.
  *
- * @param p_list Target list.
- * @param p_data Data to store.
- * @param index  Position to insert.
+ * @param p_list Pointer to the list.
+ * @param p_value Pointer to the value to insert.
+ * @param index Index to insert at.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_insert(ll_t *p_list, void *p_data, size_t index);
 
 /**
- * @brief Deletes the node at the specified index.
+ * @brief Remove the node at the specified index.
  *
- * @param p_list Target list.
- * @param index  Position to delete.
+ * @param p_list Pointer to the list.
+ * @param index Index to remove from.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_del_at(ll_t *p_list, size_t index);
 
 /**
- * @brief Checks whether the linked list is empty.
+ * @brief Check whether the list is empty.
  *
- * @param p_list Pointer to the linked list.
+ * @param p_list Pointer to the list.
  *
- * @return true if the list is empty or NULL, false otherwise.
+ * @return true if empty, false otherwise.
  */
 bool ll_is_empty(const ll_t *p_list);
 
 /**
  * @brief Retrieves the node at the specified index.
  *
- * @param p_list Target list.
- * @param index  Position to retrieve.
+ * @param p_list Pointer to the list.
+ * @param index Position to retrieve.
  *
- * @return Pointer to node or NULL if invalid.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_node_t *ll_at(const ll_t *p_list, size_t index);
 
 /**
- * @brief Finds the index of the node containing matching data.
+ * @brief Find the index of the given key using the comparison function.
  *
- * @param p_list Target list.
- * @param p_data Data to find.
- * @param p_idx  Index of the matching node.
+ * @param p_list Pointer to the list.
+ * @param p_key Pointer to the key to find.
+ * @param p_idx Output parameter for the found index.
  *
- * @return Index on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
-ll_error_code_t ll_find(const ll_t *p_list, void *p_data, size_t *p_idx);
+ll_error_code_t ll_find(const ll_t *p_list, void *p_key, size_t *p_idx);
 
 /**
- * @brief Returns the number of nodes in the list.
+ * @brief Get the number of elements in the list.
  *
- * @param p_list Target list.
- * @param p_size Number of nodes in list.
+ * @param p_list Pointer to the list.
+ * @param p_size Output parameter to store the list's current size.
  *
- * @return Number of nodes on success, error code.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_size(const ll_t *p_list, size_t *p_size);
 
 /**
  * @brief Reverses the order of nodes in the list.
  *
- * @param p_list Target list.
+ * @param p_list Pointer to the list.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_reverse(ll_t *p_list);
 
 /**
- * @brief Apply a function to each element in the linked list.
+ * @brief Apply a function to each element in the list.
  *
- * This function iterates over each node in the list and applies the provided
- * callback function to the node's data and its index.
+ * @param p_list Pointer to the list.
+ * @param func Function to apply to each element.
  *
- * @param p_list Pointer to the linked list.
- * @param func   Function pointer to apply on each node's data.
- *                    The function should accept a `void*` to the data and
- *                    a `size_t` index.
- *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_foreach(ll_t *p_list, foreach_func func);
 
 /**
  * @brief Swaps data between two nodes at given indices.
  *
- * @param p_list  Target list.
+ * @param p_list Pointer to the list.
  * @param index_1 First node index.
  * @param index_2 Second node index.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
 
 /**
- * @brief Updates the data at a specified node index.
+ * @brief Replace the element at the given index.
  *
- * @param p_list Target list.
- * @param index  Node index.
- * @param p_data New data pointer.
+ * @param p_list Pointer to the list.
+ * @param index Index of the element to replace.
+ * @param p_data Pointer to the new value.
  *
- * @return 0 on success, error code otherwise.
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
 ll_error_code_t ll_update(ll_t *p_list, size_t index, void *p_data);
 
@@ -204,7 +208,8 @@ ll_t *ll_clone(const ll_t *p_ori);
  * @brief Retrieves the first node in the list.
  *
  * @param p_list Pointer to the linked list.
- * @return Pointer to the head node, or NULL if empty or invalid.
+ *
+ * @return Pointer to a new list on success, or NULL on failure.
  */
 ll_node_t *ll_head(const ll_t *p_list);
 

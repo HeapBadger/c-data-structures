@@ -100,7 +100,7 @@ test_stack_create_destroy_clear (void)
     CU_ASSERT_EQUAL(size, 5);
 
     // Clear the stack
-    CU_ASSERT_EQUAL(stack_clear(p_stack), STACK_SUCCESS);
+    stack_clear(p_stack);
     CU_ASSERT_EQUAL(stack_size(p_stack, &size), STACK_SUCCESS);
     CU_ASSERT_EQUAL(size, 0);
 
@@ -258,7 +258,6 @@ static void
 test_stack_null_inputs (void)
 {
     CU_ASSERT_PTR_NULL(stack_create(0, NULL, NULL, NULL, NULL));
-    CU_ASSERT_EQUAL(stack_clear(NULL), STACK_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(stack_push(NULL, NULL), STACK_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(stack_pop(NULL, NULL), STACK_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(stack_peek(NULL, NULL), STACK_INVALID_ARGUMENT);

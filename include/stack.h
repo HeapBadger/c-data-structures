@@ -56,10 +56,8 @@ void stack_destroy(stack_t *p_stack);
  * @brief Removes all elements from the stack.
  *
  * @param p_stack Stack to clear.
- *
- * @return STACK_SUCCESS on success, error code otherwise.
  */
-stack_error_code_t stack_clear(stack_t *p_stack);
+void stack_clear(stack_t *p_stack);
 
 /**
  * @brief Fill the entire stack with copies of the given value.

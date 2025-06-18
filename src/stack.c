@@ -59,7 +59,7 @@ stack_destroy (stack_t *p_stack)
     }
 }
 
-stack_error_code_t
+void
 stack_clear (stack_t *p_stack)
 {
     if (NULL != p_stack) 
@@ -68,11 +68,7 @@ stack_clear (stack_t *p_stack)
         {
             array_clear(p_stack->p_array);
         }
-
-        return STACK_SUCCESS;
     }
-
-    return STACK_INVALID_ARGUMENT;
 }
 
 stack_error_code_t

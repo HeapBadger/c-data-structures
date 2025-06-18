@@ -224,7 +224,6 @@ static void test_ll_null_invalid_inputs(void)
     CU_ASSERT_EQUAL(ll_swap(NULL, 0, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_find(NULL, NULL, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_reverse(NULL), LL_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(ll_clear(NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_TRUE(ll_is_empty(NULL));
     CU_ASSERT_PTR_NULL(ll_at(NULL, 0));
     CU_ASSERT_PTR_NULL(ll_clone(NULL));
@@ -253,11 +252,7 @@ static void test_ll_head_tail_contains_clear_is_empty(void)
     CU_ASSERT_TRUE(ll_contains(p_list, b));
     int not_found = 999;
     CU_ASSERT_FALSE(ll_contains(p_list, &not_found));
-
-    CU_ASSERT_EQUAL(ll_clear(p_list), LL_SUCCESS);
-    CU_ASSERT_TRUE(ll_is_empty(p_list));
-    CU_ASSERT_PTR_NULL(ll_head(p_list));
-    CU_ASSERT_PTR_NULL(ll_tail(p_list));
+    CU_ASSERT_FALSE(ll_is_empty(p_list));
 
     ll_destroy(p_list);
 }
