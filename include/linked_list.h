@@ -9,7 +9,6 @@
 #define LINKED_LIST_H
 
 #include <stdbool.h>
-#include <sys/types.h>
 #include "auxiliary.h"
 
 typedef enum
@@ -230,6 +229,13 @@ ll_node_t *ll_tail(const ll_t *p_list);
  * @return true if found, false otherwise.
  */
 bool ll_contains(const ll_t *p_list, void *p_data);
+
+/**
+ * @brief Prints all elements in the list using the registered print function.
+ *
+ * @param p_list Point to the list to print.
+ */
+void ll_print(const ll_t *p_list);
 
 #endif // LINKED_LIST_H
 

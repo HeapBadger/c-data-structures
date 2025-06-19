@@ -8,6 +8,7 @@ SRC_DIR = src
 TEST_SRC_DIR = test/src
 OBJ_DIR = obj
 BIN_DIR = bin
+LIB_DIR = lib
 
 # Source and object files
 SRC_SOURCES = $(wildcard $(SRC_DIR)/*.c)
@@ -49,8 +50,8 @@ format:
 
 # Create a custom library
 lib: $(OBJS)
-	@mkdir -p lib
-	ar rcs lib/libcds.a $(OBJS)
+	@mkdir -p $(LIB_DIR)
+	ar rcs $(LIB_DIR)/libcds.a $(OBJS)
 
 # Create necessary directories
 $(OBJ_DIR):
@@ -61,6 +62,8 @@ $(BIN_DIR):
 
 # Clean object and executable files
 clean:
+	rm -rf test/test_main.o
 	rm -rf $(BIN_DIR)
-	rm -rf lib
+	rm -rf $(OBJ_DIR)
+	rm -rf $(LIB_DIR)
 	@echo "Clean complete."

@@ -5,7 +5,7 @@
  * @author heapbadger
  */
 
-#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "auxiliary.h"
 #include "linked_list.h"
@@ -495,10 +495,12 @@ ll_node_t *
 ll_find_node (const ll_t *p_list, void *p_key)
 {
     ll_node_t *result = NULL;
+
     if (LL_SUCCESS == ll_find_internal(p_list, p_key, NULL, &result))
     {
         return result;
     }
+
     return NULL;
 }
 
@@ -506,6 +508,29 @@ bool
 ll_contains (const ll_t *p_list, void *p_key)
 {
     return (LL_SUCCESS == ll_find_internal(p_list, p_key, NULL, NULL));
+}
+
+void 
+ll_print(const ll_t *p_list)
+{
+    if ((NULL != p_list) && (NULL != p_list->print_f))
+    {
+        size_t idx = 0U;
+        printf("[");
+    
+        for (ll_node_t *p_curr = p_list->p_head; NULL != p_curr; p_curr = p_curr->p_next)
+        {
+            if (idx > 0U)
+            {
+                printf(" -> ");
+            }
+
+            p_list->print_f(p_curr->p_data, idx);
+            ++idx;
+        }
+
+        printf("]\n");
+    }
 }
 
 static ll_node_t *

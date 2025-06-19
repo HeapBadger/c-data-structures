@@ -9,7 +9,6 @@
 #define ARRAY_H
 
 #include <stdbool.h>
-#include <sys/types.h>
 #include "auxiliary.h"
 
 /**
