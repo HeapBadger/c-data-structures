@@ -11,17 +11,17 @@
 #include "linked_list.h"
 
 /**
- * @brief Creates a new node. 
- * 
+ * @brief Creates a new node.
+ *
  * @param p_data Pointer to the data for the new node.
- * 
+ *
  * @return Pointer to a new linked list node, or NULL on failure.
  */
 static ll_node_t *ll_create_node(void *p_data);
 
 /**
  * @brief Deletes a node.
- * 
+ *
  * @param p_list Pointer to the list.
  * @param p_node Pointer to the node to be deleted.
  */
@@ -37,13 +37,16 @@ static void ll_del_node(ll_t *p_list, ll_node_t *p_node);
  *
  * @return LL_SUCCESS on success, appropriate error code otherwise.
  */
-static ll_error_code_t ll_find_internal(const ll_t *p_list, void *p_key, size_t *p_out_idx, ll_node_t **p_out_node);
+static ll_error_code_t ll_find_internal(const ll_t *p_list,
+                                        void       *p_key,
+                                        size_t     *p_out_idx,
+                                        ll_node_t **p_out_node);
 
 ll_t *
-ll_create(const del_func del_f,
-          const cmp_func  cmp_f,
-          const print_func print_f,
-          const copy_func  cpy_f)
+ll_create (const del_func   del_f,
+           const cmp_func   cmp_f,
+           const print_func print_f,
+           const copy_func  cpy_f)
 {
     ll_t *p_list = (ll_t *)calloc(1U, sizeof(ll_t));
 
@@ -52,7 +55,8 @@ ll_create(const del_func del_f,
         goto EXIT;
     }
 
-    if ((NULL == del_f) || (NULL == cmp_f) || (NULL == print_f) || (NULL == cpy_f))
+    if ((NULL == del_f) || (NULL == cmp_f) || (NULL == print_f)
+        || (NULL == cpy_f))
     {
         free(p_list);
         p_list = NULL;
@@ -70,7 +74,7 @@ EXIT:
 }
 
 void
-ll_destroy(ll_t *p_list)
+ll_destroy (ll_t *p_list)
 {
     if (NULL != p_list)
     {
@@ -85,7 +89,7 @@ ll_destroy(ll_t *p_list)
 }
 
 void
-ll_clear(ll_t *p_list)
+ll_clear (ll_t *p_list)
 {
     if ((NULL == p_list) || (NULL == p_list->del_f))
     {
@@ -105,7 +109,7 @@ ll_clear(ll_t *p_list)
 }
 
 void
-ll_delete_element(ll_t *p_list, void *p_value)
+ll_delete_element (ll_t *p_list, void *p_value)
 {
     if ((NULL != p_list) && (NULL != p_value))
     {
@@ -114,7 +118,7 @@ ll_delete_element(ll_t *p_list, void *p_value)
 }
 
 ll_error_code_t
-ll_insert(ll_t *p_list, void *p_data, size_t index)
+ll_insert (ll_t *p_list, void *p_data, size_t index)
 {
     ll_error_code_t ret = LL_SUCCESS;
 
@@ -161,23 +165,23 @@ ll_insert(ll_t *p_list, void *p_data, size_t index)
         p_curr = p_curr->p_next;
     }
 
-    p_new->p_next   = p_curr->p_next;
-    p_curr->p_next  = p_new;
+    p_new->p_next  = p_curr->p_next;
+    p_curr->p_next = p_new;
 
 EXIT:
     return ret;
 }
 
 ll_error_code_t
-ll_prepend(ll_t *p_list, void *p_data)
+ll_prepend (ll_t *p_list, void *p_data)
 {
     return ll_insert(p_list, p_data, 0U);
 }
 
 ll_error_code_t
-ll_append(ll_t *p_list, void *p_data)
+ll_append (ll_t *p_list, void *p_data)
 {
-    size_t end = 0U;
+    size_t          end = 0U;
     ll_error_code_t ret = ll_size(p_list, &end);
 
     if (LL_SUCCESS == ret)
@@ -189,7 +193,7 @@ ll_append(ll_t *p_list, void *p_data)
 }
 
 ll_error_code_t
-ll_del_at(ll_t *p_list, size_t index)
+ll_del_at (ll_t *p_list, size_t index)
 {
     ll_error_code_t ret = LL_SUCCESS;
 
@@ -208,7 +212,7 @@ ll_del_at(ll_t *p_list, size_t index)
     if (0U == index)
     {
         ll_node_t *p_tmp = p_list->p_head;
-        p_list->p_head = p_tmp->p_next;
+        p_list->p_head   = p_tmp->p_next;
         ll_del_node(p_list, p_tmp);
         goto EXIT;
     }
@@ -234,7 +238,7 @@ ll_del_at(ll_t *p_list, size_t index)
         goto EXIT;
     }
 
-    p_curr->p_next= p_tmp->p_next;
+    p_curr->p_next = p_tmp->p_next;
     ll_del_node(p_list, p_tmp);
 
 EXIT:
@@ -242,7 +246,7 @@ EXIT:
 }
 
 bool
-ll_is_empty(const ll_t *p_list)
+ll_is_empty (const ll_t *p_list)
 {
     if (NULL == p_list)
     {
@@ -253,7 +257,7 @@ ll_is_empty(const ll_t *p_list)
 }
 
 ll_node_t *
-ll_at(const ll_t *p_list, size_t index)
+ll_at (const ll_t *p_list, size_t index)
 {
     if (NULL == p_list)
     {
@@ -261,7 +265,7 @@ ll_at(const ll_t *p_list, size_t index)
     }
 
     ll_node_t *p_curr = p_list->p_head;
-    size_t     count = 0U;
+    size_t     count  = 0U;
 
     while (NULL != p_curr)
     {
@@ -278,20 +282,20 @@ ll_at(const ll_t *p_list, size_t index)
 }
 
 ll_error_code_t
-ll_find(const ll_t *p_list, void *p_key, size_t *p_idx)
+ll_find (const ll_t *p_list, void *p_key, size_t *p_idx)
 {
     return ll_find_internal(p_list, p_key, p_idx, NULL);
 }
 
 ll_error_code_t
-ll_size(const ll_t *p_list, size_t *p_size)
+ll_size (const ll_t *p_list, size_t *p_size)
 {
     if ((NULL == p_list) || (NULL == p_size))
     {
         return LL_INVALID_ARGUMENT;
     }
 
-    *p_size = 0U;
+    *p_size           = 0U;
     ll_node_t *p_curr = p_list->p_head;
 
     while (NULL != p_curr)
@@ -304,7 +308,7 @@ ll_size(const ll_t *p_list, size_t *p_size)
 }
 
 ll_error_code_t
-ll_reverse(ll_t *p_list)
+ll_reverse (ll_t *p_list)
 {
     if (NULL == p_list)
     {
@@ -317,7 +321,7 @@ ll_reverse(ll_t *p_list)
     while (NULL != p_curr)
     {
         ll_node_t *p_next = p_curr->p_next;
-        p_curr->p_next     = p_prev;
+        p_curr->p_next    = p_prev;
         p_prev            = p_curr;
         p_curr            = p_next;
     }
@@ -327,7 +331,7 @@ ll_reverse(ll_t *p_list)
 }
 
 ll_error_code_t
-ll_foreach(ll_t *p_list, foreach_func func)
+ll_foreach (ll_t *p_list, foreach_func func)
 {
     if ((NULL == p_list) || (NULL == func))
     {
@@ -347,7 +351,7 @@ ll_foreach(ll_t *p_list, foreach_func func)
 }
 
 ll_error_code_t
-ll_swap(ll_t *p_list, size_t index_1, size_t index_2)
+ll_swap (ll_t *p_list, size_t index_1, size_t index_2)
 {
     if (NULL == p_list)
     {
@@ -367,14 +371,14 @@ ll_swap(ll_t *p_list, size_t index_1, size_t index_2)
         return LL_OUT_OF_BOUNDS;
     }
 
-    void *p_tmp = p_node1->p_data;
+    void *p_tmp     = p_node1->p_data;
     p_node1->p_data = p_node2->p_data;
     p_node2->p_data = p_tmp;
     return LL_SUCCESS;
 }
 
 ll_error_code_t
-ll_update(ll_t *p_list, size_t index, void *p_data)
+ll_update (ll_t *p_list, size_t index, void *p_data)
 {
     if ((NULL == p_list) || (NULL == p_data))
     {
@@ -389,15 +393,15 @@ ll_update(ll_t *p_list, size_t index, void *p_data)
     }
 
     ll_delete_element(p_list, p_node->p_data);
-    p_node->p_data= p_data;
+    p_node->p_data = p_data;
     return LL_SUCCESS;
 }
 
 ll_t *
-ll_clone(const ll_t *p_ori)
+ll_clone (const ll_t *p_ori)
 {
-    ll_node_t *p_prev   = NULL; 
-    ll_t *p_new = NULL;
+    ll_node_t *p_prev = NULL;
+    ll_t      *p_new  = NULL;
 
     if ((NULL == p_ori) || (NULL == p_ori->cpy_f))
     {
@@ -418,7 +422,8 @@ ll_clone(const ll_t *p_ori)
     p_new->cpy_f   = p_ori->cpy_f;
 
     // walk the original list once
-    for (ll_node_t *p_curr = p_ori->p_head;  NULL != p_curr;  p_curr = p_curr->p_next)
+    for (ll_node_t *p_curr = p_ori->p_head; NULL != p_curr;
+         p_curr            = p_curr->p_next)
     {
         // make a user‑data copy
         void *p_copy = p_ori->cpy_f(p_curr->p_data);
@@ -432,7 +437,7 @@ ll_clone(const ll_t *p_ori)
 
         // allocate a new node around that copy
         ll_node_t *p_node = ll_create_node(p_copy);
-    
+
         if (NULL == p_node)
         {
             p_new->del_f(p_copy);
@@ -460,7 +465,7 @@ EXIT:
 }
 
 ll_node_t *
-ll_head(const ll_t *p_list)
+ll_head (const ll_t *p_list)
 {
     if (NULL != p_list)
     {
@@ -471,7 +476,7 @@ ll_head(const ll_t *p_list)
 }
 
 ll_node_t *
-ll_tail(const ll_t *p_list)
+ll_tail (const ll_t *p_list)
 {
     if (NULL != p_list)
     {
@@ -479,7 +484,7 @@ ll_tail(const ll_t *p_list)
 
         if (LL_SUCCESS == ll_size(p_list, &size))
         {
-            return ll_at(p_list, size-1);
+            return ll_at(p_list, size - 1);
         }
     }
 
@@ -487,7 +492,7 @@ ll_tail(const ll_t *p_list)
 }
 
 ll_node_t *
-ll_find_node(const ll_t *p_list, void *p_key)
+ll_find_node (const ll_t *p_list, void *p_key)
 {
     ll_node_t *result = NULL;
     if (LL_SUCCESS == ll_find_internal(p_list, p_key, NULL, &result))
@@ -498,27 +503,27 @@ ll_find_node(const ll_t *p_list, void *p_key)
 }
 
 bool
-ll_contains(const ll_t *p_list, void *p_key)
+ll_contains (const ll_t *p_list, void *p_key)
 {
     return (LL_SUCCESS == ll_find_internal(p_list, p_key, NULL, NULL));
 }
 
 static ll_node_t *
-ll_create_node(void *p_data)
+ll_create_node (void *p_data)
 {
     ll_node_t *p_node = (ll_node_t *)calloc(1U, sizeof(ll_node_t));
 
     if (NULL != p_node)
     {
-        p_node->p_data= p_data;
-        p_node->p_next= NULL;
+        p_node->p_data = p_data;
+        p_node->p_next = NULL;
     }
 
     return p_node;
 }
 
 static void
-ll_del_node(ll_t *p_list, ll_node_t *p_node)
+ll_del_node (ll_t *p_list, ll_node_t *p_node)
 {
     if ((NULL != p_list) && (NULL != p_node))
     {
@@ -528,36 +533,36 @@ ll_del_node(ll_t *p_list, ll_node_t *p_node)
 }
 
 static ll_error_code_t
-ll_find_internal(const ll_t    *p_list,
-                 void          *p_key,
-                 size_t        *p_out_idx,
-                 ll_node_t    **p_out_node)
+ll_find_internal (const ll_t *p_list,
+                  void       *p_key,
+                  size_t     *p_out_idx,
+                  ll_node_t **p_out_node)
 {
     if ((NULL == p_list) || (NULL == p_key) || (NULL == p_list->cmp_f))
     {
         return LL_INVALID_ARGUMENT;
     }
 
-    size_t    idx   = 0U;
-    ll_node_t *p_curr  = p_list->p_head;
+    size_t     idx    = 0U;
+    ll_node_t *p_curr = p_list->p_head;
 
     while (NULL != p_curr)
     {
         if (0 == p_list->cmp_f(p_key, p_curr->p_data))
         {
             if (NULL != p_out_idx)
-            {   
-                *p_out_idx  = idx;
+            {
+                *p_out_idx = idx;
             }
 
             if (NULL != p_out_node)
             {
                 *p_out_node = p_curr;
             }
-        
+
             return LL_SUCCESS;
         }
-    
+
         p_curr = p_curr->p_next;
         idx++;
     }

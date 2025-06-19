@@ -62,7 +62,7 @@ stack_destroy (stack_t *p_stack)
 void
 stack_clear (stack_t *p_stack)
 {
-    if (NULL != p_stack) 
+    if (NULL != p_stack)
     {
         if (NULL != p_stack->p_array)
         {

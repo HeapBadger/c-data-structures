@@ -42,7 +42,7 @@ typedef struct
  * @param del_f   Custom delete function.
  * @param cmp_f   Custom comparison function.
  * @param print_f Custom print function.
- * @param cpy_f   Custom deep copy function. 
+ * @param cpy_f   Custom deep copy function.
  *
  * @return Pointer to new list, or NULL on failure.
  */

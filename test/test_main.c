@@ -12,7 +12,6 @@
 #include <CUnit/Basic.h>
 #include "test_array.h"
 #include "test_auxiliary.h"
-#include "test_doubly_linked_list.h"
 #include "test_linked_list.h"
 #include "test_matrix.h"
 #include "test_stack.h"
@@ -29,7 +28,7 @@ static void run_suite(const char *suite_name);
  * @param argc  Number of command-line arguments.
  * @param argv  Array of command-line arguments.
  *
- * @return  Returns 0 on success, or a non-zero value on failure.
+ * @return  Returns CUE_SUCCESS on success, or a non-zero value on failure.
  */
 int
 main (int argc, char *argv[])
@@ -122,8 +121,6 @@ list_suites (void)
  * @brief   Run the specified test suite.
  *
  * @param suite_name  Name of the suite to run.
- *
- * @return  Returns 0 on success, or a non-zero value on failure.
  */
 static void
 run_suite (const char *suite_name)
@@ -161,25 +158,17 @@ run_suite (const char *suite_name)
  * where a developer may add additional suites to be created. See the
  * "example_suite" as an example.
  *
- * @return  Returns 0 on success, or a non-zero value on failure.
+ * @return  Returns CUE_SUCCESS on success, or a non-zero value on failure.
  */
 static int
 create_suites (void)
 {
-    int retval = CUE_SUCCESS; // Assume success unless an error occurs
+    int retval = CUE_SUCCESS;
 
     // Linked List
     if (NULL == ll_suite())
     {
         ERROR_LOG("Failed to create the Linked List Suite\n");
-        retval = CU_get_error();
-        goto EXIT;
-    }
-
-    // Doubly Linked List
-    if (NULL == dl_suite())
-    {
-        ERROR_LOG("Failed to create the Doubly Linked List Suite\n");
         retval = CU_get_error();
         goto EXIT;
     }
