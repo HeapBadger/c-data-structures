@@ -65,14 +65,6 @@ void ll_destroy(ll_t *p_list);
 void ll_clear(ll_t *p_list);
 
 /**
- * @brief Deletes a single element using the list's delete function.
- *
- * @param p_list Pointer to the list.
- * @param p_value Pointer to the element to delete.
- */
-void ll_delete_element(ll_t *p_list, void *p_value);
-
-/**
  * @brief Insert an element at the start of the list.
  *
  * @param p_list Pointer to the list.
@@ -133,7 +125,7 @@ bool ll_is_empty(const ll_t *p_list);
 ll_node_t *ll_at(const ll_t *p_list, size_t index);
 
 /**
- * @brief Find the index of the given key using the comparison function.
+ * @brief Find the index of the given key using the registered comparison function.
  *
  * @param p_list Pointer to the list.
  * @param p_key Pointer to the key to find.

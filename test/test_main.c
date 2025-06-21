@@ -1,9 +1,7 @@
 /**
  * @file    test_main.c
- * @brief   Control suite for all test cases.
  *
  * @author  heapbadger
- * @date    August 17, 2024
  */
 
 #include <stdio.h>
@@ -15,8 +13,8 @@
 #include "test_linked_list.h"
 #include "test_matrix.h"
 #include "test_stack.h"
+#include "test_queue.h"
 
-// Function Declarations
 static void print_help(void);
 static int  create_suites(void);
 static void list_suites(void);
@@ -36,7 +34,6 @@ main (int argc, char *argv[])
     int retval = CUE_SUCCESS;
     CU_basic_set_mode(CU_BRM_VERBOSE);
 
-    // Initialize the CUnit registry
     if (CUE_SUCCESS != CU_initialize_registry())
     {
         ERROR_LOG("Failed to initialize CUnit registry\n");
@@ -44,7 +41,6 @@ main (int argc, char *argv[])
         goto CLEANUP;
     }
 
-    // Create all test suites
     retval = create_suites();
 
     if (CUE_SUCCESS != retval)
@@ -53,14 +49,12 @@ main (int argc, char *argv[])
         goto CLEANUP;
     }
 
-    // Process command-line arguments
     if (1 == argc)
     {
         CU_basic_run_tests();
     }
     else if (2 == argc)
     {
-        // Process the command
         if (is_name_match("help", argv[1]))
         {
             print_help();
@@ -154,10 +148,6 @@ run_suite (const char *suite_name)
 /**
  * @brief   Create all test suites.
  *
- * This should be the only function that needs to be updated. This is
- * where a developer may add additional suites to be created. See the
- * "example_suite" as an example.
- *
  * @return  Returns CUE_SUCCESS on success, or a non-zero value on failure.
  */
 static int
@@ -193,6 +183,14 @@ create_suites (void)
     if (NULL == stack_suite())
     {
         ERROR_LOG("Failed to create the Stack Suite\n");
+        retval = CU_get_error();
+        goto EXIT;
+    }
+
+    // Queue
+    if (NULL == queue_suite())
+    {
+        ERROR_LOG("Failed to create the Queue Suite\n");
         retval = CU_get_error();
         goto EXIT;
     }
