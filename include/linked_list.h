@@ -18,6 +18,7 @@ typedef enum
     LL_OUT_OF_BOUNDS      = -2, /**< Index out of range. */
     LL_INVALID_ARGUMENT   = -3, /**< Invalid argument provided. */
     LL_ALLOCATION_FAILURE = -4, /**< Memory allocation failed. */
+    LL_EMPTY              = -5, /**< Empty list. */
 } ll_error_code_t;
 
 typedef struct ll_node
@@ -106,6 +107,17 @@ ll_error_code_t ll_insert(ll_t *p_list, void *p_data, size_t index);
 ll_error_code_t ll_del_at(ll_t *p_list, size_t index);
 
 /**
+ * @brief Creates a deep copy of the data at a specific index.
+ *
+ * @param p_list Pointer to the list.
+ * @param index Index to copy.
+ * @param p_size Output parameter to store a copy of the data.
+ *
+ * @return LL_SUCCESS on success, appropriate error code otherwise.
+ */
+ll_error_code_t ll_copy_at(const ll_t *p_list, size_t index, void **p_copy);
+
+/**
  * @brief Check whether the list is empty.
  *
  * @param p_list Pointer to the list.
@@ -125,7 +137,8 @@ bool ll_is_empty(const ll_t *p_list);
 ll_node_t *ll_at(const ll_t *p_list, size_t index);
 
 /**
- * @brief Find the index of the given key using the registered comparison function.
+ * @brief Find the index of the given key using the registered comparison
+ * function.
  *
  * @param p_list Pointer to the list.
  * @param p_key Pointer to the key to find.
@@ -165,28 +178,6 @@ ll_error_code_t ll_reverse(ll_t *p_list);
 ll_error_code_t ll_foreach(ll_t *p_list, foreach_func func);
 
 /**
- * @brief Swaps data between two nodes at given indices.
- *
- * @param p_list Pointer to the list.
- * @param index_1 First node index.
- * @param index_2 Second node index.
- *
- * @return LL_SUCCESS on success, appropriate error code otherwise.
- */
-ll_error_code_t ll_swap(ll_t *p_list, size_t index_1, size_t index_2);
-
-/**
- * @brief Replace the element at the given index.
- *
- * @param p_list Pointer to the list.
- * @param index Index of the element to replace.
- * @param p_data Pointer to the new value.
- *
- * @return LL_SUCCESS on success, appropriate error code otherwise.
- */
-ll_error_code_t ll_update(ll_t *p_list, size_t index, void *p_data);
-
-/**
  * @brief Create a deep copy of the list structure.
  *
  * @param p_ori Pointer to the source list.
@@ -211,16 +202,6 @@ ll_node_t *ll_head(const ll_t *p_list);
  * @return Pointer to the tail node, or NULL if empty or invalid.
  */
 ll_node_t *ll_tail(const ll_t *p_list);
-
-/**
- * @brief Checks if the list contains a given value using cmp_func.
- *
- * @param p_list Pointer to the linked list.
- * @param p_data Pointer to the data to find.
- *
- * @return true if found, false otherwise.
- */
-bool ll_contains(const ll_t *p_list, void *p_data);
 
 /**
  * @brief Prints all elements in the list using the registered print function.

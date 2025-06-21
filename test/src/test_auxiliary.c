@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_STRING_LENGTH  256
+#define MAX_STRING_LENGTH 256
 
 void *
 copy_int (const void *p_data)

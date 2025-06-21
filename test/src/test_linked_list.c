@@ -16,9 +16,8 @@ static void test_ll_create_destroy(void);
 static void test_ll_insert_remove(void);
 static void test_ll_find_at(void);
 static void test_ll_foreach_clone(void);
-static void test_ll_reverse_swap_update(void);
 static void test_ll_null_invalid_inputs(void);
-static void test_ll_head_tail_contains_clear_is_empty(void);
+static void test_ll_head_tail_contains_is_empty(void);
 
 CU_pSuite
 ll_suite (void)
@@ -66,15 +65,6 @@ ll_suite (void)
 
     if (NULL
         == (CU_add_test(
-            suite, "test_ll_reverse_swap_update", test_ll_reverse_swap_update)))
-    {
-        ERROR_LOG("Failed to add test_ll_reverse_swap_update to suite\n");
-        suite = NULL;
-        goto CLEANUP;
-    }
-
-    if (NULL
-        == (CU_add_test(
             suite, "test_ll_null_invalid_inputs", test_ll_null_invalid_inputs)))
     {
         ERROR_LOG("Failed to add test_ll_null_invalid_inputs to suite\n");
@@ -84,11 +74,11 @@ ll_suite (void)
 
     if (NULL
         == (CU_add_test(suite,
-                        "test_ll_head_tail_contains_clear_is_empty",
-                        test_ll_head_tail_contains_clear_is_empty)))
+                        "test_ll_head_tail_contains_is_empty",
+                        test_ll_head_tail_contains_is_empty)))
     {
         ERROR_LOG(
-            "Failed to add test_ll_head_tail_contains_clear_is_empty to "
+            "Failed to add test_ll_head_tail_contains_is_empty to "
             "suite\n");
         suite = NULL;
         goto CLEANUP;
@@ -214,46 +204,12 @@ test_ll_foreach_clone (void)
 }
 
 static void
-test_ll_reverse_swap_update (void)
-{
-    ll_t *p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
-
-    int *x = malloc(sizeof(int));
-    *x     = 1;
-    int *y = malloc(sizeof(int));
-    *y     = 2;
-    int *z = malloc(sizeof(int));
-    *z     = 3;
-
-    ll_append(p_list, x);
-    ll_append(p_list, y);
-    ll_append(p_list, z);
-
-    CU_ASSERT_EQUAL(ll_reverse(p_list), LL_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 3);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 1);
-
-    CU_ASSERT_EQUAL(ll_swap(p_list, 0, 2), LL_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 1);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 3);
-
-    int *new_val = malloc(sizeof(int));
-    *new_val     = 42;
-    CU_ASSERT_EQUAL(ll_update(p_list, 1, new_val), LL_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 42);
-
-    ll_destroy(p_list);
-}
-
-static void
 test_ll_null_invalid_inputs (void)
 {
     CU_ASSERT_EQUAL(ll_size(NULL, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_del_at(NULL, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_insert(NULL, NULL, 0), LL_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(ll_update(NULL, 0, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_foreach(NULL, NULL), LL_INVALID_ARGUMENT);
-    CU_ASSERT_EQUAL(ll_swap(NULL, 0, 0), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_find(NULL, NULL, NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(ll_reverse(NULL), LL_INVALID_ARGUMENT);
     CU_ASSERT_TRUE(ll_is_empty(NULL));
@@ -262,7 +218,7 @@ test_ll_null_invalid_inputs (void)
 }
 
 static void
-test_ll_head_tail_contains_clear_is_empty (void)
+test_ll_head_tail_contains_is_empty (void)
 {
     ll_t *p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
 
@@ -284,11 +240,7 @@ test_ll_head_tail_contains_clear_is_empty (void)
     CU_ASSERT_EQUAL(*(int *)ll_head(p_list)->p_data, 100);
     CU_ASSERT_EQUAL(*(int *)ll_tail(p_list)->p_data, 200);
 
-    CU_ASSERT_TRUE(ll_contains(p_list, b));
-    int not_found = 999;
-    CU_ASSERT_FALSE(ll_contains(p_list, &not_found));
     CU_ASSERT_FALSE(ll_is_empty(p_list));
-
     ll_destroy(p_list);
 }
 

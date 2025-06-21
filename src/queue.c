@@ -1,15 +1,17 @@
 /**
  * @file queue.c
- * @brief Implementation of a queue (FIFO) data structure using a singly linked list.
+ * @brief Implementation of a queue (FIFO) data structure using a singly linked
+ * list.
  *
  * This queue is backed by a singly linked list, enabling efficient O(1) enqueue
  * and dequeue operations without the need for shifting elements, as required in
  * array-based queues. The structure dynamically grows to accommodate new items,
  * with memory managed node-by-node.
  *
- * Linked list queues are ideal for unbounded or unpredictable workloads, as they
- * avoid reallocations and maintain consistent performance. They are well-suited
- * for systems where memory usage patterns are dynamic or unknown in advance.
+ * Linked list queues are ideal for unbounded or unpredictable workloads, as
+ * they avoid reallocations and maintain consistent performance. They are
+ * well-suited for systems where memory usage patterns are dynamic or unknown in
+ * advance.
  *
  * @author  heapbadger
  */
@@ -28,9 +30,12 @@
 static queue_error_code_t queue_error_from_ll(ll_error_code_t ret);
 
 queue_t *
-queue_create(const del_func del_f, const cmp_func cmp_f, const print_func print_f, const copy_func cpy_f)
+queue_create (const del_func   del_f,
+              const cmp_func   cmp_f,
+              const print_func print_f,
+              const copy_func  cpy_f)
 {
-    queue_t *p_queue = (queue_t *)calloc(1, sizeof(queue_t));
+    queue_t *p_queue = (queue_t *)calloc(1U, sizeof(queue_t));
 
     if (NULL != p_queue)
     {
@@ -47,12 +52,11 @@ queue_create(const del_func del_f, const cmp_func cmp_f, const print_func print_
 }
 
 void
-queue_destroy(queue_t *p_queue)
+queue_destroy (queue_t *p_queue)
 {
     if (NULL != p_queue)
     {
         ll_destroy(p_queue->p_queue);
-
         free(p_queue);
     }
 }
@@ -67,7 +71,7 @@ queue_clear (queue_t *p_queue)
 }
 
 queue_error_code_t
-queue_enqueue(queue_t *p_queue, void *p_data)
+queue_enqueue (queue_t *p_queue, void *p_data)
 {
     if ((NULL != p_queue) && (NULL != p_data))
     {
@@ -78,21 +82,22 @@ queue_enqueue(queue_t *p_queue, void *p_data)
 }
 
 queue_error_code_t
-queue_dequeue(queue_t *p_queue, void **p_data)
+queue_dequeue (queue_t *p_queue, void **p_data)
 {
     if ((NULL == p_queue) || (NULL == p_data))
     {
         return QUEUE_INVALID_ARGUMENT;
     }
 
-    queue_error_code_t err = queue_peek(p_queue, p_data);
+    queue_error_code_t err
+        = queue_error_from_ll(ll_copy_at(p_queue->p_queue, 0, p_data));
 
     if (QUEUE_SUCCESS != err)
     {
         return err;
     }
 
-    return queue_error_from_ll(ll_del_at(p_queue->p_queue, 0));
+    return queue_error_from_ll(ll_del_at(p_queue->p_queue, 0U));
 }
 
 queue_error_code_t
@@ -114,9 +119,8 @@ queue_peek (const queue_t *p_queue, void **p_data)
     return QUEUE_INVALID_ARGUMENT;
 }
 
-
 bool
-queue_is_empty(const queue_t *p_queue)
+queue_is_empty (const queue_t *p_queue)
 {
     if (NULL != p_queue)
     {
@@ -133,17 +137,6 @@ queue_print (const queue_t *p_queue)
     {
         ll_print(p_queue->p_queue);
     }
-}
-
-queue_error_code_t
-queue_foreach (queue_t *p_queue, foreach_func func)
-{
-    if ((NULL != p_queue) && (NULL != func))
-    {
-        return queue_error_from_ll(ll_foreach(p_queue->p_queue, func));
-    }
-
-    return QUEUE_INVALID_ARGUMENT;
 }
 
 queue_error_code_t
@@ -164,7 +157,7 @@ queue_clone (const queue_t *p_ori)
 
     if (NULL != p_ori)
     {
-        p_new = (queue_t *)calloc(1, sizeof(queue_t));
+        p_new = (queue_t *)calloc(1U, sizeof(queue_t));
 
         if (NULL == p_new)
         {
@@ -175,28 +168,6 @@ queue_clone (const queue_t *p_ori)
     }
 
     return p_new;
-}
-
-bool
-queue_contains (const queue_t *p_queue, void *p_data)
-{
-    if ((NULL != p_queue) && (NULL != p_data))
-    {
-        return ll_contains(p_queue->p_queue, p_data);
-    }
-
-    return QUEUE_INVALID_ARGUMENT;
-}
-
-queue_error_code_t
-queue_find (const queue_t *p_queue, void *p_key, size_t *p_index)
-{
-    if ((NULL != p_queue) && (NULL != p_key) && (NULL != p_index))
-    {
-        return queue_error_from_ll(ll_find(p_queue->p_queue, p_key, p_index));
-    }
-
-    return QUEUE_INVALID_ARGUMENT;
 }
 
 static queue_error_code_t
@@ -214,6 +185,8 @@ queue_error_from_ll (ll_error_code_t ret)
             return QUEUE_INVALID_ARGUMENT;
         case LL_ALLOCATION_FAILURE:
             return QUEUE_ALLOCATION_FAILURE;
+        case LL_EMPTY:
+            return QUEUE_EMPTY;
         default:
             return QUEUE_FAILURE;
     }

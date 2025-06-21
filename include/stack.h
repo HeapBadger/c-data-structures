@@ -20,7 +20,6 @@ typedef enum
     STACK_ALLOCATION_FAILURE = -4, /**< Memory allocation failed. */
     STACK_EMPTY              = -5, /**< Empty stack. */
     STACK_FAILURE            = -6, /**< Generic failure. */
-
 } stack_error_code_t;
 
 typedef struct

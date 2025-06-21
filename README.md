@@ -132,7 +132,7 @@ c-data-structures/
 │   ├── ✅ array.c
 │   ├── ✅ matrix.c
 │   ├── ✅ stack.c
-│   ├── queue.c
+│   ├── ✅ queue.c
 │   ├── binary_tree.c
 │   ├── binary_heap.c
 │   ├── hash_table.c
