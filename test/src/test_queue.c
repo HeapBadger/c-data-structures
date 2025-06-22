@@ -29,9 +29,8 @@ queue_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(suite,
-                        "test_queue_create_destroy",
-                        test_queue_create_destroy)))
+        == (CU_add_test(
+            suite, "test_queue_create_destroy", test_queue_create_destroy)))
     {
         ERROR_LOG("Failed to add test_queue_create_destroy to suite\n");
         suite = NULL;

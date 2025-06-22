@@ -5,16 +5,16 @@
  * This implementation provides a generic singly linked list with dynamic memory
  * management. Each node stores a pointer to user data, allowing the list to
  * manage elements of any type. Core features include insertion, deletion,
- * searching, traversal, and cloning. Function pointers are used for user-defined
- * data operations such as copy, delete, print, and compare.
+ * searching, traversal, and cloning. Function pointers are used for
+ * user-defined data operations such as copy, delete, print, and compare.
  *
  * The list grows dynamically and supports efficient O(1) insertion at the head
  * and O(n) access for arbitrary positions. The design prioritizes flexibility
  * and modularity through encapsulation and callback-based customization.
  *
- * @note Elements are not owned by the list until they are successfully inserted.
- *       If insertion fails (e.g., due to a memory allocation error), the caller
- *       remains responsible for freeing the associated memory.
+ * @note Elements are not owned by the list until they are successfully
+ * inserted. If insertion fails (e.g., due to a memory allocation error), the
+ * caller remains responsible for freeing the associated memory.
  *
  * @author heapbadger
  */

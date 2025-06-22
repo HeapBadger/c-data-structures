@@ -16,7 +16,7 @@
  * @note The queue only takes ownership of an element upon successful insertion.
  *       If insertion fails, the caller must manage (and eventually free) the
  *       memory.
- * 
+ *
  * @author  heapbadger
  */
 
@@ -65,8 +65,8 @@ queue_destroy (queue_t *p_queue)
     }
 }
 
-void 
-queue_del_ele(queue_t *p_queue, void *p_data)
+void
+queue_del_ele (queue_t *p_queue, void *p_data)
 {
     if ((NULL != p_queue) && (NULL != p_data))
     {

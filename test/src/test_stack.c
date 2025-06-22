@@ -29,7 +29,8 @@ stack_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(suite, "test_stack_create_destroy", test_stack_create_destroy)))
+        == (CU_add_test(
+            suite, "test_stack_create_destroy", test_stack_create_destroy)))
     {
         ERROR_LOG("Failed to add test_stack_create_destroy to suite\n");
         suite = NULL;
@@ -37,17 +38,16 @@ stack_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(
-            suite, "test_stack_push_pop_peek_size", test_stack_push_pop_peek_size)))
+        == (CU_add_test(suite,
+                        "test_stack_push_pop_peek_size",
+                        test_stack_push_pop_peek_size)))
     {
         ERROR_LOG("Failed to add test_stack_push_pop_peek_size to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
 
-    if (NULL
-        == (CU_add_test(
-            suite, "test_stack_clone", test_stack_clone)))
+    if (NULL == (CU_add_test(suite, "test_stack_clone", test_stack_clone)))
     {
         ERROR_LOG("Failed to add test_stack_clone to suite\n");
         suite = NULL;
@@ -75,7 +75,8 @@ CLEANUP:
 static void
 test_stack_create_destroy (void)
 {
-    stack_t *p_stack = stack_create(5, delete_int, compare_ints, print_int, copy_int);
+    stack_t *p_stack
+        = stack_create(5, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_stack);
     size_t size = 0U;
     CU_ASSERT_EQUAL(stack_size(p_stack, &size), STACK_SUCCESS);
@@ -103,7 +104,6 @@ test_stack_push_pop_peek_size (void)
     // Attempt push/pop to null stack
     CU_ASSERT_EQUAL(stack_push(p_stack, val), STACK_INVALID_ARGUMENT);
     CU_ASSERT_EQUAL(stack_pop(p_stack, &p_data), STACK_INVALID_ARGUMENT);
-    
 
     // Create stack and push
     p_stack = stack_create(5, delete_int, compare_ints, print_int, copy_int);
@@ -140,24 +140,24 @@ test_stack_push_pop_peek_size (void)
 
     // Pop and few elements and check
     CU_ASSERT_EQUAL(stack_pop(p_stack, &p_data), STACK_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)p_data, 99*5);
+    CU_ASSERT_EQUAL(*(int *)p_data, 99 * 5);
     stack_del_ele(p_stack, p_data);
 
     CU_ASSERT_EQUAL(stack_pop(p_stack, &p_data), STACK_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)p_data, 98*5);
+    CU_ASSERT_EQUAL(*(int *)p_data, 98 * 5);
     stack_del_ele(p_stack, p_data);
 
     CU_ASSERT_EQUAL(stack_pop(p_stack, &p_data), STACK_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)p_data, 97*5);
+    CU_ASSERT_EQUAL(*(int *)p_data, 97 * 5);
     stack_del_ele(p_stack, p_data);
 
     CU_ASSERT_EQUAL(stack_pop(p_stack, &p_data), STACK_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)p_data, 96*5);
+    CU_ASSERT_EQUAL(*(int *)p_data, 96 * 5);
     stack_del_ele(p_stack, p_data);
 
     // Peek at stack again
     CU_ASSERT_EQUAL(stack_peek(p_stack, &p_data), STACK_SUCCESS);
-    CU_ASSERT_EQUAL(*(int *)p_data, 95*5);
+    CU_ASSERT_EQUAL(*(int *)p_data, 95 * 5);
 
     stack_destroy(p_stack);
 }
@@ -166,8 +166,8 @@ static void
 test_stack_clone (void)
 {
     stack_t *p_ori = NULL;
-    stack_t *p_new = NULL;    
-    
+    stack_t *p_new = NULL;
+
     // Create a stack
     p_ori = stack_create(5, delete_int, compare_ints, print_int, copy_int);
     CU_ASSERT_PTR_NOT_NULL(p_ori);

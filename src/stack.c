@@ -13,7 +13,7 @@
  * @note The stack only takes ownership of an element upon successful insertion.
  *       If insertion fails, the caller must manage (and eventually free) the
  *       memory.
- * 
+ *
  * @author  heapbadger
  */
 
@@ -63,8 +63,8 @@ stack_destroy (stack_t *p_stack)
     }
 }
 
-void 
-stack_del_ele(stack_t *p_stack, void *p_value)
+void
+stack_del_ele (stack_t *p_stack, void *p_value)
 {
     if ((NULL != p_stack) && (NULL != p_value))
     {
@@ -102,7 +102,7 @@ stack_peek (const stack_t *p_stack, void **p_out)
         return STACK_INVALID_ARGUMENT;
     }
 
-    size_t size;
+    size_t             size;
     stack_error_code_t err = stack_size(p_stack, &size);
 
     if (STACK_SUCCESS != err)

@@ -8,12 +8,12 @@
  * compared to pointer-based 2D grids. Matrix dimensions are flexible and
  * support resizing as needed.
  *
- * This implementation supports basic matrix operations such as creation,
- * resizing, access, and destruction.
+ * This matrix implementation stores elements as `double`, supporting
+ * basic matrix operations such as create, destroy, set, get, find, and clone.
  *
- * @note Ownership of inserted elements is not transferred to the matrix unless
- *       the operation succeeds. If creation or insertion fails, the caller is
- *       responsible for managing and freeing the element’s memory.
+ * Using `double` ensures safe handling of both `int` and `float` values
+ * via implicit conversion, offering higher precision and a traditional
+ * numerical matrix structure.
  *
  * @author heapbadger
  */
@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "matrix.h"
+
+#define ROW_MAJOR_IDX(row, col, num_cols) ((row) * (num_cols) + (col))
 
 /**
  * @brief Convert an array module return code to a matrix module error code.
@@ -32,86 +34,184 @@
 static matrix_error_code_t matrix_error_from_array(array_error_code_t ret);
 
 /**
- * @brief Allocate an empty matrix structure with uninitialized rows.
+ * @brief Custom delete function for handling double data types.
  *
- * @param rows Number of rows.
- * @param cols Number of columns.
- *
- * @return Pointer to allocated matrix_t or NULL on failure.
+ * @param p_data Pointer to the double type data.
  */
-static matrix_t *matrix_alloc_empty(size_t rows, size_t cols);
+static void double_del(void *p_data);
+
+/**
+ * @brief Custom compare function for handling double data types.
+ *
+ * @param p_double_a Pointer to first double type value.
+ * @param p_double_b Pointer to second double type value.
+ */
+static int double_cmp(const void *p_double_a, const void *p_double_b);
+
+/**
+ * @brief Custom print function for handling double data types.
+ *
+ * @param p_data Pointer to the double type data.
+ * @param index Data index.
+ */
+static void double_print(void *p_data, size_t index);
+
+/**
+ * @brief Custom copy function for handling double data types.
+ *
+ * @param p_data Pointer to the double type data.
+ */
+static void *double_cpy(const void *p_src);
 
 matrix_t *
-matrix_create (size_t           rows,
-               size_t           cols,
-               const del_func   del_f,
-               const cmp_func   cmp_f,
-               const print_func print_f,
-               const copy_func  cpy_f)
+matrix_create (size_t rows, size_t cols)
 {
-    matrix_t *p_matrix = matrix_alloc_empty(rows, cols);
+    matrix_t *p_matrix = NULL;
+
+    if ((0 == rows) || (0 == cols))
+    {
+        return NULL;
+    }
+    
+    p_matrix = (matrix_t *)calloc(1U, sizeof(matrix_t));
 
     if (NULL == p_matrix)
     {
         return NULL;
     }
 
-    for (size_t idx = 0U; idx < rows; ++idx)
-    {
-        p_matrix->pp_matrix[idx]
-            = array_create(cols, del_f, cmp_f, print_f, cpy_f);
-
-        if (NULL == p_matrix->pp_matrix[idx])
-        {
-            matrix_destroy(p_matrix);
-            p_matrix = NULL;
-            break;
-        }
-    }
-
+    size_t cap = rows * cols;
+    p_matrix->p_flat = array_create(cap, (del_func)double_del, (cmp_func)double_cmp, (print_func)double_print, (copy_func)double_cpy);
+    p_matrix->cols = cols;
+    p_matrix->rows = rows;
+    matrix_fill(p_matrix, 0.0);
     return p_matrix;
 }
 
 void
 matrix_destroy (matrix_t *p_matrix)
 {
-    if (NULL != p_matrix)
+    if ((NULL != p_matrix) && (NULL != p_matrix->p_flat))
     {
-        if (NULL != p_matrix->pp_matrix)
-        {
-            matrix_clear(p_matrix);
-        }
-
+        array_destroy(p_matrix->p_flat);
+        p_matrix->p_flat = NULL;
+        p_matrix->cols     = 0U;
+        p_matrix->rows     = 0U;
         free(p_matrix);
+        p_matrix = NULL;
     }
 }
 
 void
-matrix_clear (matrix_t *p_matrix)
+matrix_del_ele (matrix_t *p_matrix, void *p_data)
 {
-    if (NULL != p_matrix)
+    if ((NULL != p_matrix) && (NULL != p_data))
     {
-        if (NULL != p_matrix->pp_matrix)
-        {
-            for (size_t row = 0U; row < p_matrix->rows; ++row)
-            {
-                array_destroy(p_matrix->pp_matrix[row]);
-            }
-
-            free(p_matrix->pp_matrix);
-            p_matrix->pp_matrix = NULL;
-        }
-
-        p_matrix->rows = 0U;
-        p_matrix->cols = 0U;
+        array_del_ele(p_matrix->p_flat, p_data);
     }
 }
 
-void matrix_del_ele(matrix_t *p_matrix, void *p_data)
+matrix_error_code_t
+matrix_fill (matrix_t *p_matrix, double value)
 {
-    if ((NULL != p_matrix) && (NULL != p_data) && (NULL != p_matrix->pp_matrix[0]))
+    if (NULL == p_matrix)
     {
-        array_del_ele(p_matrix->pp_matrix[0], p_data);
+        return MATRIX_INVALID_ARGUMENT;
+    }
+
+    return matrix_error_from_array(
+        array_fill(p_matrix->p_flat, (void *)&value));
+}
+
+matrix_error_code_t
+matrix_get (const matrix_t *p_matrix, size_t row, size_t col, double *p_out)
+{
+    if ((NULL == p_matrix) || (NULL == p_out))
+    {
+        return MATRIX_INVALID_ARGUMENT;
+    }
+
+    if ((row >= p_matrix->rows) || (col >= p_matrix->cols))
+    {
+        return MATRIX_OUT_OF_BOUNDS;
+    }
+
+    matrix_error_code_t ret;
+    void               *p_val = NULL;
+    size_t              idx;
+
+    idx = ROW_MAJOR_IDX(row, col, p_matrix->cols);
+    ret = matrix_error_from_array(array_get(p_matrix->p_flat, idx, &p_val));
+
+    if ((MATRIX_SUCCESS == ret) && (NULL != p_val))
+    {
+        *p_out = *(double *)p_val;
+    }
+
+    return ret;
+}
+
+matrix_error_code_t
+matrix_set (matrix_t *p_matrix, size_t row, size_t col, double value)
+{
+    if (NULL == p_matrix)
+    {
+        return MATRIX_ALLOCATION_FAILURE;
+    }
+
+    if ((row >= p_matrix->rows) || (col >= p_matrix->cols))
+    {
+        return MATRIX_OUT_OF_BOUNDS;
+    }
+
+    double *p_val = calloc(1, sizeof(double));
+
+    if (NULL == p_val)
+    {
+        return MATRIX_ALLOCATION_FAILURE;
+    }
+
+    matrix_error_code_t ret;
+    size_t idx = ROW_MAJOR_IDX(row, col, p_matrix->cols);
+    *p_val     = value;
+    ret = matrix_error_from_array(array_set(p_matrix->p_flat, idx, p_val));
+
+    if (MATRIX_SUCCESS != ret)
+    {
+        free(p_val);
+    }
+
+    return ret;
+}
+
+bool
+matrix_is_equal (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b)
+{
+    if ((NULL == p_matrix_a) && (NULL == p_matrix_b))
+    {
+        return true;
+    }
+
+    if ((NULL == p_matrix_a) || (NULL == p_matrix_b))
+    {
+        return false;
+    }
+
+    if ((p_matrix_a->rows != p_matrix_b->rows)
+        || (p_matrix_a->cols != p_matrix_b->cols))
+    {
+        return false;
+    }
+
+    return array_is_equal(p_matrix_a->p_flat, p_matrix_b->p_flat);
+}
+
+void
+matrix_print (const matrix_t *p_matrix)
+{
+    if (NULL != p_matrix)
+    {
+        array_print(p_matrix->p_flat);
     }
 }
 
@@ -140,126 +240,21 @@ matrix_column_size (const matrix_t *p_matrix, size_t *p_size)
 }
 
 matrix_error_code_t
-matrix_fill (matrix_t *p_matrix, void *p_value)
+matrix_find (const matrix_t *p_matrix, double key, size_t *p_row, size_t *p_col)
 {
-    matrix_error_code_t ret = MATRIX_SUCCESS;
-
-    if ((NULL == p_matrix) || (NULL == p_value)
-        || (NULL == p_matrix->pp_matrix))
-    {
-        ret = MATRIX_INVALID_ARGUMENT;
-        goto EXIT;
-    }
-
-    for (size_t row = 0U; row < p_matrix->rows; ++row)
-    {
-        ret = matrix_error_from_array(
-            array_fill(p_matrix->pp_matrix[row], p_value));
-
-        if (MATRIX_SUCCESS != ret)
-        {
-            break;
-        }
-    }
-
-EXIT:
-    return ret;
-}
-
-matrix_error_code_t
-matrix_insert (matrix_t *p_matrix, size_t row, size_t col, void *p_value)
-{
-    matrix_error_code_t ret = MATRIX_INVALID_ARGUMENT;
-
-    if ((NULL != p_matrix) && (NULL != p_value))
-    {
-        if ((row < p_matrix->rows) && (col < p_matrix->cols))
-        {
-            ret = matrix_error_from_array(
-                array_insert(p_matrix->pp_matrix[row], col, p_value));
-        }
-        else
-        {
-            ret = MATRIX_OUT_OF_BOUNDS;
-        }
-    }
-
-    return ret;
-}
-
-matrix_error_code_t
-matrix_remove (matrix_t *p_matrix, size_t row, size_t col)
-{
-    if (NULL == p_matrix)
+    if ((NULL == p_matrix) || (NULL == p_row) || (NULL == p_col))
     {
         return MATRIX_INVALID_ARGUMENT;
     }
 
-    if ((row >= p_matrix->rows) || (col >= p_matrix->cols))
+    size_t flat_idx = 0;
+
+    if (ARRAY_SUCCESS
+        == array_find(p_matrix->p_flat, (void **)&key, &flat_idx))
     {
-        return MATRIX_OUT_OF_BOUNDS;
-    }
-
-    return matrix_error_from_array(array_remove(p_matrix->pp_matrix[row], col));
-}
-
-matrix_error_code_t
-matrix_get (const matrix_t *p_matrix, size_t row, size_t col, void **p_out)
-{
-    if ((NULL == p_matrix) || (NULL == p_matrix->pp_matrix) || (NULL == p_out))
-    {
-        return MATRIX_INVALID_ARGUMENT;
-    }
-
-    if ((row >= p_matrix->rows) || (col >= p_matrix->cols))
-    {
-        return MATRIX_OUT_OF_BOUNDS;
-    }
-
-    return matrix_error_from_array(
-        array_get(p_matrix->pp_matrix[row], col, p_out));
-}
-
-matrix_error_code_t
-matrix_set (matrix_t *p_matrix, size_t row, size_t col, void *p_value)
-{
-    matrix_error_code_t ret = MATRIX_INVALID_ARGUMENT;
-
-    if ((NULL != p_matrix) && (NULL != p_value))
-    {
-        if ((row < p_matrix->rows) && (col < p_matrix->cols))
-        {
-            ret = matrix_error_from_array(
-                array_set(p_matrix->pp_matrix[row], col, p_value));
-        }
-        else
-        {
-            ret = MATRIX_OUT_OF_BOUNDS;
-        }
-    }
-
-    return ret;
-}
-
-matrix_error_code_t
-matrix_find (matrix_t *p_matrix, void *p_key, size_t *p_row, size_t *p_col)
-{
-    if ((NULL == p_matrix) || (NULL == p_key) || (NULL == p_row)
-        || (NULL == p_col))
-    {
-        return MATRIX_INVALID_ARGUMENT;
-    }
-
-    for (size_t row = 0U; row < p_matrix->rows; ++row)
-    {
-        size_t col = 0U;
-
-        if (array_find(p_matrix->pp_matrix[row], p_key, &col) == ARRAY_SUCCESS)
-        {
-            *p_row = row;
-            *p_col = (size_t)col;
-            return MATRIX_SUCCESS;
-        }
+        *p_row = flat_idx / p_matrix->cols;
+        *p_col = flat_idx % p_matrix->cols;
+        return MATRIX_SUCCESS;
     }
 
     return MATRIX_NOT_FOUND;
@@ -270,80 +265,19 @@ matrix_clone (const matrix_t *p_ori)
 {
     matrix_t *p_new = NULL;
 
-    if ((NULL == p_ori) || (NULL == p_ori->pp_matrix))
+    if (NULL != p_ori)
     {
-        goto EXIT;
-    }
+        p_new = (matrix_t *)calloc(1U, sizeof(matrix_t));
 
-    p_new = matrix_alloc_empty(p_ori->rows, p_ori->cols);
-
-    if (NULL == p_new)
-    {
-        goto EXIT;
-    }
-
-    for (size_t row = 0U; row < p_ori->rows; ++row)
-    {
-        array_t *p_dst = array_clone(p_ori->pp_matrix[row]);
-
-        if (NULL == p_dst)
+        if (NULL != p_new)
         {
-            matrix_destroy(p_new);
-            p_new = NULL;
-            goto EXIT;
+            p_new->cols = p_ori->cols;
+            p_new->rows = p_ori->rows;
+            p_new->p_flat = array_clone(p_ori->p_flat);
         }
-
-        p_new->pp_matrix[row] = p_dst;
     }
 
-EXIT:
     return p_new;
-}
-
-bool
-matrix_is_equal (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b)
-{
-    if ((NULL == p_matrix_a) && (NULL == p_matrix_b))
-    {
-        return true;
-    }
-
-    if ((NULL == p_matrix_a) || (NULL == p_matrix_b))
-    {
-        return false;
-    }
-
-    if ((p_matrix_a->rows != p_matrix_b->rows)
-        || (p_matrix_a->cols != p_matrix_b->cols))
-    {
-        return false;
-    }
-
-    for (size_t row = 0U; row < p_matrix_a->rows; ++row)
-    {
-        if (!array_is_equal(p_matrix_a->pp_matrix[row],
-                            p_matrix_b->pp_matrix[row]))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void
-matrix_print (const matrix_t *p_matrix)
-{
-    if ((NULL == p_matrix) || (NULL == p_matrix->pp_matrix))
-    {
-        return;
-    }
-
-    for (size_t row = 0U; row < p_matrix->rows; row++)
-    {
-        array_print(p_matrix->pp_matrix[row]);
-        printf("\n");
-    }
 }
 
 static matrix_error_code_t
@@ -366,37 +300,58 @@ matrix_error_from_array (array_error_code_t ret)
     }
 }
 
-static matrix_t *
-matrix_alloc_empty (size_t rows, size_t cols)
+static void
+double_del (void *p_data)
 {
-    matrix_t *p_matrix = NULL;
+    free(p_data);
+}
 
-    if ((0U == rows) || (0U == cols))
+static int
+double_cmp (const void *p_double_a, const void *p_double_b)
+{
+    double double_a = *(const double *)p_double_a;
+    double double_b = *(const double *)p_double_b;
+
+    if (double_a < double_b)
     {
-        goto EXIT;
+        return -1;
     }
 
-    p_matrix = calloc(1, sizeof(matrix_t));
-
-    if (NULL == p_matrix)
+    if (double_a > double_b)
     {
-        goto EXIT;
+        return 1;
     }
 
-    p_matrix->pp_matrix = calloc(rows, sizeof(array_t *));
+    return 0;
+}
 
-    if (NULL == p_matrix->pp_matrix)
+static void
+double_print (void *p_data, size_t index)
+{
+    if (p_data != NULL)
     {
-        free(p_matrix);
-        p_matrix = NULL;
-        goto EXIT;
+        printf("(%zu: %f)", index, *(const double *)p_data);
     }
 
-    p_matrix->rows = rows;
-    p_matrix->cols = cols;
+    return;
+}
 
-EXIT:
-    return p_matrix;
+static void *
+double_cpy (const void *p_src)
+{
+    if (NULL == p_src)
+    {
+        return NULL;
+    }
+
+    double *p_copy = calloc(1, sizeof(double));
+
+    if (NULL != p_copy)
+    {
+        *p_copy = *(const double *)p_src;
+    }
+
+    return p_copy;
 }
 
 /*** end of file ***/

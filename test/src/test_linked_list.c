@@ -56,7 +56,9 @@ ll_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(suite, "test_ll_foreach_clone_reverse", test_ll_foreach_clone_reverse)))
+        == (CU_add_test(suite,
+                        "test_ll_foreach_clone_reverse",
+                        test_ll_foreach_clone_reverse)))
     {
         ERROR_LOG("Failed to add test_ll_foreach_clone_reverse to suite\n");
         suite = NULL;
@@ -109,12 +111,12 @@ static void
 test_ll_insert_remove (void)
 {
     ll_t *p_list = NULL;
-    int *val1 = malloc(sizeof(int));
-    *val1     = 1;
-    int *val2 = malloc(sizeof(int));
-    *val2     = 2;
-    int *val3 = malloc(sizeof(int));
-    *val3     = 3;
+    int  *val1   = malloc(sizeof(int));
+    *val1        = 1;
+    int *val2    = malloc(sizeof(int));
+    *val2        = 2;
+    int *val3    = malloc(sizeof(int));
+    *val3        = 3;
 
     // Attempt append and insert with NULL list
     CU_ASSERT_EQUAL(ll_append(p_list, val1), LL_INVALID_ARGUMENT);
@@ -180,8 +182,8 @@ test_ll_find_at (void)
 static void
 test_ll_foreach_clone_reverse (void)
 {
-    ll_t *p_ori = NULL;
-    p_ori = ll_create(delete_int, compare_ints, print_int, copy_int);
+    ll_t *p_ori  = NULL;
+    p_ori        = ll_create(delete_int, compare_ints, print_int, copy_int);
     int **values = calloc(5, sizeof(int *));
 
     for (int idx = 0; idx < 5; ++idx)
@@ -194,10 +196,10 @@ test_ll_foreach_clone_reverse (void)
     free(values);
     CU_ASSERT_EQUAL(ll_foreach(p_ori, multiply_by_five), LL_SUCCESS);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 0)->p_data, 0);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data, 5*5);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data, 10*5);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data, 15*5);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data, 20*5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data, 5 * 5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data, 10 * 5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data, 15 * 5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data, 20 * 5);
 
     ll_t *p_new = ll_clone(p_ori);
     CU_ASSERT_PTR_NOT_NULL(p_new);
@@ -210,25 +212,20 @@ test_ll_foreach_clone_reverse (void)
 
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 0)->p_data,
                     *(int *)ll_at(p_new, 0)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 0)->p_data,
-                            ll_at(p_new, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 0)->p_data, ll_at(p_new, 0)->p_data);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data,
                     *(int *)ll_at(p_new, 1)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 1)->p_data,
-                            ll_at(p_new, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 1)->p_data, ll_at(p_new, 1)->p_data);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data,
                     *(int *)ll_at(p_new, 2)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 2)->p_data,
-                            ll_at(p_new, 2)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 2)->p_data, ll_at(p_new, 2)->p_data);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data,
                     *(int *)ll_at(p_new, 3)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 3)->p_data,
-                            ll_at(p_new, 3)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 3)->p_data, ll_at(p_new, 3)->p_data);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data,
                     *(int *)ll_at(p_new, 4)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 4)->p_data,
-                            ll_at(p_new, 4)->p_data);
-    
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 4)->p_data, ll_at(p_new, 4)->p_data);
+
     CU_ASSERT_EQUAL(ll_reverse(p_new), LL_SUCCESS);
     CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data,
                     *(int *)ll_at(p_new, 0)->p_data);

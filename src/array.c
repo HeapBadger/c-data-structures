@@ -18,7 +18,7 @@
  * @note The array only takes ownership of an element upon successful insertion.
  *       If insertion fails, the caller must manage (and eventually free) the
  *       memory.
- * 
+ *
  * @author  heapbadger
  */
 
@@ -126,12 +126,10 @@ array_del_ele (array_t *p_array, void *p_value)
 array_error_code_t
 array_fill (array_t *p_array, void *p_value)
 {
-    if ((NULL == p_array) || (NULL == p_value) || (NULL == p_array->cpy_f))
+    if (!p_array || !p_value || !p_array->cpy_f)
     {
         return ARRAY_INVALID_ARGUMENT;
     }
-
-    array_error_code_t ret = ARRAY_SUCCESS;
 
     for (size_t idx = 0U; idx < p_array->cap; ++idx)
     {
@@ -139,24 +137,30 @@ array_fill (array_t *p_array, void *p_value)
 
         if (NULL == p_copy)
         {
-            ret = ARRAY_ALLOCATION_FAILURE;
-            break;
+            array_clear(p_array);
+            return ARRAY_ALLOCATION_FAILURE;
         }
 
-        ret = array_push(p_array, p_copy);
+        array_error_code_t ret;
+
+        if (p_array->pp_array[idx])
+        {
+            ret = array_set(p_array, idx, p_copy);
+        }
+        else
+        {
+            ret = array_push(p_array, p_copy);
+        }
 
         if (ARRAY_SUCCESS != ret)
         {
-            break;
+            array_del_ele(p_array, p_copy);
+            array_clear(p_array);
+            return ret;
         }
     }
 
-    if (ARRAY_SUCCESS != ret)
-    {
-        array_clear(p_array);
-    }
-
-    return ret;
+    return ARRAY_SUCCESS;
 }
 
 array_error_code_t

@@ -99,7 +99,8 @@ void array_clear(array_t *p_array);
 void array_del_ele(array_t *p_array, void *p_value);
 
 /**
- * @brief Fill the entire array with copies of the given value.
+ * @brief Fill the entire array with copies of the given value. Overwrites
+ * any previous data.
  *
  * @param p_array Pointer to the array to fill.
  * @param p_value Pointer to the value to copy into each element.
