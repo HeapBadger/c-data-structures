@@ -208,6 +208,7 @@ test_array_insert_remove (void)
     int *val6 = malloc(sizeof(int));
     *val6     = 1;
     CU_ASSERT_EQUAL(array_insert(p_array, 20, val6), ARRAY_OUT_OF_BOUNDS);
+    array_del_ele(p_array, val6);
 
     // Remove element at index 1 (val4)
     ret = array_remove(p_array, 1);
@@ -321,6 +322,7 @@ test_array_set_get (void)
     *val3     = 300;
     ret       = array_set(p_array, 5, val3);
     CU_ASSERT_EQUAL(ret, ARRAY_OUT_OF_BOUNDS);
+    array_del_ele(p_array, val3);
 
     array_destroy(p_array);
 }
@@ -383,6 +385,7 @@ test_array_bounds (void)
     CU_ASSERT_EQUAL(array_get(p_array, 999, &out), ARRAY_OUT_OF_BOUNDS);
     CU_ASSERT_EQUAL(array_set(p_array, 999, val4), ARRAY_OUT_OF_BOUNDS);
     CU_ASSERT_EQUAL(array_remove(p_array, 999), ARRAY_OUT_OF_BOUNDS);
+    array_del_ele(p_array, val4);
 
     array_destroy(p_array);
 }

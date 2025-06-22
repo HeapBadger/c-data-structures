@@ -1,6 +1,20 @@
 /**
  * @file linked_list.c
- * @brief Implementation of the singly Linked List data structure.
+ * @brief Implementation of the singly linked list data structure.
+ *
+ * This implementation provides a generic singly linked list with dynamic memory
+ * management. Each node stores a pointer to user data, allowing the list to
+ * manage elements of any type. Core features include insertion, deletion,
+ * searching, traversal, and cloning. Function pointers are used for user-defined
+ * data operations such as copy, delete, print, and compare.
+ *
+ * The list grows dynamically and supports efficient O(1) insertion at the head
+ * and O(n) access for arbitrary positions. The design prioritizes flexibility
+ * and modularity through encapsulation and callback-based customization.
+ *
+ * @note Elements are not owned by the list until they are successfully inserted.
+ *       If insertion fails (e.g., due to a memory allocation error), the caller
+ *       remains responsible for freeing the associated memory.
  *
  * @author heapbadger
  */
@@ -20,29 +34,12 @@
 static ll_node_t *ll_create_node(void *p_data);
 
 /**
- * @brief Deletes a single element using the list's delete function.
- *
- * @param p_list Pointer to the list.
- * @param p_value Pointer to the element to delete.
- */
-static void ll_delete_element(ll_t *p_list, void *p_value);
-
-/**
  * @brief Deletes a node.
  *
  * @param p_list Pointer to the list.
  * @param p_node Pointer to the node to be deleted.
  */
 static void ll_del_node(ll_t *p_list, ll_node_t *p_node);
-
-/**
- * @brief Returns a pointer to the node at the specified index.
- *
- * @param p_list Pointer to the list.
- * @param index Index of the node to retrieve.
- * @return Pointer to the node, or NULL if out of bounds.
- */
-static ll_node_t *ll_node_at(const ll_t *p_list, size_t index);
 
 /**
  * @brief   Search for a key in the list, returning its index and/or node.
@@ -70,14 +67,14 @@ ll_create (const del_func   del_f,
     if ((NULL == del_f) || (NULL == cmp_f) || (NULL == print_f)
         || (NULL == cpy_f))
     {
-        goto EXIT;
+        return p_list;
     }
 
     p_list = (ll_t *)calloc(1U, sizeof(ll_t));
 
     if (NULL == p_list)
     {
-        goto EXIT;
+        return p_list;
     }
 
     p_list->p_head  = NULL;
@@ -85,8 +82,6 @@ ll_create (const del_func   del_f,
     p_list->cmp_f   = cmp_f;
     p_list->print_f = print_f;
     p_list->cpy_f   = cpy_f;
-
-EXIT:
     return p_list;
 }
 
@@ -123,49 +118,13 @@ ll_clear (ll_t *p_list)
     }
 }
 
-ll_error_code_t
-ll_insert (ll_t *p_list, void *p_data, size_t index)
+void
+ll_del_ele (ll_t *p_list, void *p_value)
 {
-    if ((NULL == p_list) || (NULL == p_data))
+    if ((NULL != p_list) && (NULL != p_value))
     {
-        return LL_INVALID_ARGUMENT;
+        p_list->del_f(p_value);
     }
-
-    ll_node_t *p_new = ll_create_node(p_data);
-
-    if (NULL == p_new)
-    {
-        return LL_ALLOCATION_FAILURE;
-    }
-
-    // Insert at head
-    if (index == 0)
-    {
-        p_new->p_next  = p_list->p_head;
-        p_list->p_head = p_new;
-    }
-    // Insert at index
-    else
-    {
-        ll_node_t *p_prev = ll_node_at(p_list, index - 1U);
-
-        if (NULL == p_prev)
-        {
-            ll_del_node(p_list, p_new);
-            return LL_OUT_OF_BOUNDS;
-        }
-
-        p_new->p_next  = p_prev->p_next;
-        p_prev->p_next = p_new;
-    }
-
-    return LL_SUCCESS;
-}
-
-ll_error_code_t
-ll_prepend (ll_t *p_list, void *p_data)
-{
-    return ll_insert(p_list, p_data, 0U);
 }
 
 ll_error_code_t
@@ -197,6 +156,45 @@ ll_append (ll_t *p_list, void *p_data)
 }
 
 ll_error_code_t
+ll_insert (ll_t *p_list, void *p_data, size_t index)
+{
+    if ((NULL == p_list) || (NULL == p_data))
+    {
+        return LL_INVALID_ARGUMENT;
+    }
+
+    ll_node_t *p_new = ll_create_node(p_data);
+
+    if (NULL == p_new)
+    {
+        return LL_ALLOCATION_FAILURE;
+    }
+
+    // Insert at head
+    if (index == 0)
+    {
+        p_new->p_next  = p_list->p_head;
+        p_list->p_head = p_new;
+    }
+    // Insert at index
+    else
+    {
+        ll_node_t *p_prev = ll_at(p_list, index - 1U);
+
+        if (NULL == p_prev)
+        {
+            ll_del_node(p_list, p_new);
+            return LL_OUT_OF_BOUNDS;
+        }
+
+        p_new->p_next  = p_prev->p_next;
+        p_prev->p_next = p_new;
+    }
+
+    return LL_SUCCESS;
+}
+
+ll_error_code_t
 ll_del_at (ll_t *p_list, size_t index)
 {
     ll_error_code_t ret = LL_SUCCESS;
@@ -221,7 +219,7 @@ ll_del_at (ll_t *p_list, size_t index)
         goto EXIT;
     }
 
-    ll_node_t *p_prev = ll_node_at(p_list, index - 1U);
+    ll_node_t *p_prev = ll_at(p_list, index - 1U);
 
     if ((NULL == p_prev) || (NULL == p_prev->p_next))
     {
@@ -237,29 +235,57 @@ EXIT:
     return ret;
 }
 
-ll_error_code_t
-ll_copy_at (const ll_t *p_list, size_t index, void **p_copy)
+ll_node_t *
+ll_at (const ll_t *p_list, size_t index)
 {
-    if ((NULL == p_list) || (NULL == p_copy) || (NULL == p_list->cpy_f))
+    if (NULL == p_list)
     {
-        return LL_INVALID_ARGUMENT;
+        return NULL;
     }
 
-    ll_node_t *p_node = ll_node_at(p_list, index);
+    ll_node_t *p_curr = p_list->p_head;
 
-    if (NULL == p_node)
+    for (size_t i = 0U; (NULL != p_curr) && (i < index); ++i)
     {
-        return LL_EMPTY;
+        p_curr = p_curr->p_next;
     }
 
-    *p_copy = p_list->cpy_f(p_node->p_data);
+    return p_curr;
+}
 
-    if (NULL == *p_copy)
+ll_node_t *
+ll_head (const ll_t *p_list)
+{
+    return (p_list != NULL) ? p_list->p_head : NULL;
+}
+
+ll_node_t *
+ll_tail (const ll_t *p_list)
+{
+    if (NULL == p_list)
     {
-        return LL_ALLOCATION_FAILURE;
+        return NULL;
     }
 
-    return LL_SUCCESS;
+    ll_node_t *p_curr = p_list->p_head;
+
+    if (NULL == p_curr)
+    {
+        return NULL;
+    }
+
+    while (p_curr->p_next != NULL)
+    {
+        p_curr = p_curr->p_next;
+    }
+
+    return p_curr;
+}
+
+ll_error_code_t
+ll_find (const ll_t *p_list, void *p_key, size_t *p_idx)
+{
+    return ll_find_internal(p_list, p_key, p_idx, NULL);
 }
 
 bool
@@ -273,16 +299,28 @@ ll_is_empty (const ll_t *p_list)
     return (NULL == p_list->p_head);
 }
 
-ll_node_t *
-ll_at (const ll_t *p_list, size_t index)
+void
+ll_print (const ll_t *p_list)
 {
-    return ll_node_at(p_list, index);
-}
+    if ((NULL != p_list) && (NULL != p_list->print_f))
+    {
+        size_t idx = 0U;
+        printf("[");
 
-ll_error_code_t
-ll_find (const ll_t *p_list, void *p_key, size_t *p_idx)
-{
-    return ll_find_internal(p_list, p_key, p_idx, NULL);
+        for (ll_node_t *p_curr = p_list->p_head; NULL != p_curr;
+             p_curr            = p_curr->p_next)
+        {
+            if (idx > 0U)
+            {
+                printf(" -> ");
+            }
+
+            p_list->print_f(p_curr->p_data, idx);
+            ++idx;
+        }
+
+        printf("]\n");
+    }
 }
 
 ll_error_code_t
@@ -306,54 +344,25 @@ ll_size (const ll_t *p_list, size_t *p_size)
 }
 
 ll_error_code_t
-ll_reverse (ll_t *p_list)
+ll_clone_at (const ll_t *p_list, size_t index, void **p_copy)
 {
-    if (NULL == p_list)
+    if ((NULL == p_list) || (NULL == p_copy) || (NULL == p_list->cpy_f))
     {
         return LL_INVALID_ARGUMENT;
     }
 
-    if (ll_is_empty(p_list))
+    ll_node_t *p_node = ll_at(p_list, index);
+
+    if (NULL == p_node)
     {
         return LL_EMPTY;
     }
 
-    ll_node_t *p_prev = NULL;
-    ll_node_t *p_curr = p_list->p_head;
+    *p_copy = p_list->cpy_f(p_node->p_data);
 
-    while (NULL != p_curr)
+    if (NULL == *p_copy)
     {
-        ll_node_t *p_next = p_curr->p_next;
-        p_curr->p_next    = p_prev;
-        p_prev            = p_curr;
-        p_curr            = p_next;
-    }
-
-    p_list->p_head = p_prev;
-    return LL_SUCCESS;
-}
-
-ll_error_code_t
-ll_foreach (ll_t *p_list, foreach_func func)
-{
-    if ((NULL == p_list) || (NULL == func))
-    {
-        return LL_INVALID_ARGUMENT;
-    }
-
-    if (ll_is_empty(p_list))
-    {
-        return LL_EMPTY;
-    }
-
-    ll_node_t *p_curr = p_list->p_head;
-    size_t     idx    = 0U;
-
-    while (NULL != p_curr)
-    {
-        func(p_curr->p_data, idx);
-        p_curr = p_curr->p_next;
-        ++idx;
+        return LL_ALLOCATION_FAILURE;
     }
 
     return LL_SUCCESS;
@@ -423,70 +432,58 @@ EXIT:
     return p_new;
 }
 
-ll_node_t *
-ll_head (const ll_t *p_list)
-{
-    return (p_list != NULL) ? p_list->p_head : NULL;
-}
-
-ll_node_t *
-ll_tail (const ll_t *p_list)
+ll_error_code_t
+ll_reverse (ll_t *p_list)
 {
     if (NULL == p_list)
     {
-        return NULL;
+        return LL_INVALID_ARGUMENT;
+    }
+
+    if (ll_is_empty(p_list))
+    {
+        return LL_EMPTY;
+    }
+
+    ll_node_t *p_prev = NULL;
+    ll_node_t *p_curr = p_list->p_head;
+
+    while (NULL != p_curr)
+    {
+        ll_node_t *p_next = p_curr->p_next;
+        p_curr->p_next    = p_prev;
+        p_prev            = p_curr;
+        p_curr            = p_next;
+    }
+
+    p_list->p_head = p_prev;
+    return LL_SUCCESS;
+}
+
+ll_error_code_t
+ll_foreach (ll_t *p_list, foreach_func func)
+{
+    if ((NULL == p_list) || (NULL == func))
+    {
+        return LL_INVALID_ARGUMENT;
+    }
+
+    if (ll_is_empty(p_list))
+    {
+        return LL_EMPTY;
     }
 
     ll_node_t *p_curr = p_list->p_head;
+    size_t     idx    = 0U;
 
-    if (NULL == p_curr)
+    while (NULL != p_curr)
     {
-        return NULL;
-    }
-
-    while (p_curr->p_next != NULL)
-    {
+        func(p_curr->p_data, idx);
         p_curr = p_curr->p_next;
+        ++idx;
     }
 
-    return p_curr;
-}
-
-ll_node_t *
-ll_find_node (const ll_t *p_list, void *p_key)
-{
-    ll_node_t *result = NULL;
-
-    if (LL_SUCCESS == ll_find_internal(p_list, p_key, NULL, &result))
-    {
-        return result;
-    }
-
-    return NULL;
-}
-
-void
-ll_print (const ll_t *p_list)
-{
-    if ((NULL != p_list) && (NULL != p_list->print_f))
-    {
-        size_t idx = 0U;
-        printf("[");
-
-        for (ll_node_t *p_curr = p_list->p_head; NULL != p_curr;
-             p_curr            = p_curr->p_next)
-        {
-            if (idx > 0U)
-            {
-                printf(" -> ");
-            }
-
-            p_list->print_f(p_curr->p_data, idx);
-            ++idx;
-        }
-
-        printf("]\n");
-    }
+    return LL_SUCCESS;
 }
 
 static ll_node_t *
@@ -504,40 +501,13 @@ ll_create_node (void *p_data)
 }
 
 static void
-ll_delete_element (ll_t *p_list, void *p_value)
-{
-    if ((NULL != p_list) && (NULL != p_value))
-    {
-        p_list->del_f(p_value);
-    }
-}
-
-static void
 ll_del_node (ll_t *p_list, ll_node_t *p_node)
 {
     if ((NULL != p_list) && (NULL != p_node))
     {
-        ll_delete_element(p_list, p_node->p_data);
+        ll_del_ele(p_list, p_node->p_data);
         free(p_node);
     }
-}
-
-static ll_node_t *
-ll_node_at (const ll_t *p_list, size_t index)
-{
-    if (NULL == p_list)
-    {
-        return NULL;
-    }
-
-    ll_node_t *p_curr = p_list->p_head;
-
-    for (size_t i = 0U; (NULL != p_curr) && (i < index); ++i)
-    {
-        p_curr = p_curr->p_next;
-    }
-
-    return p_curr;
 }
 
 static ll_error_code_t

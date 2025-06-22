@@ -51,11 +51,12 @@ queue_t *queue_create(const del_func   del_f,
 void queue_destroy(queue_t *p_queue);
 
 /**
- * @brief Remove all elements from the queue.
+ * @brief Deletes a single element using the registered delete function.
  *
  * @param p_queue Pointer to the queue.
+ * @param p_value Pointer to the element to delete.
  */
-void queue_clear(queue_t *p_queue);
+void queue_del_ele(queue_t *p_queue, void *p_value);
 
 /**
  * @brief Insert an element at the end of the queue.
@@ -78,14 +79,14 @@ queue_error_code_t queue_enqueue(queue_t *p_queue, void *p_data);
 queue_error_code_t queue_dequeue(queue_t *p_queue, void **p_data);
 
 /**
- * @brief Return the front element without removing it.
+ * @brief Return the top element (first in queue) without removing it.
  *
  * @param p_queue Pointer to the queue.
- * @param p_data  Output parameter to store the front element's data.
+ * @param p_top   Output parameter to store the front element's data.
  *
  * @return QUEUE_SUCCESS on success, appropriate error code otherwise.
  */
-queue_error_code_t queue_peek(const queue_t *p_queue, void **p_data);
+queue_error_code_t queue_peek(const queue_t *p_queue, void **p_top);
 
 /**
  * @brief Check whether the queue is empty.

@@ -2,12 +2,20 @@
  * @file matrix.c
  * @brief Implementation of a matrix data structure using a dynamic array.
  *
- * This implementation uses a contiguous dynamic array to represent the matrix.
- * This approach was chosen for performance reasons—cache locality is improved,
- * access times are constant (O(1)), and memory usage is compact compared to
- * pointer-based grids.
+ * This matrix is represented as a contiguous 1D dynamic array internally,
+ * enabling efficient memory access and compact storage. Elements are laid out
+ * in row-major order, which improves performance due to better cache locality
+ * compared to pointer-based 2D grids. Matrix dimensions are flexible and
+ * support resizing as needed.
  *
- * @author  heapbadger
+ * This implementation supports basic matrix operations such as creation,
+ * resizing, access, and destruction.
+ *
+ * @note Ownership of inserted elements is not transferred to the matrix unless
+ *       the operation succeeds. If creation or insertion fails, the caller is
+ *       responsible for managing and freeing the element’s memory.
+ *
+ * @author heapbadger
  */
 
 #include <stdio.h>
@@ -22,14 +30,6 @@
  * @return Corresponding matrix_error_code_t.
  */
 static matrix_error_code_t matrix_error_from_array(array_error_code_t ret);
-
-/**
- * @brief Delete a value using the a custom deletion function pointer.
- *
- * @param p_matrix Pointer to the matrix.
- * @param p_value Pointer to the value to delete.
- */
-static void matrix_delete_value(matrix_t *p_matrix, void *p_value);
 
 /**
  * @brief Allocate an empty matrix structure with uninitialized rows.
@@ -107,6 +107,14 @@ matrix_clear (matrix_t *p_matrix)
     }
 }
 
+void matrix_del_ele(matrix_t *p_matrix, void *p_data)
+{
+    if ((NULL != p_matrix) && (NULL != p_data) && (NULL != p_matrix->pp_matrix[0]))
+    {
+        array_del_ele(p_matrix->pp_matrix[0], p_data);
+    }
+}
+
 matrix_error_code_t
 matrix_row_size (const matrix_t *p_matrix, size_t *p_size)
 {
@@ -172,7 +180,6 @@ matrix_insert (matrix_t *p_matrix, size_t row, size_t col, void *p_value)
         }
         else
         {
-            matrix_delete_value(p_matrix, p_value);
             ret = MATRIX_OUT_OF_BOUNDS;
         }
     }
@@ -227,7 +234,6 @@ matrix_set (matrix_t *p_matrix, size_t row, size_t col, void *p_value)
         }
         else
         {
-            matrix_delete_value(p_matrix, p_value);
             ret = MATRIX_OUT_OF_BOUNDS;
         }
     }
@@ -357,16 +363,6 @@ matrix_error_from_array (array_error_code_t ret)
             return MATRIX_ALLOCATION_FAILURE;
         default:
             return MATRIX_FAILURE;
-    }
-}
-
-static void
-matrix_delete_value (matrix_t *p_matrix, void *p_value)
-{
-    if ((NULL != p_matrix) && (NULL != p_matrix->pp_matrix) && (NULL != p_value)
-        && (0U < p_matrix->rows))
-    {
-        array_delete_element(p_matrix->pp_matrix[0], p_value);
     }
 }
 

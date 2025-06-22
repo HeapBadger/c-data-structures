@@ -15,7 +15,7 @@
 static void test_ll_create_destroy(void);
 static void test_ll_insert_remove(void);
 static void test_ll_find_at(void);
-static void test_ll_foreach_clone(void);
+static void test_ll_foreach_clone_reverse(void);
 static void test_ll_null_invalid_inputs(void);
 static void test_ll_head_tail_contains_is_empty(void);
 
@@ -56,9 +56,9 @@ ll_suite (void)
     }
 
     if (NULL
-        == (CU_add_test(suite, "test_ll_foreach_clone", test_ll_foreach_clone)))
+        == (CU_add_test(suite, "test_ll_foreach_clone_reverse", test_ll_foreach_clone_reverse)))
     {
-        ERROR_LOG("Failed to add test_ll_foreach_clone to suite\n");
+        ERROR_LOG("Failed to add test_ll_foreach_clone_reverse to suite\n");
         suite = NULL;
         goto CLEANUP;
     }
@@ -108,19 +108,25 @@ test_ll_create_destroy (void)
 static void
 test_ll_insert_remove (void)
 {
-    ll_t *p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
+    ll_t *p_list = NULL;
+    int *val1 = malloc(sizeof(int));
+    *val1     = 1;
+    int *val2 = malloc(sizeof(int));
+    *val2     = 2;
+    int *val3 = malloc(sizeof(int));
+    *val3     = 3;
 
-    int *a = malloc(sizeof(int));
-    *a     = 1;
-    int *b = malloc(sizeof(int));
-    *b     = 2;
-    int *c = malloc(sizeof(int));
-    *c     = 3;
+    // Attempt append and insert with NULL list
+    CU_ASSERT_EQUAL(ll_append(p_list, val1), LL_INVALID_ARGUMENT);
+    CU_ASSERT_EQUAL(ll_insert(p_list, val3, 1), LL_INVALID_ARGUMENT);
 
-    CU_ASSERT_EQUAL(ll_prepend(p_list, a), LL_SUCCESS);
-    CU_ASSERT_EQUAL(ll_append(p_list, b), LL_SUCCESS);
-    CU_ASSERT_EQUAL(ll_insert(p_list, c, 1), LL_SUCCESS);
+    // Append and insert values
+    p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
+    CU_ASSERT_EQUAL(ll_append(p_list, val1), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_append(p_list, val2), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_insert(p_list, val3, 1), LL_SUCCESS);
 
+    // Size list
     size_t size;
     CU_ASSERT_EQUAL(ll_size(p_list, &size), LL_SUCCESS);
     CU_ASSERT_EQUAL(size, 3);
@@ -140,24 +146,31 @@ static void
 test_ll_find_at (void)
 {
     ll_t *p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
+    CU_ASSERT_TRUE(ll_is_empty(p_list));
 
-    int *x = malloc(sizeof(int));
-    *x     = 10;
-    int *y = malloc(sizeof(int));
-    *y     = 20;
-    int *z = malloc(sizeof(int));
-    *z     = 30;
+    int *val1 = malloc(sizeof(int));
+    *val1     = 10;
+    int *val2 = malloc(sizeof(int));
+    *val2     = 20;
+    int *val3 = malloc(sizeof(int));
+    *val3     = 30;
 
-    ll_append(p_list, x);
-    ll_append(p_list, y);
-    ll_append(p_list, z);
+    // Append values and check linked list values
+    CU_ASSERT_EQUAL(ll_append(p_list, val1), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_append(p_list, val2), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_append(p_list, val3), LL_SUCCESS);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 10);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_next->p_data, 20);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_next->p_data, 30);
+    CU_ASSERT_PTR_NULL(ll_at(p_list, 2)->p_next);
+    CU_ASSERT_FALSE(ll_is_empty(p_list));
 
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 20);
-
+    // Find value
     size_t idx = 0;
-    CU_ASSERT_EQUAL(ll_find(p_list, y, &idx), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_find(p_list, val2, &idx), LL_SUCCESS);
     CU_ASSERT_EQUAL(idx, 1);
 
+    // Attempt to find non-existent value
     int val_not_found = 100;
     CU_ASSERT_EQUAL(ll_find(p_list, &val_not_found, &idx), LL_NOT_FOUND);
 
@@ -165,42 +178,71 @@ test_ll_find_at (void)
 }
 
 static void
-test_ll_foreach_clone (void)
+test_ll_foreach_clone_reverse (void)
 {
-    ll_t *p_list = ll_create(delete_int, compare_ints, print_int, copy_int);
+    ll_t *p_ori = NULL;
+    p_ori = ll_create(delete_int, compare_ints, print_int, copy_int);
+    int **values = calloc(5, sizeof(int *));
 
-    int *a = malloc(sizeof(int));
-    *a     = 2;
-    int *b = malloc(sizeof(int));
-    *b     = 4;
-    int *c = malloc(sizeof(int));
-    *c     = 6;
+    for (int idx = 0; idx < 5; ++idx)
+    {
+        values[idx]  = calloc(1, sizeof(int));
+        *values[idx] = idx * 5;
+        CU_ASSERT_EQUAL(ll_append(p_ori, values[idx]), LL_SUCCESS);
+    }
 
-    ll_append(p_list, a);
-    ll_append(p_list, b);
-    ll_append(p_list, c);
+    free(values);
+    CU_ASSERT_EQUAL(ll_foreach(p_ori, multiply_by_five), LL_SUCCESS);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 0)->p_data, 0);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data, 5*5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data, 10*5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data, 15*5);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data, 20*5);
 
-    CU_ASSERT_EQUAL(ll_foreach(p_list, multiply_by_five), LL_SUCCESS);
+    ll_t *p_new = ll_clone(p_ori);
+    CU_ASSERT_PTR_NOT_NULL(p_new);
+    CU_ASSERT_PTR_NOT_EQUAL(p_new, p_ori);
 
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 0)->p_data, 10);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data, 20);
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 2)->p_data, 30);
+    size_t size_ori, size_new;
+    CU_ASSERT_EQUAL(ll_size(p_ori, &size_ori), LL_SUCCESS);
+    CU_ASSERT_EQUAL(ll_size(p_new, &size_new), LL_SUCCESS);
+    CU_ASSERT_EQUAL(size_ori, size_new);
 
-    ll_t *p_clone = ll_clone(p_list);
-    CU_ASSERT_PTR_NOT_NULL(p_clone);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 0)->p_data,
+                    *(int *)ll_at(p_new, 0)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 0)->p_data,
+                            ll_at(p_new, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data,
+                    *(int *)ll_at(p_new, 1)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 1)->p_data,
+                            ll_at(p_new, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data,
+                    *(int *)ll_at(p_new, 2)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 2)->p_data,
+                            ll_at(p_new, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data,
+                    *(int *)ll_at(p_new, 3)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 3)->p_data,
+                            ll_at(p_new, 3)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data,
+                    *(int *)ll_at(p_new, 4)->p_data);
+    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_ori, 4)->p_data,
+                            ll_at(p_new, 4)->p_data);
+    
+    CU_ASSERT_EQUAL(ll_reverse(p_new), LL_SUCCESS);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 4)->p_data,
+                    *(int *)ll_at(p_new, 0)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 3)->p_data,
+                    *(int *)ll_at(p_new, 1)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 2)->p_data,
+                    *(int *)ll_at(p_new, 2)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 1)->p_data,
+                    *(int *)ll_at(p_new, 3)->p_data);
+    CU_ASSERT_EQUAL(*(int *)ll_at(p_ori, 0)->p_data,
+                    *(int *)ll_at(p_new, 4)->p_data);
 
-    size_t size1, size2;
-    CU_ASSERT_EQUAL(ll_size(p_list, &size1), LL_SUCCESS);
-    CU_ASSERT_EQUAL(ll_size(p_clone, &size2), LL_SUCCESS);
-    CU_ASSERT_EQUAL(size1, size2);
-
-    CU_ASSERT_EQUAL(*(int *)ll_at(p_list, 1)->p_data,
-                    *(int *)ll_at(p_clone, 1)->p_data);
-    CU_ASSERT_PTR_NOT_EQUAL(ll_at(p_list, 1)->p_data,
-                            ll_at(p_clone, 1)->p_data);
-
-    ll_destroy(p_list);
-    ll_destroy(p_clone);
+    ll_destroy(p_ori);
+    ll_destroy(p_new);
 }
 
 static void

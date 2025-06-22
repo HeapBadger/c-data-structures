@@ -10,6 +10,10 @@
  * bounded sizes, making them ideal for high-performance scenarios compared to
  * linked list alternatives.
  *
+ * @note The stack only takes ownership of an element upon successful insertion.
+ *       If insertion fails, the caller must manage (and eventually free) the
+ *       memory.
+ * 
  * @author  heapbadger
  */
 
@@ -59,27 +63,13 @@ stack_destroy (stack_t *p_stack)
     }
 }
 
-void
-stack_clear (stack_t *p_stack)
+void 
+stack_del_ele(stack_t *p_stack, void *p_value)
 {
-    if (NULL != p_stack)
+    if ((NULL != p_stack) && (NULL != p_value))
     {
-        if (NULL != p_stack->p_array)
-        {
-            array_clear(p_stack->p_array);
-        }
+        array_del_ele(p_stack->p_array, p_value);
     }
-}
-
-stack_error_code_t
-stack_fill (stack_t *p_stack, void *p_value)
-{
-    if (NULL != p_stack)
-    {
-        return stack_error_from_array(array_fill(p_stack->p_array, p_value));
-    }
-
-    return STACK_INVALID_ARGUMENT;
 }
 
 stack_error_code_t
@@ -105,22 +95,27 @@ stack_pop (stack_t *p_stack, void **p_out)
 }
 
 stack_error_code_t
-stack_peek (const stack_t *p_stack, void **p_top)
+stack_peek (const stack_t *p_stack, void **p_out)
 {
-    if (NULL != p_stack)
+    if ((NULL == p_stack) || (NULL == p_stack->p_array) || (NULL == p_out))
     {
-        size_t size = 0U;
-
-        if ((STACK_SUCCESS != stack_size(p_stack, &size)) || (0U == size))
-        {
-            return STACK_EMPTY;
-        }
-
-        return stack_error_from_array(
-            array_get(p_stack->p_array, size - 1, p_top));
+        return STACK_INVALID_ARGUMENT;
     }
 
-    return STACK_INVALID_ARGUMENT;
+    size_t size;
+    stack_error_code_t err = stack_size(p_stack, &size);
+
+    if (STACK_SUCCESS != err)
+    {
+        return err;
+    }
+
+    if (size == 0)
+    {
+        return STACK_EMPTY;
+    }
+
+    return stack_error_from_array(array_get(p_stack->p_array, size - 1, p_out));
 }
 
 bool
@@ -132,6 +127,15 @@ stack_is_empty (const stack_t *p_stack)
     }
 
     return true;
+}
+
+void
+stack_print (const stack_t *p_stack)
+{
+    if (NULL != p_stack)
+    {
+        array_print(p_stack->p_array);
+    }
 }
 
 stack_error_code_t
@@ -150,37 +154,19 @@ stack_clone (const stack_t *p_ori)
 {
     stack_t *p_new = NULL;
 
-    if ((NULL == p_ori) || (NULL == p_ori->p_array))
+    if (NULL != p_ori)
     {
-        goto EXIT;
+        p_new = (stack_t *)calloc(1U, sizeof(stack_t));
+
+        if (NULL == p_new)
+        {
+            return p_new;
+        }
+
+        p_new->p_array = array_clone(p_ori->p_array);
     }
 
-    p_new = (stack_t *)calloc(1, sizeof(stack_t));
-
-    if (NULL == p_new)
-    {
-        goto EXIT;
-    }
-
-    p_new->p_array = array_clone(p_ori->p_array);
-
-    if (NULL == p_new->p_array)
-    {
-        free(p_new);
-        p_new = NULL;
-    }
-
-EXIT:
     return p_new;
-}
-
-void
-stack_print (const stack_t *p_stack)
-{
-    if (NULL != p_stack)
-    {
-        array_print(p_stack->p_array);
-    }
 }
 
 static stack_error_code_t

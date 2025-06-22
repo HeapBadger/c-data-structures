@@ -162,6 +162,7 @@ test_matrix_set_get_insert_remove (void)
             {
                 CU_ASSERT_EQUAL(matrix_insert(p_matrix, idx, jdx, val),
                                 MATRIX_OUT_OF_BOUNDS);
+                matrix_del_ele(p_matrix, val);
             }
             else
             {

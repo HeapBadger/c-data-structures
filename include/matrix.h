@@ -62,6 +62,8 @@ void matrix_destroy(matrix_t *p_matrix);
  */
 void matrix_clear(matrix_t *p_matrix);
 
+void matrix_del_ele(matrix_t *p_matrix, void *p_data);
+
 /**
  * @brief Get the number of rows in the matrix.
  *

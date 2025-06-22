@@ -13,6 +13,10 @@
  * well-suited for systems where memory usage patterns are dynamic or unknown in
  * advance.
  *
+ * @note The queue only takes ownership of an element upon successful insertion.
+ *       If insertion fails, the caller must manage (and eventually free) the
+ *       memory.
+ * 
  * @author  heapbadger
  */
 
@@ -61,12 +65,12 @@ queue_destroy (queue_t *p_queue)
     }
 }
 
-void
-queue_clear (queue_t *p_queue)
+void 
+queue_del_ele(queue_t *p_queue, void *p_data)
 {
-    if ((NULL != p_queue) && (NULL != p_queue->p_queue))
+    if ((NULL != p_queue) && (NULL != p_data))
     {
-        ll_clear(p_queue->p_queue);
+        ll_del_ele(p_queue->p_queue, p_data);
     }
 }
 
@@ -90,7 +94,7 @@ queue_dequeue (queue_t *p_queue, void **p_data)
     }
 
     queue_error_code_t err
-        = queue_error_from_ll(ll_copy_at(p_queue->p_queue, 0, p_data));
+        = queue_error_from_ll(ll_clone_at(p_queue->p_queue, 0, p_data));
 
     if (QUEUE_SUCCESS != err)
     {
@@ -101,9 +105,9 @@ queue_dequeue (queue_t *p_queue, void **p_data)
 }
 
 queue_error_code_t
-queue_peek (const queue_t *p_queue, void **p_data)
+queue_peek (const queue_t *p_queue, void **p_top)
 {
-    if ((NULL != p_queue) && (p_queue->p_queue) && (NULL != p_data))
+    if ((NULL != p_queue) && (p_queue->p_queue) && (NULL != p_top))
     {
         ll_node_t *p_node = ll_head(p_queue->p_queue);
 
@@ -112,7 +116,7 @@ queue_peek (const queue_t *p_queue, void **p_data)
             return QUEUE_NOT_FOUND;
         }
 
-        *p_data = p_node->p_data;
+        *p_top = p_node->p_data;
         return QUEUE_SUCCESS;
     }
 

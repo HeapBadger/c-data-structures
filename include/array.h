@@ -91,12 +91,12 @@ void array_destroy(array_t *p_array);
 void array_clear(array_t *p_array);
 
 /**
- * @brief Deletes a single element using the array's delete function.
+ * @brief Deletes a single element using the registered delete function.
  *
  * @param p_array Pointer to the array.
  * @param p_value Pointer to the element to delete.
  */
-void array_delete_element(array_t *p_array, void *p_value);
+void array_del_ele(array_t *p_array, void *p_value);
 
 /**
  * @brief Fill the entire array with copies of the given value.

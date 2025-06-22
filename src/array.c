@@ -1,8 +1,24 @@
-
 /**
  * @file array.c
- * @brief Implementation of the dynamic array data structure.
+ * @brief Implementation of a dynamic array data structure.
  *
+ * This dynamic array provides a flexible, resizable container for storing
+ * generic pointers. It supports constant-time indexed access, amortized
+ * constant-time append and pop operations, and automatic resizing as elements
+ * are added or removed.
+ *
+ * The array maintains internal capacity separate from logical length, allowing
+ * efficient memory usage through growth and shrink-to-fit strategies. Elements
+ * are stored as `void*`, making the structure suitable for generic use.
+ *
+ * Dynamic arrays are ideal when frequent random access is required and the
+ * number of elements is not known in advance. They offer higher cache locality
+ * and better performance for indexed operations compared to linked structures.
+ *
+ * @note The array only takes ownership of an element upon successful insertion.
+ *       If insertion fails, the caller must manage (and eventually free) the
+ *       memory.
+ * 
  * @author  heapbadger
  */
 
@@ -90,7 +106,7 @@ array_clear (array_t *p_array)
     {
         for (size_t idx = 0U; idx < p_array->len; ++idx)
         {
-            array_delete_element(p_array, p_array->pp_array[idx]);
+            array_del_ele(p_array, p_array->pp_array[idx]);
             p_array->pp_array[idx] = NULL;
         }
 
@@ -99,7 +115,7 @@ array_clear (array_t *p_array)
 }
 
 void
-array_delete_element (array_t *p_array, void *p_value)
+array_del_ele (array_t *p_array, void *p_value)
 {
     if ((NULL != p_array) && (NULL != p_value))
     {
@@ -156,7 +172,6 @@ array_insert (array_t *p_array, size_t index, void *p_value)
 
     if (index > p_array->len)
     {
-        array_delete_element(p_array, p_value);
         ret = ARRAY_OUT_OF_BOUNDS;
         goto EXIT;
     }
@@ -176,10 +191,6 @@ array_insert (array_t *p_array, size_t index, void *p_value)
         p_array->pp_array[index] = p_value;
         p_array->len++;
     }
-    else
-    {
-        array_delete_element(p_array, p_value);
-    }
 
 EXIT:
     return ret;
@@ -198,7 +209,7 @@ array_remove (array_t *p_array, size_t index)
         return ARRAY_OUT_OF_BOUNDS;
     }
 
-    array_delete_element(p_array, p_array->pp_array[index]);
+    array_del_ele(p_array, p_array->pp_array[index]);
 
     for (size_t i = index; i < p_array->len - 1U; ++i)
     {
@@ -275,7 +286,6 @@ array_set (array_t *p_array, size_t index, void *p_value)
     // If setting past current end, error.
     if (index > p_array->len)
     {
-        array_delete_element(p_array, p_value);
         return ARRAY_OUT_OF_BOUNDS;
     }
 
@@ -288,7 +298,7 @@ array_set (array_t *p_array, size_t index, void *p_value)
     // Replace value at index.
     if (NULL != p_array->pp_array[index])
     {
-        array_delete_element(p_array, p_array->pp_array[index]);
+        array_del_ele(p_array, p_array->pp_array[index]);
     }
 
     p_array->pp_array[index] = p_value;
@@ -345,27 +355,13 @@ array_capacity (const array_t *p_array, size_t *p_cap)
 bool
 array_is_empty (const array_t *p_array)
 {
-    size_t size = 0U;
-
-    if ((NULL == p_array) || (ARRAY_SUCCESS != array_size(p_array, &size)))
-    {
-        return true;
-    }
-
-    return (size == 0U);
+    return (p_array && p_array->len == 0U);
 }
 
 bool
 array_is_full (const array_t *p_array)
 {
-    size_t size = 0U;
-
-    if ((NULL == p_array) || (ARRAY_SUCCESS != array_size(p_array, &size)))
-    {
-        return false;
-    }
-
-    return (size >= p_array->cap);
+    return (p_array && p_array->len == p_array->cap);
 }
 
 bool
@@ -464,7 +460,7 @@ array_clone (const array_t *p_ori)
 
         if (ARRAY_SUCCESS != ret)
         {
-            array_delete_element(p_new, p_copy);
+            array_del_ele(p_new, p_copy);
             array_destroy(p_new);
             p_new = NULL;
             goto EXIT;

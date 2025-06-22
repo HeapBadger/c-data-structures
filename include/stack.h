@@ -52,23 +52,12 @@ stack_t *stack_create(size_t           cap,
 void stack_destroy(stack_t *p_stack);
 
 /**
- * @brief Removes all elements from the stack.
+ * @brief Deletes a single element using the registered delete function.
  *
- * @param p_stack Stack to clear.
+ * @param stack_t Pointer to the stack.
+ * @param p_value Pointer to the element to delete.
  */
-void stack_clear(stack_t *p_stack);
-
-/**
- * @brief Fill the entire stack with copies of the given value.
- *
- * @param p_array Pointer to the stack to fill.
- * @param p_value Pointer to the value to copy into each element.
- *
- * @note Caller is responsible for freeing p_value.
- *
- * @return STACK_SUCCESS on success, error code otherwise.
- */
-stack_error_code_t stack_fill(stack_t *p_stack, void *p_value);
+void stack_del_ele(stack_t *p_stack, void *p_value);
 
 /**
  * @brief Pushes an element onto the stack.
@@ -92,14 +81,14 @@ stack_error_code_t stack_push(stack_t *p_stack, void *p_data);
 stack_error_code_t stack_pop(stack_t *p_stack, void **p_out);
 
 /**
- * @brief Retrieves the top element of the stack without removing it.
+ * @brief Return the top element (end of stack) without removing it.
  *
  * @param p_stack Stack to peek into.
- * @param p_top   Output pointer to receive the data.
+ * @param p_out   Output pointer to receive the data.
  *
  * @return STACK_SUCCESS on success, error code otherwise.
  */
-stack_error_code_t stack_peek(const stack_t *p_stack, void **p_top);
+stack_error_code_t stack_peek(const stack_t *p_stack, void **p_out);
 
 /**
  * @brief Checks if the stack is empty.
@@ -109,6 +98,13 @@ stack_error_code_t stack_peek(const stack_t *p_stack, void **p_top);
  * @return true if stack is empty or NULL, false otherwise.
  */
 bool stack_is_empty(const stack_t *p_stack);
+
+/**
+ * @brief Prints all elements in the stack using the registered print function.
+ *
+ * @param p_stack Stack to print.
+ */
+void stack_print(const stack_t *p_stack);
 
 /**
  * @brief Gets the number of elements currently in the stack.
@@ -128,13 +124,6 @@ stack_error_code_t stack_size(const stack_t *p_stack, size_t *p_size);
  * @return Pointer to a new stack on success, or NULL on failure.
  */
 stack_t *stack_clone(const stack_t *p_ori);
-
-/**
- * @brief Prints all elements in the stack using the registered print function.
- *
- * @param p_stack Stack to print.
- */
-void stack_print(const stack_t *p_stack);
 
 #endif // STACK_H
 
