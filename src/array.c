@@ -126,83 +126,49 @@ array_del_ele (array_t *p_array, void *p_value)
 array_error_code_t
 array_fill (array_t *p_array, void *p_value)
 {
+    void **p_tmp = NULL;
+    array_error_code_t ret = ARRAY_SUCCESS;
+
     if ((NULL == p_array) || (NULL == p_value) || (NULL == p_array->cpy_f))
     {
-        return ARRAY_INVALID_ARGUMENT;
+        ret = ARRAY_INVALID_ARGUMENT;
+        goto EXIT;
     }
 
-    void **p_new_data = (void **)calloc(p_array->cap, sizeof(void *));
+    p_tmp = (void **)calloc(p_array->cap, sizeof(void *));
 
-    if (NULL == p_new_data)
+    if (NULL == p_tmp)
     {
-        return ARRAY_ALLOCATION_FAILURE;
+        ret = ARRAY_ALLOCATION_FAILURE;
+        goto EXIT;
     }
 
     // Optimize fill by pre-copying values
     for (size_t idx = 0; idx < p_array->cap; ++idx)
     {
-        p_new_data[idx] = p_array->cpy_f(p_value);
+        p_tmp[idx] = p_array->cpy_f(p_value);
     
-        if (NULL == p_new_data[idx])
+        if (NULL == p_tmp[idx])
         {
-            // cleanup and return
             for (size_t jdx = 0; jdx < idx; ++jdx)
             {
-                array_del_ele(new_data[jdx]);
+                array_del_ele(p_array, p_tmp[jdx]);
             }
-          
-            free(p_new_data);
-            return ARRAY_ALLOCATION_FAILURE;
+
+            ret = ARRAY_ALLOCATION_FAILURE;
+            goto EXIT;
         }
     }
 
-    // Clear existing elements
+    // Clear existing elements and directly assign new data to array
     array_clear(p_array);
-
-    // Directly assign new data to array
-    memcpy(p_array->pp_array, p_new_data, p_array->cap * sizeof(void *));
+    memcpy(p_array->pp_array, p_tmp, p_array->cap * sizeof(void *));
     p_array->len = p_array->cap;
 
-    free(p_new_data);
-    return ARRAY_SUCCESS;
+EXIT:
+    free(p_tmp);
+    return ret;
 }
-// {
-//     if (!p_array || !p_value || !p_array->cpy_f)
-//     {
-//         return ARRAY_INVALID_ARGUMENT;
-//     }
-
-//     for (size_t idx = 0U; idx < p_array->cap; ++idx)
-//     {
-//         void *p_copy = p_array->cpy_f(p_value);
-
-//         if (NULL == p_copy)
-//         {
-//             array_clear(p_array);
-//             return ARRAY_ALLOCATION_FAILURE;
-//         }
-
-//         array_error_code_t ret;
-
-//         if (p_array->pp_array[idx])
-//         {
-//             ret = array_set(p_array, idx, p_copy);
-//         }
-//         else
-//         {
-//             ret = array_push(p_array, p_copy);
-//         }
-
-//         if (ARRAY_SUCCESS != ret)
-//         {
-//             array_del_ele(p_array, p_copy);
-//             array_clear(p_array);
-//             return ret;
-//         }
-//     }
-
-//     return ARRAY_SUCCESS;
-// }
 
 array_error_code_t
 array_insert (array_t *p_array, size_t index, void *p_value)
@@ -475,44 +441,48 @@ array_foreach (array_t *p_array, foreach_func func)
 array_t *
 array_clone (const array_t *p_ori)
 {
-    array_t *p_new = NULL;
-
     if (NULL == p_ori)
     {
-        goto EXIT;
+        return NULL;
     }
 
-    p_new = array_create(
-        p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
+    array_t *p_new = array_create(p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
 
     if (NULL == p_new)
     {
-        goto EXIT;
+        return NULL;
     }
 
-    for (size_t idx = 0U; idx < p_ori->len; ++idx)
+    void **p_tmp = (void **)calloc(p_ori->len, sizeof(void *));
+
+    if (NULL == p_tmp)
     {
-        void *p_copy = p_ori->cpy_f(p_ori->pp_array[idx]);
+        array_destroy(p_new);
+        return NULL;
+    }
 
-        if (NULL == p_copy)
+    // Clone everything first
+    for (size_t idx = 0; idx < p_ori->len; ++idx)
+    {
+        p_tmp[idx] = p_ori->cpy_f(p_ori->pp_array[idx]);
+
+        if (NULL == p_tmp[idx])
         {
-            array_destroy(p_new);
-            p_new = NULL;
-            goto EXIT;
-        }
+            for (size_t jdx = 0; jdx < idx; ++jdx)
+            {
+                p_ori->del_f(p_tmp[jdx]);
+            }
 
-        array_error_code_t ret = array_insert(p_new, idx, p_copy);
-
-        if (ARRAY_SUCCESS != ret)
-        {
-            array_del_ele(p_new, p_copy);
             array_destroy(p_new);
-            p_new = NULL;
-            goto EXIT;
+            free(p_tmp);
+            return NULL;
         }
     }
 
-EXIT:
+    // Directly assign new data to array
+    memcpy(p_new->pp_array, p_tmp, p_ori->len * sizeof(void *));
+    p_new->len = p_ori->len;
+    free(p_tmp);
     return p_new;
 }
 

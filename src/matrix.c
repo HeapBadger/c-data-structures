@@ -63,6 +63,9 @@ static void double_print(void *p_data, size_t index);
  */
 static void *double_cpy(const void *p_src);
 
+static bool matrix_is_same_row_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b);
+static bool matrix_is_same_col_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b);
+
 matrix_t *
 matrix_create (size_t rows, size_t cols)
 {
@@ -72,7 +75,7 @@ matrix_create (size_t rows, size_t cols)
     {
         return NULL;
     }
-    
+
     p_matrix = (matrix_t *)calloc(1U, sizeof(matrix_t));
 
     if (NULL == p_matrix)
@@ -80,10 +83,14 @@ matrix_create (size_t rows, size_t cols)
         return NULL;
     }
 
-    size_t cap = rows * cols;
-    p_matrix->p_flat = array_create(cap, (del_func)double_del, (cmp_func)double_cmp, (print_func)double_print, (copy_func)double_cpy);
-    p_matrix->cols = cols;
-    p_matrix->rows = rows;
+    size_t cap       = rows * cols;
+    p_matrix->p_flat = array_create(cap,
+                                    (del_func)double_del,
+                                    (cmp_func)double_cmp,
+                                    (print_func)double_print,
+                                    (copy_func)double_cpy);
+    p_matrix->cols   = cols;
+    p_matrix->rows   = rows;
     matrix_fill(p_matrix, 0.0);
     return p_matrix;
 }
@@ -95,8 +102,8 @@ matrix_destroy (matrix_t *p_matrix)
     {
         array_destroy(p_matrix->p_flat);
         p_matrix->p_flat = NULL;
-        p_matrix->cols     = 0U;
-        p_matrix->rows     = 0U;
+        p_matrix->cols   = 0U;
+        p_matrix->rows   = 0U;
         free(p_matrix);
         p_matrix = NULL;
     }
@@ -172,8 +179,8 @@ matrix_set (matrix_t *p_matrix, size_t row, size_t col, double value)
     }
 
     matrix_error_code_t ret;
-    size_t idx = ROW_MAJOR_IDX(row, col, p_matrix->cols);
-    *p_val     = value;
+    size_t              idx = ROW_MAJOR_IDX(row, col, p_matrix->cols);
+    *p_val                  = value;
     ret = matrix_error_from_array(array_set(p_matrix->p_flat, idx, p_val));
 
     if (MATRIX_SUCCESS != ret)
@@ -249,8 +256,7 @@ matrix_find (const matrix_t *p_matrix, double key, size_t *p_row, size_t *p_col)
 
     size_t flat_idx = 0;
 
-    if (ARRAY_SUCCESS
-        == array_find(p_matrix->p_flat, (void **)&key, &flat_idx))
+    if (ARRAY_SUCCESS == array_find(p_matrix->p_flat, (void **)&key, &flat_idx))
     {
         *p_row = flat_idx / p_matrix->cols;
         *p_col = flat_idx % p_matrix->cols;
@@ -271,13 +277,68 @@ matrix_clone (const matrix_t *p_ori)
 
         if (NULL != p_new)
         {
-            p_new->cols = p_ori->cols;
-            p_new->rows = p_ori->rows;
+            p_new->cols   = p_ori->cols;
+            p_new->rows   = p_ori->rows;
             p_new->p_flat = array_clone(p_ori->p_flat);
         }
     }
 
     return p_new;
+}
+
+matrix_error_code_t
+matrix_add (const matrix_t *p_matrix_a,
+            const matrix_t *p_matrix_b,
+            matrix_t       *p_result)
+{
+    if ((NULL == p_matrix_a) || (NULL == p_matrix_b) || (NULL == p_result) || (false == matrix_is_same_col_size(p_matrix_a, p_matrix_b)) || (false == matrix_is_same_row_size(p_matrix_a, p_matrix_b)))
+    {
+        return ARRAY_INVALID_ARGUMENT;
+    }
+
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_subtract (const matrix_t *p_matrix_a,
+                 const matrix_t *p_matrix_b,
+                 matrix_t       *p_result)
+{
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_multiply (const matrix_t *p_matrix_a,
+                 const matrix_t *p_matrix_b,
+                 matrix_t       *p_result)
+{
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_scalar_multiply (const matrix_t *p_matrix,
+                        double          scalar,
+                        matrix_t       *p_result)
+{
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_transpose (const matrix_t *p_matrix, matrix_t *p_result)
+{
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_determinant (const matrix_t *p_matrix, double *p_result)
+{
+    return ARRAY_SUCCESS;
+}
+
+matrix_error_code_t
+matrix_inverse (const matrix_t *p_matrix, matrix_t *p_result)
+{
+    return ARRAY_SUCCESS;
 }
 
 static matrix_error_code_t
@@ -352,6 +413,46 @@ double_cpy (const void *p_src)
     }
 
     return p_copy;
+}
+
+static bool
+matrix_is_same_row_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b)
+{
+    if ((NULL == p_matrix_a) || (NULL == p_matrix_b))
+    {
+        return false;
+    }
+
+    size_t row_a = 0;
+    size_t row_b = 0;
+
+    if ((MATRIX_SUCCESS == matrix_row_size(p_matrix_a, &row_a))
+        && (MATRIX_SUCCESS == matrix_row_size(p_matrix_b, &row_b)))
+    {
+        return (row_a == row_b);
+    }
+
+    return false;
+}
+
+static bool
+matrix_is_same_col_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b)
+{
+    if ((NULL == p_matrix_a) || (NULL == p_matrix_b))
+    {
+        return false;
+    }
+
+    size_t col_a = 0;
+    size_t col_b = 0;
+
+    if ((MATRIX_SUCCESS == matrix_column_size(p_matrix_a, &col_a))
+        && (MATRIX_SUCCESS == matrix_column_size(p_matrix_b, &col_b)))
+    {
+        return (col_a == col_b);
+    }
+
+    return false;
 }
 
 /*** end of file ***/

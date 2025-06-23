@@ -188,6 +188,198 @@ test_matrix_find_copy (void)
 static void
 test_matrix_arithmetic (void)
 {
+    // // Dimensions for test matrices
+    // size_t rows = 3, cols = 3;
+
+    // // Create matrices for testing
+    // matrix_t *p_a      = matrix_create(rows, cols);
+    // matrix_t *p_b      = matrix_create(rows, cols);
+    // matrix_t *p_result = matrix_create(rows, cols);
+    // CU_ASSERT_PTR_NOT_NULL(p_a);
+    // CU_ASSERT_PTR_NOT_NULL(p_b);
+    // CU_ASSERT_PTR_NOT_NULL(p_result);
+
+    // // Initialize matrices p_a and p_b with some values
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_set(p_a, row, col, (double)(row + col)),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_set(p_b, row, col, (double)(row * col)),
+    //                         MATRIX_SUCCESS);
+    //     }
+    // }
+
+    // // Test Addition
+    // CU_ASSERT_EQUAL(matrix_add(p_a, p_b, p_result), MATRIX_SUCCESS);
+    // double val_a, val_b, val_r;
+
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_b, row, col, &val_b), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a + val_b, 1e-9);
+    //     }
+    // }
+
+    // // Test Subtraction
+    // CU_ASSERT_EQUAL(matrix_subtract(p_a, p_b, p_result), MATRIX_SUCCESS);
+
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_b, row, col, &val_b), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a - val_b, 1e-9);
+    //     }
+    // }
+
+    // // Test Scalar Multiplication
+    // double scalar = 2.5;
+    // CU_ASSERT_EQUAL(matrix_scalar_multiply(p_a, scalar, p_result),
+    //                 MATRIX_SUCCESS);
+
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a * scalar, 1e-9);
+    //     }
+    // }
+
+    // // Test Transpose
+    // matrix_t *p_transpose = matrix_create(cols, rows);
+    // CU_ASSERT_PTR_NOT_NULL(p_transpose);
+    // CU_ASSERT_EQUAL(matrix_transpose(p_a, p_transpose), MATRIX_SUCCESS);
+
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
+    //         CU_ASSERT_EQUAL(matrix_get(p_transpose, col, row, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a, 1e-9);
+    //     }
+    // }
+    // matrix_destroy(p_transpose);
+
+    // // Test Multiplication
+    // // For multiplication, use 3x2 and 2x3 matrices
+    // matrix_t *p_mul_a      = matrix_create(3, 2);
+    // matrix_t *p_mul_b      = matrix_create(2, 3);
+    // matrix_t *p_mul_result = matrix_create(3, 3);
+    // CU_ASSERT_PTR_NOT_NULL(p_mul_a);
+    // CU_ASSERT_PTR_NOT_NULL(p_mul_b);
+    // CU_ASSERT_PTR_NOT_NULL(p_mul_result);
+
+    // // Initialize p_mul_a
+    // double mul_a_vals[3][2] = { { 1, 2 }, { 3, 4 }, { 5, 6 } };
+
+    // for (size_t row = 0; row < 3; ++row)
+    // {
+    //     for (size_t col = 0; col < 2; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_set(p_mul_a, row, col, mul_a_vals[row][col]),
+    //                         MATRIX_SUCCESS);
+    //     }
+    // }
+
+    // // Initialize p_mul_b
+    // double mul_b_vals[2][3] = { { 7, 8, 9 }, { 10, 11, 12 } };
+
+    // for (size_t row = 0; row < 2; ++row)
+    // {
+    //     for (size_t col = 0; col < 3; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_set(p_mul_b, row, col, mul_b_vals[row][col]),
+    //                         MATRIX_SUCCESS);
+    //     }
+    // }
+
+    // // Multiply p_mul_a * p_mul_b -> p_mul_result
+    // CU_ASSERT_EQUAL(matrix_multiply(p_mul_a, p_mul_b, p_mul_result),
+    //                 MATRIX_SUCCESS);
+
+    // // Expected multiplication result
+    // double expected_mul[3][3]
+    //     = { { 27, 30, 33 }, { 61, 68, 75 }, { 95, 106, 117 } };
+
+    // for (size_t row = 0; row < 3; ++row)
+    // {
+    //     for (size_t col = 0; col < 3; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_mul_result, row, col, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         CU_ASSERT_DOUBLE_EQUAL(val_r, expected_mul[row][col], 1e-9);
+    //     }
+    // }
+
+    // matrix_destroy(p_mul_a);
+    // matrix_destroy(p_mul_b);
+    // matrix_destroy(p_mul_result);
+
+    // // Test Determinant (3x3)
+    // double det = 0.0;
+    // CU_ASSERT_EQUAL(matrix_determinant(p_a, &det), MATRIX_SUCCESS);
+
+    // // Manually compute determinant of p_a (which is filled with r+c)
+    // // For matrix:
+    // // 0 1 2
+    // // 1 2 3
+    // // 2 3 4
+    // // det = 0*(2*4 - 3*3) - 1*(1*4 - 3*2) + 2*(1*3 - 2*2)
+    // // det = 0 - 1*(4 - 6) + 2*(3 - 4)
+    // // det = 0 - 1*(-2) + 2*(-1) = 2 - 2 = 0
+    // CU_ASSERT_DOUBLE_EQUAL(det, 0.0, 1e-9);
+
+    // // Test Inverse (should fail since determinant is 0)
+    // matrix_t *p_inv = matrix_create(rows, cols);
+    // CU_ASSERT_PTR_NOT_NULL(p_inv);
+    // CU_ASSERT_NOT_EQUAL(matrix_inverse(p_a, p_inv), MATRIX_SUCCESS);
+
+    // // Modify p_a to identity matrix for invertible test
+    // matrix_fill(p_a, 0.0);
+
+    // for (size_t idx = 0; idx < rows; ++idx)
+    // {
+    //     CU_ASSERT_EQUAL(matrix_set(p_a, idx, idx, 1.0), MATRIX_SUCCESS);
+    // }
+
+    // CU_ASSERT_EQUAL(matrix_inverse(p_a, p_inv), MATRIX_SUCCESS);
+    // // Inverse of identity is identity, verify
+    // for (size_t row = 0; row < rows; ++row)
+    // {
+    //     for (size_t col = 0; col < cols; ++col)
+    //     {
+    //         CU_ASSERT_EQUAL(matrix_get(p_inv, row, col, &val_r),
+    //                         MATRIX_SUCCESS);
+    //         if (row == col)
+    //         {
+    //             CU_ASSERT_DOUBLE_EQUAL(val_r, 1.0, 1e-9);
+    //         }
+    //         else
+    //         {
+    //             CU_ASSERT_DOUBLE_EQUAL(val_r, 0.0, 1e-9);
+    //         }
+    //     }
+    // }
+
+    // matrix_destroy(p_inv);
+    // matrix_destroy(p_a);
+    // matrix_destroy(p_b);
+    // matrix_destroy(p_result);
     return;
 }
 
