@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "auxiliary.h"
 #include "linked_list.h"
 
