@@ -126,42 +126,83 @@ array_del_ele (array_t *p_array, void *p_value)
 array_error_code_t
 array_fill (array_t *p_array, void *p_value)
 {
-    if (!p_array || !p_value || !p_array->cpy_f)
+    if ((NULL == p_array) || (NULL == p_value) || (NULL == p_array->cpy_f))
     {
         return ARRAY_INVALID_ARGUMENT;
     }
 
-    for (size_t idx = 0U; idx < p_array->cap; ++idx)
+    void **p_new_data = (void **)calloc(p_array->cap, sizeof(void *));
+
+    if (NULL == p_new_data)
     {
-        void *p_copy = p_array->cpy_f(p_value);
+        return ARRAY_ALLOCATION_FAILURE;
+    }
 
-        if (NULL == p_copy)
+    // Optimize fill by pre-copying values
+    for (size_t idx = 0; idx < p_array->cap; ++idx)
+    {
+        p_new_data[idx] = p_array->cpy_f(p_value);
+    
+        if (NULL == p_new_data[idx])
         {
-            array_clear(p_array);
+            // cleanup and return
+            for (size_t jdx = 0; jdx < idx; ++jdx)
+            {
+                array_del_ele(new_data[jdx]);
+            }
+          
+            free(p_new_data);
             return ARRAY_ALLOCATION_FAILURE;
-        }
-
-        array_error_code_t ret;
-
-        if (p_array->pp_array[idx])
-        {
-            ret = array_set(p_array, idx, p_copy);
-        }
-        else
-        {
-            ret = array_push(p_array, p_copy);
-        }
-
-        if (ARRAY_SUCCESS != ret)
-        {
-            array_del_ele(p_array, p_copy);
-            array_clear(p_array);
-            return ret;
         }
     }
 
+    // Clear existing elements
+    array_clear(p_array);
+
+    // Directly assign new data to array
+    memcpy(p_array->pp_array, p_new_data, p_array->cap * sizeof(void *));
+    p_array->len = p_array->cap;
+
+    free(p_new_data);
     return ARRAY_SUCCESS;
 }
+// {
+//     if (!p_array || !p_value || !p_array->cpy_f)
+//     {
+//         return ARRAY_INVALID_ARGUMENT;
+//     }
+
+//     for (size_t idx = 0U; idx < p_array->cap; ++idx)
+//     {
+//         void *p_copy = p_array->cpy_f(p_value);
+
+//         if (NULL == p_copy)
+//         {
+//             array_clear(p_array);
+//             return ARRAY_ALLOCATION_FAILURE;
+//         }
+
+//         array_error_code_t ret;
+
+//         if (p_array->pp_array[idx])
+//         {
+//             ret = array_set(p_array, idx, p_copy);
+//         }
+//         else
+//         {
+//             ret = array_push(p_array, p_copy);
+//         }
+
+//         if (ARRAY_SUCCESS != ret)
+//         {
+//             array_del_ele(p_array, p_copy);
+//             array_clear(p_array);
+//             return ret;
+//         }
+//     }
+
+//     return ARRAY_SUCCESS;
+// }
 
 array_error_code_t
 array_insert (array_t *p_array, size_t index, void *p_value)
