@@ -51,8 +51,6 @@ check_and_install "make" "sudo apt install -y make"
 check_and_install "gcc" "sudo apt install -y gcc"
 check_and_install "libcunit1" "sudo apt-get install -y libcunit1 libcunit1-doc libcunit1-dev"
 check_and_install "valgrind" "sudo apt install -y valgrind"
-check_and_install "clang-tidy" "sudo apt install -y clang-tidy"
 check_and_install "clang-format-15" "sudo apt-get install -y clang-format-15"
-check_and_install "clang" "sudo apt install -y clang"
 
 echo "Setup completed."

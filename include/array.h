@@ -234,7 +234,7 @@ bool array_is_full(const array_t *p_array);
  *
  * @param p_array_a Pointer to the array a.
  * @param p_array_b Pointer to the array b.
- * 
+ *
  * @note Assumes that both arrays have same registered comparison
  * function!
  *

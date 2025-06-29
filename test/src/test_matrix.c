@@ -219,9 +219,10 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < cols; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_b, row, col, &val_b), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a),
+    //         MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_b, row, col,
+    //         &val_b), MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_result,
+    //         row, col, &val_r),
     //                         MATRIX_SUCCESS);
     //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a + val_b, 1e-9);
     //     }
@@ -234,9 +235,10 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < cols; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_b, row, col, &val_b), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a),
+    //         MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_b, row, col,
+    //         &val_b), MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_result,
+    //         row, col, &val_r),
     //                         MATRIX_SUCCESS);
     //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a - val_b, 1e-9);
     //     }
@@ -251,8 +253,9 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < cols; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_result, row, col, &val_r),
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a),
+    //         MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_result, row, col,
+    //         &val_r),
     //                         MATRIX_SUCCESS);
     //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a * scalar, 1e-9);
     //     }
@@ -267,8 +270,9 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < cols; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a), MATRIX_SUCCESS);
-    //         CU_ASSERT_EQUAL(matrix_get(p_transpose, col, row, &val_r),
+    //         CU_ASSERT_EQUAL(matrix_get(p_a, row, col, &val_a),
+    //         MATRIX_SUCCESS); CU_ASSERT_EQUAL(matrix_get(p_transpose, col,
+    //         row, &val_r),
     //                         MATRIX_SUCCESS);
     //         CU_ASSERT_DOUBLE_EQUAL(val_r, val_a, 1e-9);
     //     }
@@ -291,7 +295,8 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < 2; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_set(p_mul_a, row, col, mul_a_vals[row][col]),
+    //         CU_ASSERT_EQUAL(matrix_set(p_mul_a, row, col,
+    //         mul_a_vals[row][col]),
     //                         MATRIX_SUCCESS);
     //     }
     // }
@@ -303,7 +308,8 @@ test_matrix_arithmetic (void)
     // {
     //     for (size_t col = 0; col < 3; ++col)
     //     {
-    //         CU_ASSERT_EQUAL(matrix_set(p_mul_b, row, col, mul_b_vals[row][col]),
+    //         CU_ASSERT_EQUAL(matrix_set(p_mul_b, row, col,
+    //         mul_b_vals[row][col]),
     //                         MATRIX_SUCCESS);
     //     }
     // }

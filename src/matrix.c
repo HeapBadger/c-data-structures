@@ -63,8 +63,10 @@ static void double_print(void *p_data, size_t index);
  */
 static void *double_cpy(const void *p_src);
 
-static bool matrix_is_same_row_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b);
-static bool matrix_is_same_col_size (const matrix_t *p_matrix_a, const matrix_t *p_matrix_b);
+static bool matrix_is_same_row_size(const matrix_t *p_matrix_a,
+                                    const matrix_t *p_matrix_b);
+static bool matrix_is_same_col_size(const matrix_t *p_matrix_a,
+                                    const matrix_t *p_matrix_b);
 
 matrix_t *
 matrix_create (size_t rows, size_t cols)
@@ -291,7 +293,9 @@ matrix_add (const matrix_t *p_matrix_a,
             const matrix_t *p_matrix_b,
             matrix_t       *p_result)
 {
-    if ((NULL == p_matrix_a) || (NULL == p_matrix_b) || (NULL == p_result) || (false == matrix_is_same_col_size(p_matrix_a, p_matrix_b)) || (false == matrix_is_same_row_size(p_matrix_a, p_matrix_b)))
+    if ((NULL == p_matrix_a) || (NULL == p_matrix_b) || (NULL == p_result)
+        || (false == matrix_is_same_col_size(p_matrix_a, p_matrix_b))
+        || (false == matrix_is_same_row_size(p_matrix_a, p_matrix_b)))
     {
         return ARRAY_INVALID_ARGUMENT;
     }

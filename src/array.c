@@ -127,8 +127,8 @@ array_del_ele (array_t *p_array, void *p_value)
 array_error_code_t
 array_fill (array_t *p_array, void *p_value)
 {
-    void **p_tmp = NULL;
-    array_error_code_t ret = ARRAY_SUCCESS;
+    void             **p_tmp = NULL;
+    array_error_code_t ret   = ARRAY_SUCCESS;
 
     if ((NULL == p_array) || (NULL == p_value) || (NULL == p_array->cpy_f))
     {
@@ -148,7 +148,7 @@ array_fill (array_t *p_array, void *p_value)
     for (size_t idx = 0; idx < p_array->cap; ++idx)
     {
         p_tmp[idx] = p_array->cpy_f(p_value);
-    
+
         if (NULL == p_tmp[idx])
         {
             for (size_t jdx = 0; jdx < idx; ++jdx)
@@ -447,7 +447,8 @@ array_clone (const array_t *p_ori)
         return NULL;
     }
 
-    array_t *p_new = array_create(p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
+    array_t *p_new = array_create(
+        p_ori->cap, p_ori->del_f, p_ori->cmp_f, p_ori->print_f, p_ori->cpy_f);
 
     if (NULL == p_new)
     {
