@@ -297,10 +297,10 @@ matrix_add (const matrix_t *p_matrix_a,
         || (false == matrix_is_same_col_size(p_matrix_a, p_matrix_b))
         || (false == matrix_is_same_row_size(p_matrix_a, p_matrix_b)))
     {
-        return ARRAY_INVALID_ARGUMENT;
+        return MATRIX_INVALID_ARGUMENT;
     }
 
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
@@ -308,7 +308,7 @@ matrix_subtract (const matrix_t *p_matrix_a,
                  const matrix_t *p_matrix_b,
                  matrix_t       *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
@@ -316,7 +316,7 @@ matrix_multiply (const matrix_t *p_matrix_a,
                  const matrix_t *p_matrix_b,
                  matrix_t       *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
@@ -324,25 +324,25 @@ matrix_scalar_multiply (const matrix_t *p_matrix,
                         double          scalar,
                         matrix_t       *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
 matrix_transpose (const matrix_t *p_matrix, matrix_t *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
 matrix_determinant (const matrix_t *p_matrix, double *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 matrix_error_code_t
 matrix_inverse (const matrix_t *p_matrix, matrix_t *p_result)
 {
-    return ARRAY_SUCCESS;
+    return MATRIX_SUCCESS;
 }
 
 static matrix_error_code_t
