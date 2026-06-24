@@ -133,14 +133,10 @@ c-data-structures/
 │   ├── ✅ matrix.c
 │   ├── ✅ stack.c
 │   ├── ✅ queue.c
-│   ├── binary_tree.c
+│   ├── deque.c
+│   ├── binary_search_tree.c
 │   ├── binary_heap.c
-│   ├── hash_table.c
-│   ├── deque.c          
-│   ├── trie.c        
-│   ├── disjoint_set.c    
-│   ├── skip_list.c           
-│   ├── bloom_filter.c       
+│   ├── hash_table.c     
 │
 ├── tests/
 │   ├── ...
