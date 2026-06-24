@@ -165,7 +165,7 @@ matrix_set (matrix_t *p_matrix, size_t row, size_t col, double value)
 {
     if (NULL == p_matrix)
     {
-        return MATRIX_ALLOCATION_FAILURE;
+        return MATRIX_INVALID_ARGUMENT;
     }
 
     if ((row >= p_matrix->rows) || (col >= p_matrix->cols))
@@ -258,7 +258,7 @@ matrix_find (const matrix_t *p_matrix, double key, size_t *p_row, size_t *p_col)
 
     size_t flat_idx = 0;
 
-    if (ARRAY_SUCCESS == array_find(p_matrix->p_flat, (void **)&key, &flat_idx))
+    if (ARRAY_SUCCESS == array_find(p_matrix->p_flat, (void *)&key, &flat_idx))
     {
         *p_row = flat_idx / p_matrix->cols;
         *p_col = flat_idx % p_matrix->cols;
